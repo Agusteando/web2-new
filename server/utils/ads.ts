@@ -1,0 +1,577 @@
+
+import { randomUUID, timingSafeEqual } from "node:crypto";
+import type { H3Event } from "h3";
+import { createError, getCookie, getRequestURL, readBody, setCookie, setHeader } from "h3";
+import type { NitroRuntimeConfig } from "nitropack";
+import type { AdConfigRow } from "./adsDb";
+import { getAdConfig, insertAdVisit } from "./adsDb";
+import type { AdDecisionResult, LastLoginType, UserSegment, VisitorContext } from "./adsTypes";
+
+const COOKIE_VISITOR_ID = "visitor_id";
+const COOKIE_USER_SEGMENT = "user_segment";
+const COOKIE_ADS_SUPPRESSED = "ads_suppressed";
+const COOKIE_LAST_LOGIN_TYPE = "last_login_type";
+
+/**
+ * Normalize a raw cookie or env string into a boolean or "unknown".
+ */
+function normalizeEnvBoolean(raw: string | undefined | null): "true" | "false" | "unknown" {
+  if (!raw) return "unknown";
+  const value = String(raw).trim().toLowerCase();
+
+  if (["1", "true", "yes", "on"].includes(value)) return "true";
+  if (["0", "false", "no", "off"].includes(value)) return "false";
+
+  return "unknown";
+}
+
+/**
+ * Hard env-based kill switch legacy helper.
+ *
+ * Actualmente NO se usa en el motor de decisión; el kill switch efectivo
+ * es exclusivamente el flag global_ads_enabled controlado desde /ads.
+ * Se mantiene como utilidad opcional por si en el futuro se requiere un
+ * override de emergencia a nivel infraestructura.
+ */
+export function isEnvAdsHardDisabled(): boolean {
+  const raw =
+    process.env.ENABLE_INDEX_ADS != null
+      ? process.env.ENABLE_INDEX_ADS
+      : process.env.NUXT_ENABLE_INDEX_ADS;
+
+  const normalized = normalizeEnvBoolean(raw);
+  return normalized === "false";
+}
+
+/**
+ * Legacy helper for ENABLE_INDEX_ADS / NUXT_ENABLE_INDEX_ADS.
+ * No se usa en el nuevo motor, se conserva para compatibilidad.
+ */
+export function isIndexAdsEnabled(runtimeConfig?: NitroRuntimeConfig): boolean {
+  // Prefer explicit runtime config if present.
+  // @ts-expect-error runtimeConfig may or may not expose public.enableIndexAds
+  const cfgValue = runtimeConfig?.public?.enableIndexAds as unknown;
+
+  const raw =
+    (cfgValue as string | undefined) ??
+    process.env.ENABLE_INDEX_ADS ??
+    process.env.NUXT_ENABLE_INDEX_ADS ??
+    "";
+
+  const normalized = normalizeEnvBoolean(raw);
+  return normalized === "true";
+}
+
+/**
+ * Determine the appropriate cookie domain for this request.
+ */
+function getCookieDomainForEvent(event: H3Event): string | undefined {
+  const url = getRequestURL(event);
+  const host = url.hostname.toLowerCase();
+
+  if (host === "casitaiedis.edu.mx" || host.endsWith(".casitaiedis.edu.mx")) {
+    return ".casitaiedis.edu.mx";
+  }
+
+  // For localhost, previews, etc., fall back to host-only cookies.
+  return undefined;
+}
+
+function parseUserSegment(raw: string | undefined | null): UserSegment | null {
+  if (!raw) return null;
+  const value = String(raw).trim().toLowerCase();
+
+  if (value === "internal" || value === "premium" || value === "daycare" || value === "organic") {
+    return value;
+  }
+
+  return null;
+}
+
+function parseLastLoginType(raw: string | undefined | null): LastLoginType {
+  if (!raw) return "unknown";
+  const value = String(raw).trim().toLowerCase();
+
+  if (value === "google" || value === "php" || value === "none") {
+    return value;
+  }
+
+  return "unknown";
+}
+
+function parseBooleanCookie(raw: string | undefined | null): boolean {
+  const normalized = normalizeEnvBoolean(raw);
+  return normalized === "true";
+}
+
+/**
+ * Timing-safe string comparison to avoid trivial timing attacks
+ * against the Basic Auth credentials.
+ */
+function safeEqual(a: string, b: string): boolean {
+  const aBuf = Buffer.from(a);
+  const bBuf = Buffer.from(b);
+
+  if (aBuf.length !== bBuf.length) {
+    return false;
+  }
+
+  try {
+    return timingSafeEqual(aBuf, bBuf);
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * Normalize an IP string so IPv6 loopback / IPv4-mapped / "ip:port" collapse cleanly.
+ *
+ * Examples:
+ *   "::1"                    -> "127.0.0.1"
+ *   "::ffff:127.0.0.1"       -> "127.0.0.1"
+ *   "148.230.251.169:61540"  -> "148.230.251.169"
+ *   "148.230.251.169"        -> "148.230.251.169"
+ *   "::ffff:148.230.251.169" -> "148.230.251.169"
+ */
+function normalizeIp(raw: string | undefined | null): string {
+  if (!raw) return "";
+  let ip = raw.trim();
+
+  // IPv6 loopback
+  if (ip === "::1") return "127.0.0.1";
+
+  // IPv4-mapped IPv6 addresses
+  if (ip.startsWith("::ffff:")) {
+    ip = ip.slice("::ffff:".length);
+  }
+
+  // Strip ":port" for IPv4-style strings (whether they came from remoteAddress or env).
+  // Matches:
+  //   1.2.3.4
+  //   1.2.3.4:1234
+  const ipv4WithOptionalPort = /^(\d{1,3}(?:\.\d{1,3}){3})(?::\d+)?$/;
+  const m = ip.match(ipv4WithOptionalPort);
+  if (m) {
+    return m[1];
+  }
+
+  // For non-IPv4 forms (plain IPv6, etc.), just return as-is.
+  return ip;
+}
+
+/**
+ * Extract the client IP (considering X-Forwarded-For) and normalize it.
+ */
+function getClientIp(event: H3Event): string {
+  const xff = event.node.req.headers["x-forwarded-for"];
+  let ip = "";
+
+  if (typeof xff === "string" && xff.length > 0) {
+    ip = xff.split(",")[0].trim();
+  } else if (Array.isArray(xff) && xff.length > 0) {
+    ip = xff[0].split(",")[0].trim();
+  } else {
+    ip = event.node.req.socket?.remoteAddress ?? "";
+  }
+
+  return normalizeIp(ip);
+}
+
+/**
+ * Ensure visitor-related cookies exist and are normalized.
+ */
+export async function getOrCreateVisitorContext(event: H3Event): Promise<VisitorContext> {
+  const debug =
+    (process.env.DEBUG_LEGACY ?? "").toLowerCase() === "1" ||
+    (process.env.DEBUG_LEGACY ?? "").toLowerCase() === "true";
+
+  const domain = getCookieDomainForEvent(event);
+  const secure = (process.env.NODE_ENV ?? "development") === "production";
+
+  let visitorId = getCookie(event, COOKIE_VISITOR_ID);
+  let userSegment = parseUserSegment(getCookie(event, COOKIE_USER_SEGMENT));
+  let adsSuppressed = parseBooleanCookie(getCookie(event, COOKIE_ADS_SUPPRESSED));
+  let lastLoginType = parseLastLoginType(getCookie(event, COOKIE_LAST_LOGIN_TYPE));
+
+  let cookiesChanged = false;
+
+  if (!visitorId) {
+    visitorId = randomUUID();
+    cookiesChanged = true;
+  }
+
+  if (!userSegment) {
+    // No prior segmentation: treat as ORGANIC, never logged in.
+    userSegment = "organic";
+    adsSuppressed = false;
+    lastLoginType = "none";
+    cookiesChanged = true;
+  }
+
+  if (!lastLoginType) {
+    lastLoginType = "unknown";
+    cookiesChanged = true;
+  }
+
+  if (cookiesChanged) {
+    const cookieOptions = {
+      path: "/",
+      httpOnly: false,
+      secure,
+      sameSite: "lax" as const,
+      domain,
+      maxAge: 60 * 60 * 24 * 365, // one year
+    };
+
+    setCookie(event, COOKIE_VISITOR_ID, visitorId, cookieOptions);
+    setCookie(event, COOKIE_USER_SEGMENT, userSegment, cookieOptions);
+    setCookie(event, COOKIE_ADS_SUPPRESSED, adsSuppressed ? "true" : "false", cookieOptions);
+    setCookie(event, COOKIE_LAST_LOGIN_TYPE, lastLoginType, cookieOptions);
+  }
+
+  const visitor: VisitorContext = {
+    visitorId,
+    userSegment,
+    adsSuppressed,
+    lastLoginType,
+  };
+
+  if (debug) {
+    // eslint-disable-next-line no-console
+    console.log("[ads] VisitorContext", {
+      visitorId: visitor.visitorId,
+      userSegment: visitor.userSegment,
+      adsSuppressed: visitor.adsSuppressed,
+      lastLoginType: visitor.lastLoginType,
+      domain,
+    });
+  }
+
+  return visitor;
+}
+
+/**
+ * Core ad decision engine.
+ *
+ * - Respeta un bloqueo duro por cookie ads_suppressed=true (opt-out individual).
+ * - Después aplica la matriz de toggles por segmento definida en ad_config
+ *   (incluye internal y premium).
+ * - No hay rollout porcentual: si el segmento está habilitado, la visita es
+ *   elegible al 100%.
+ * - adsRendered aplica además únicamente el kill switch global (global_ads_enabled).
+ */
+export function computeAdDecision(visitor: VisitorContext, config: AdConfigRow): AdDecisionResult {
+  const segment: UserSegment = visitor.userSegment;
+
+  // Bloqueo duro por cookie (por ejemplo, opt-out individual).
+  if (visitor.adsSuppressed === true) {
+    return { adsEligible: false, adsRendered: false };
+  }
+
+  // Matriz de toggles por segmento (incluye internal y premium).
+  let segmentAllowed = false;
+  switch (segment) {
+    case "internal":
+      segmentAllowed = config.ads_for_internal === 1;
+      break;
+    case "premium":
+      segmentAllowed = config.ads_for_premium === 1;
+      break;
+    case "daycare":
+      segmentAllowed = config.ads_for_daycare === 1;
+      break;
+    case "organic":
+      segmentAllowed = config.ads_for_organic === 1;
+      break;
+    default:
+      segmentAllowed = false;
+      break;
+  }
+
+  if (!segmentAllowed) {
+    return { adsEligible: false, adsRendered: false };
+  }
+
+  // Sin rollout porcentual: todo visitante del segmento habilitado es elegible.
+  const adsEligible = true;
+
+  // Kill switch global: controlado exclusivamente desde /ads (ad_config.global_ads_enabled).
+  const globalEnabled = config.global_ads_enabled === 1;
+
+  const adsRendered = adsEligible && globalEnabled;
+
+  return { adsEligible, adsRendered };
+}
+
+/**
+ * Run decision engine + insert ad_visits row.
+ */
+export async function evaluateAdsForEvent(event: H3Event): Promise<{
+  visitor: VisitorContext;
+  config: AdConfigRow;
+  decision: AdDecisionResult;
+}> {
+  const debug =
+    (process.env.DEBUG_LEGACY ?? "").toLowerCase() === "1" ||
+    (process.env.DEBUG_LEGACY ?? "").toLowerCase() === "true";
+
+  const visitor = await getOrCreateVisitorContext(event);
+  const config = await getAdConfig();
+  const decision = computeAdDecision(visitor, config);
+
+  if (debug) {
+    // eslint-disable-next-line no-console
+    console.log("[ads] Decision", {
+      visitorId: visitor.visitorId,
+      userSegment: visitor.userSegment,
+      adsSuppressed: visitor.adsSuppressed,
+      global_ads_enabled: config.global_ads_enabled,
+      ads_for_internal: config.ads_for_internal,
+      ads_for_premium: config.ads_for_premium,
+      ads_for_daycare: config.ads_for_daycare,
+      ads_for_organic: config.ads_for_organic,
+      adsEligible: decision.adsEligible,
+      adsRendered: decision.adsRendered,
+    });
+  }
+
+  try {
+    await insertAdVisit({
+      visitorId: visitor.visitorId,
+      userSegment: visitor.userSegment,
+      adsEligible: decision.adsEligible,
+      adsRendered: decision.adsRendered,
+    });
+  } catch (err) {
+    if (debug) {
+      // eslint-disable-next-line no-console
+      console.error("[ads] Failed to insert ad_visits row", err);
+    }
+  }
+
+  return { visitor, config, decision };
+}
+
+/**
+ * Restrict /ads dashboard access to IP + HTTP Basic Auth only.
+ */
+export function assertAdsDashboardAccess(event: H3Event): void {
+  const debug =
+    (process.env.DEBUG_LEGACY ?? "").toLowerCase() === "1" ||
+    (process.env.DEBUG_LEGACY ?? "").toLowerCase() === "true";
+
+  // 1) IP allowlist
+  const allowListRaw = process.env.ADS_DASHBOARD_IP_ALLOWLIST ?? "";
+  const allowList = allowListRaw
+    .split(",")
+    .map((v) => normalizeIp(v))
+    .filter((v) => v.length > 0);
+
+  const clientIp = getClientIp(event);
+
+  const ipAllowed = allowList.length > 0 && clientIp && allowList.includes(clientIp);
+
+  if (!ipAllowed) {
+    if (debug) {
+      // eslint-disable-next-line no-console
+      console.warn("[ads] Dashboard access denied by IP gate", {
+        clientIp,
+        allowList,
+      });
+    }
+
+    throw createError({
+      statusCode: 403,
+      statusMessage: "Forbidden: Ads dashboard is internal only",
+    });
+  }
+
+  // 2) HTTP Basic Auth (always required once IP passes)
+  const envUser =
+    process.env.ADS_DASHBOARD_BASIC_USER ??
+    process.env.NUXT_ADS_DASHBOARD_BASIC_USER ??
+    "";
+  const envPass =
+    process.env.ADS_DASHBOARD_BASIC_PASS ??
+    process.env.NUXT_ADS_DASHBOARD_BASIC_PASS ??
+    "";
+
+  const basicUser = envUser.trim();
+  const basicPass = envPass.trim();
+  const basicConfigured = basicUser.length > 0 && basicPass.length > 0;
+
+  if (!basicConfigured) {
+    if (debug) {
+      // eslint-disable-next-line no-console
+      console.warn("[ads] Dashboard Basic Auth not configured; denying access", {
+        clientIp,
+      });
+    }
+
+    throw createError({
+      statusCode: 403,
+      statusMessage: "Forbidden: Ads dashboard is internal only",
+    });
+  }
+
+  const rawAuthHeader = event.node.req.headers["authorization"];
+  const authHeader = Array.isArray(rawAuthHeader) ? rawAuthHeader[0] : rawAuthHeader;
+
+  const challenge = () => {
+    setHeader(
+      event,
+      "WWW-Authenticate",
+      'Basic realm="IECS-IEDIS Ads Dashboard", charset="UTF-8"'
+    );
+    throw createError({
+      statusCode: 401,
+      statusMessage: "Authentication required",
+    });
+  };
+
+  if (!authHeader || !authHeader.toString().startsWith("Basic ")) {
+    if (debug) {
+      // eslint-disable-next-line no-console
+      console.warn("[ads] Dashboard Basic Auth missing or malformed Authorization header", {
+        clientIp,
+      });
+    }
+    challenge();
+  }
+
+  const base64 = authHeader.toString().slice(6).trim();
+  let decoded = "";
+  try {
+    decoded = Buffer.from(base64, "base64").toString("utf8");
+  } catch {
+    if (debug) {
+      // eslint-disable-next-line no-console
+      console.warn("[ads] Dashboard Basic Auth header could not be base64-decoded", {
+        clientIp,
+      });
+    }
+    challenge();
+  }
+
+  const sepIndex = decoded.indexOf(":");
+  const user = sepIndex >= 0 ? decoded.slice(0, sepIndex) : decoded;
+  const pass = sepIndex >= 0 ? decoded.slice(sepIndex + 1) : "";
+
+  const okUser = safeEqual(user, basicUser);
+  const okPass = safeEqual(pass, basicPass);
+
+  if (!okUser || !okPass) {
+    if (debug) {
+      // eslint-disable-next-line no-console
+      console.warn("[ads] Dashboard Basic Auth invalid credentials", {
+        user,
+        clientIp,
+      });
+    }
+    challenge();
+  }
+
+  if (debug) {
+    // eslint-disable-next-line no-console
+    console.log("[ads] Dashboard access granted via IP + HTTP Basic Auth", {
+      user,
+      clientIp,
+    });
+  }
+}
+
+/**
+ * Helper for the INTERNAL login flow (/login, Google OAuth).
+ *
+ * Ahora ya no fuerza ads_suppressed=true; el control se hace vía /ads.
+ */
+export function applyInternalLoginCookies(event: H3Event): VisitorContext {
+  const domain = getCookieDomainForEvent(event);
+  const secure = (process.env.NODE_ENV ?? "development") === "production";
+
+  let visitorId = getCookie(event, COOKIE_VISITOR_ID);
+  if (!visitorId) {
+    visitorId = randomUUID();
+  }
+
+  const cookieOptions = {
+    path: "/",
+    httpOnly: false,
+    secure,
+    sameSite: "lax" as const,
+    domain,
+    maxAge: 60 * 60 * 24 * 365,
+  };
+
+  setCookie(event, COOKIE_VISITOR_ID, visitorId, cookieOptions);
+  setCookie(event, COOKIE_USER_SEGMENT, "internal", cookieOptions);
+  // Por defecto, no suprimimos anuncios: se controla con ads_for_internal en /ads.
+  setCookie(event, COOKIE_ADS_SUPPRESSED, "false", cookieOptions);
+  setCookie(event, COOKIE_LAST_LOGIN_TYPE, "google", cookieOptions);
+
+  return {
+    visitorId,
+    userSegment: "internal",
+    adsSuppressed: false,
+    lastLoginType: "google",
+  };
+}
+
+/**
+ * Helper for the PHP parent login flow (login.php).
+ *
+ * PREMIUM y DAYCARE se segmentan por longitud de usuario, pero la
+ * exposición a anuncios se controla siempre desde ad_config.
+ */
+export async function applyPhpLoginCookiesForUsername(
+  event: H3Event,
+  username: string
+): Promise<VisitorContext> {
+  const domain = getCookieDomainForEvent(event);
+  const secure = (process.env.NODE_ENV ?? "development") === "production";
+
+  let visitorId = getCookie(event, COOKIE_VISITOR_ID);
+  if (!visitorId) {
+    visitorId = randomUUID();
+  }
+
+  const isPremium = username.length === 6;
+  const userSegment: UserSegment = isPremium ? "premium" : "daycare";
+
+  // No suprimimos anuncios por cookie; se controla desde /ads por segmento.
+  const adsSuppressed = false;
+
+  const cookieOptions = {
+    path: "/",
+    httpOnly: false,
+    secure,
+    sameSite: "lax" as const,
+    domain,
+    maxAge: 60 * 60 * 24 * 365,
+  };
+
+  setCookie(event, COOKIE_VISITOR_ID, visitorId, cookieOptions);
+  setCookie(event, COOKIE_USER_SEGMENT, userSegment, cookieOptions);
+  setCookie(event, COOKIE_ADS_SUPPRESSED, adsSuppressed ? "true" : "false", cookieOptions);
+  setCookie(event, COOKIE_LAST_LOGIN_TYPE, "php", cookieOptions);
+
+  return {
+    visitorId,
+    userSegment,
+    adsSuppressed,
+    lastLoginType: "php",
+  };
+}
+
+/**
+ * Utility to read URL-encoded form submissions.
+ */
+export async function readFormBody(
+  event: H3Event
+): Promise<Record<string, string | string[] | undefined>> {
+  const body = await readBody<unknown>(event);
+  if (body == null || typeof body !== "object") {
+    return {};
+  }
+  return body as Record<string, string | string[] | undefined>;
+}
