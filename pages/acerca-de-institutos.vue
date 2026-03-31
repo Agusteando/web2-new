@@ -1,0 +1,1 @@
+<template><PlaceholderPage title="Acerca de los institutos" /></template>

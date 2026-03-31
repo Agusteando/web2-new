@@ -1,0 +1,1 @@
+<template><PlaceholderPage title="Escuela para padres" /></template>

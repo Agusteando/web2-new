@@ -1,0 +1,1 @@
+<template><PlaceholderPage title="Términos y condiciones" /></template>

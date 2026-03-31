@@ -1,0 +1,1 @@
+<template><PlaceholderPage title="Talleres Inteligentes" /></template>

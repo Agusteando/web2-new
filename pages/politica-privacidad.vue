@@ -1,0 +1,1 @@
+<template><PlaceholderPage title="Política de Privacidad" /></template>

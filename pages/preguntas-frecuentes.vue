@@ -1,0 +1,1 @@
+<template><PlaceholderPage title="Preguntas Frecuentes (FAQ's)" /></template>

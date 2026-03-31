@@ -1,0 +1,1 @@
+<template><PlaceholderPage title="Aviso legal" /></template>
