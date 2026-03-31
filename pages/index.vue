@@ -226,7 +226,7 @@
           </div>
           <div class="col-12 order-3">
             <div class="tp-brand-wrap tp-hero-ai-brand pt-125">
-               <Swiper :modules="[SwiperAutoplay]" :loop="true" :autoplay="{ delay: 2500, disableOnInteraction: false }" :slidesPerView="4" :spaceBetween="30" class="tp-brand-slide-active">
+               <Swiper :modules="[Autoplay]" :loop="true" :autoplay="{ delay: 2500, disableOnInteraction: false }" :slidesPerView="4" :spaceBetween="30" class="tp-brand-slide-active">
                   <SwiperSlide><div class="tp-brand-item"><a href="#"><img src="/assets/img/IECS-IEDIS IMAGES/CAMBRIDGE-SPONSOR-450X446.webp" alt=""></a></div></SwiperSlide>
                   <SwiperSlide><div class="tp-brand-item"><a href="#"><img src="/assets/img/IECS-IEDIS IMAGES/APPLE-SPONSOR-450X446.webp" alt=""></a></div></SwiperSlide>
                   <SwiperSlide><div class="tp-brand-item"><a href="#"><img src="/assets/img/IECS-IEDIS IMAGES/UNOI-SPONSOR-450X446.webp" alt=""></a></div></SwiperSlide>
@@ -338,7 +338,7 @@
     
     <!-- tp-text-slider-area-start -->
     <div class="tp-text-md-slider-area pb-95">
-       <Swiper :modules="[SwiperAutoplay]" :loop="true" :autoplay="{ delay: 0, disableOnInteraction: false }" :speed="4000" :slidesPerView="'auto'" :spaceBetween="30" class="tp-text-md-slider-active">
+       <Swiper :modules="[Autoplay]" :loop="true" :autoplay="{ delay: 0, disableOnInteraction: false }" :speed="4000" :slidesPerView="'auto'" :spaceBetween="30" class="tp-text-md-slider-active">
           <SwiperSlide v-for="i in 3" :key="i">
              <div class="tp-text-md-top-text">
                 <h2 class="tp-text-md-title tp-ff-familjen ls-m-3 tp-text-common-black-5 mb-0"> Compartiendo contigo la formación integral de tus hijos. </h2>
@@ -373,7 +373,7 @@
              </div>
           </div>
           <div class="row">
-             <div v-for="(n, i) in noticias" :key="n.id" class="col-xl-4 col-lg-6 col-md-6 tp_fade_anim">
+             <div v-for="(n, i) in (noticias || [])" :key="n.id" class="col-xl-4 col-lg-6 col-md-6 tp_fade_anim">
                 <div class="tp-blog-ai-item tp-blog-md-item tp--hover-item tp-round-24 mb-30">
                    <NuxtLink :to="`/noticias/${n.id}`" class="tp-round-24 w-100 fix p-relative d-inline-block">
                       <div class="tp-blog-ai-thumb w-100 tp--hover-img tp-round-24">
@@ -410,9 +410,10 @@
 </template>
 
 <script setup>
-import { SwiperAutoplay } from '#imports'
+import { Autoplay } from 'swiper/modules'
 
 const { data: noticias } = await useFetch('/api/noticias', { query: { limit: 3 } })
+
 const fallbacks = [
   "/assets/img/IECS-IEDIS IMAGES/ex-news-578x433.webp",
   "/assets/img/IECS-IEDIS IMAGES/ex-news2-578x433.webp",
@@ -420,6 +421,7 @@ const fallbacks = [
 ]
 
 const formatDate = (d) => {
+  if (!d) return ''
   try { return new Intl.DateTimeFormat('es-MX', { dateStyle: 'medium' }).format(new Date(d)) } 
   catch { return d }
 }

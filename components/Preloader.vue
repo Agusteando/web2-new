@@ -20,8 +20,17 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
+
 const loading = ref(true)
 const show = ref(true)
+
+// Salvavidas: Ocultar el preloader a los 2 segundos incluso si hubo un error en hidratación
+if (import.meta.client) {
+  setTimeout(() => {
+    loading.value = false
+    setTimeout(() => { show.value = false }, 500)
+  }, 2000)
+}
 
 onMounted(() => {
   setTimeout(() => {
