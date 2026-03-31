@@ -44,18 +44,18 @@
        </div>
        <div class="tp-header-md-main">
           <div class="container-fluid container-1824">
-             <!-- Corrected perfectly balanced 12-column robust grid structure -->
-             <div class="row align-items-center">
-                <div class="col-xxl-2 col-xl-2 col-lg-3 col-6">
+             <!-- Compact single-row auto-sizing flex grid to prevent overlaps at 100% zoom -->
+             <div class="row align-items-center justify-content-between flex-nowrap">
+                <div class="col-auto">
                    <div class="tp-header-logo">
                       <NuxtLink to="/">
                          <img data-width="215" src="/assets/img/IECS-IEDIS IMAGES/IMAGOTIPOS-HORIZONTAL-IECS-IEDIS-GRADIENT.webp" alt="Imagotipo IECS-IEDIS">
                       </NuxtLink>
                    </div>
                 </div>
-                <div class="col-xxl-6 col-xl-6 d-none d-xl-block">
-                   <div class="tp-main-menu tp-main-menu-ai tp-main-menu-md tp-header-dropdown dropdown-white-bg font-montserrat-semibold">
-                      <nav class="tp-mobile-menu-active">
+                <div class="col-auto d-none d-xl-flex header-col-nav">
+                   <div class="tp-main-menu tp-main-menu-ai tp-main-menu-md tp-header-dropdown dropdown-white-bg font-montserrat-semibold w-100">
+                      <nav class="tp-mobile-menu-active w-100">
                          <ul>
                             <div class="tp-mobile-extra-logo text-left mt-30 mb-20 d-xl-none d-lg-none">
                                <a href="https://admin.casitaiedis.edu.mx/login.php" class="d-inline-block mt-30">
@@ -103,9 +103,9 @@
                       </nav>
                    </div>
                 </div>
-                <div class="col-xxl-4 col-xl-4 col-lg-9 col-6">
+                <div class="col-auto">
                    <!-- Unified flex wrapper mapping directly to Vue state for toggles -->
-                   <div class="tp-header-right d-flex align-items-center justify-content-end">
+                   <div class="tp-header-right d-flex align-items-center justify-content-end flex-nowrap">
                       <div class="tp-header-search">
                          <button class="tp-header-search-btn tp-header-md-search-btn tp-search-click" @click.prevent="isSearchOpen = true">
                             <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -160,11 +160,30 @@ const isSearchOpen = useState('isSearchOpen', () => false)
   flex-shrink: 0 !important;
 }
 
-/* 
-  Ensures the center navigation strictly stays on one row 
-  so the header height never breaks.
-*/
 .tp-main-menu ul {
   white-space: nowrap;
+}
+
+/* 
+  Desktop Layout Safeguards
+  Uses fluid clamp gaps on the primary navigation to gracefully avoid collisions 
+  with the utility cluster on 100% zoom typical desktop resolutions. 
+*/
+@media (min-width: 1200px) {
+  .header-col-nav {
+    flex: 1 1 auto;
+    display: flex;
+    justify-content: center;
+  }
+  
+  .tp-main-menu > nav > ul {
+    display: flex;
+    justify-content: center;
+    gap: clamp(15px, 2vw, 40px);
+  }
+  
+  .tp-main-menu > nav > ul > li {
+    margin-right: 0 !important;
+  }
 }
 </style>

@@ -48,7 +48,7 @@
     <SiteHeader />
     
     <div id="smooth-wrapper">
-      <div id="smooth-content" class="page-layout-contract">
+      <div id="smooth-content" :class="{ 'page-layout-contract': route.path !== '/' }">
         <slot />
         <SiteFooter />
       </div>
@@ -56,12 +56,18 @@
   </div>
 </template>
 
+<script setup>
+import { useRoute } from '#app'
+const route = useRoute()
+</script>
+
 <style>
 /* 
   Global Page-Shell Layout Contract:
   The theme applies absolute positioning to the header by default. 
-  To prevent the header from overlapping content on ANY page, we offset the main content wrapper globally.
+  To prevent the header from overlapping content on inner pages, we offset the main content wrapper.
   This removes the need for fragile per-page padding hacks and preserves all native scroll animations.
+  The Home page (`/`) is explicitly excluded to preserve its intentional transparent hero overlap.
 */
 .page-layout-contract {
   padding-top: 135px; /* Safely clears the desktop header and top-bar height */
