@@ -6,11 +6,9 @@ export default defineNuxtConfig({
 
   compatibilityDate: '2025-12-13',
 
-  modules: ['nuxt-swiper'],
-
   vue: {
     compilerOptions: {
-      // Evita advertencias en consola sobre Web Components
+      // Evita advertencias en consola sobre Web Components nativos del theme
       isCustomElement: (tag) => tag.startsWith('ion-') || tag.startsWith('atropos-')
     }
   },
@@ -18,6 +16,7 @@ export default defineNuxtConfig({
   app: {
     head: {
       htmlAttrs: { lang: 'es' },
+      bodyAttrs: { class: 'tp-magic-cursor loaded' },
       title: 'Colegios IECS-IEDIS',
       meta: [
         { charset: 'utf-8' },
@@ -35,6 +34,8 @@ export default defineNuxtConfig({
         { rel: 'stylesheet', href: 'https://fonts.googleapis.com/css2?family=Fredoka:wght@700&display=swap' },
         { rel: 'stylesheet', href: 'https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap' },
         { rel: 'stylesheet', href: '/assets/css/bootstrap.css' },
+        { rel: 'stylesheet', href: '/assets/css/swiper-bundle.css' },
+        { rel: 'stylesheet', href: '/assets/css/magnific-popup.css' },
         { rel: 'stylesheet', href: '/assets/css/font-awesome-pro.css' },
         { rel: 'stylesheet', href: '/assets/css/spacing.css' },
         { rel: 'stylesheet', href: '/assets/css/atropos.min.css' },
@@ -44,20 +45,53 @@ export default defineNuxtConfig({
         { type: 'module', src: 'https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js' },
         { nomodule: true, src: 'https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js' },
         { src: 'https://www.clarity.ms/tag/jutz06e6ij', async: true },
-        { src: 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1644096973273978', async: true, crossorigin: 'anonymous' }
+        { src: 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1644096973273978', async: true, crossorigin: 'anonymous' },
+        
+        // Restauración completa de los scripts visuales del diseñador al final del body
+        { src: '/assets/js/vendor/jquery.js', tagPosition: 'bodyClose', defer: true },
+        { src: '/assets/js/bootstrap-bundle.js', tagPosition: 'bodyClose', defer: true },
+        { src: '/assets/js/plugin.js', tagPosition: 'bodyClose', defer: true },
+        { src: '/assets/js/three.js', tagPosition: 'bodyClose', defer: true },
+        { src: '/assets/js/hover-effect.umd.js', tagPosition: 'bodyClose', defer: true },
+        { src: '/assets/js/split-type.js', tagPosition: 'bodyClose', defer: true },
+        { src: '/assets/js/swiper-bundle.js', tagPosition: 'bodyClose', defer: true },
+        { src: '/assets/js/swiper-gl.js', tagPosition: 'bodyClose', defer: true },
+        { src: '/assets/js/effect-slicer.js', tagPosition: 'bodyClose', defer: true },
+        { src: '/assets/js/magnific-popup.js', tagPosition: 'bodyClose', defer: true },
+        { src: '/assets/js/nice-select.js', tagPosition: 'bodyClose', defer: true },
+        { src: '/assets/js/purecounter.js', tagPosition: 'bodyClose', defer: true },
+        { src: '/assets/js/isotope-pkgd.js', tagPosition: 'bodyClose', defer: true },
+        { src: '/assets/js/imagesloaded-pkgd.js', tagPosition: 'bodyClose', defer: true },
+        { src: '/assets/js/atropos.js', tagPosition: 'bodyClose', defer: true },
+        { src: '/assets/js/backtop.js', tagPosition: 'bodyClose', defer: true },
+        { src: '/assets/js/ajax-form.js', tagPosition: 'bodyClose', defer: true },
+        { src: '/assets/js/slider-init.js', tagPosition: 'bodyClose', defer: true },
+        { src: '/assets/js/main.js', tagPosition: 'bodyClose', defer: true },
+        { src: '/assets/js/tp-cursor.js', tagPosition: 'bodyClose', defer: true }
       ]
     }
   },
 
-  nitro: isProd
-    ? {
-        preset: 'node-server',
-        server: {
-          host: process.env.NITRO_HOST || process.env.HOST || '127.0.0.1',
-          port: Number(process.env.NITRO_PORT || process.env.PORT || 16767),
-        },
-      }
-    : {},
+  nitro: {
+    ignore: [
+      '**/server/routes/index.get.ts',
+      '**/server/routes/index.html.get.ts',
+      '**/server/routes/legacy-*.ts',
+      '**/server/routes/__diag.get.ts',
+      '**/server/routes/\\[page\\].get.ts',
+      '**/server/routes/\\[page\\].html.get.ts',
+      '**/server/middleware/legacy-html.ts'
+    ],
+    ...(isProd
+      ? {
+          preset: 'node-server',
+          server: {
+            host: process.env.NITRO_HOST || process.env.HOST || '127.0.0.1',
+            port: Number(process.env.NITRO_PORT || process.env.PORT || 16767),
+          },
+        }
+      : {})
+  },
 
   runtimeConfig: {
     dbHost: process.env.NUXT_DB_HOST || process.env.DB_HOST || '',
