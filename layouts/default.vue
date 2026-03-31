@@ -47,7 +47,8 @@
     
     <SiteHeader />
     
-    <div id="smooth-wrapper">
+    <!-- Global Page Layout Contract -->
+    <div id="smooth-wrapper" class="global-page-shell">
       <div id="smooth-content">
         <slot />
         <SiteFooter />
@@ -55,3 +56,23 @@
     </div>
   </div>
 </template>
+
+<style>
+/* 
+  Global Layout Contract
+  Reserves exact vertical space for the fixed header at the shell level 
+  so no content (ads, views, heroes) ever renders underneath or collides with it.
+*/
+.global-page-shell {
+  padding-top: 130px; /* Base offset for desktop header + top bar */
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+@media (max-width: 1199px) {
+  .global-page-shell {
+    padding-top: 80px; /* Base offset for mobile/tablet header (no top bar) */
+  }
+}
+</style>

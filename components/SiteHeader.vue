@@ -1,6 +1,6 @@
 <template>
-  <header>
-    <div id="header-sticky" class="tp-header-area pre-header tp-header-md-wrap sticky-white-bg tp-header-blur header-transparent">
+  <header class="site-header-global">
+    <div id="header-sticky" class="tp-header-area pre-header tp-header-md-wrap sticky-white-bg tp-header-blur">
        <div class="tp-header-md-top elemento d-none d-lg-block">
           <div class="container-fluid container-1824">
              <div class="row">
@@ -43,6 +43,7 @@
        </div>
        <div class="tp-header-md-main">
           <div class="container-fluid container-1824">
+             <!-- Restored original single-row grid composition -->
              <div class="row align-items-center">
                 <div class="col-xxl-2 col-xl-2 col-6">
                    <div class="tp-header-logo">
@@ -50,7 +51,7 @@
                    </div>
                 </div>
                 <div class="col-xxl-6 col-xl-7 d-none d-xl-block">
-                   <div class="tp-main-menu tp-main-menu-ai tp-main-menu-md tp-header-dropdown dropdown-white-bg font-montserrat-semibold">
+                   <div class="tp-main-menu tp-main-menu-ai tp-main-menu-md tp-header-dropdown dropdown-white-bg font-montserrat-semibold text-center">
                       <nav class="tp-mobile-menu-active">
                       <ul>
                          <div class="tp-mobile-extra-logo text-left mt-30 mb-20 d-xl-none d-lg-none">
@@ -100,7 +101,8 @@
                    </div>
                 </div>
                 <div class="col-xxl-4 col-xl-3 col-6">
-                   <div class="tp-header-right d-flex align-items-center justify-content-end">
+                   <!-- Replaced manual margins with flex gap to strictly solve the crowding/merging issue -->
+                   <div class="tp-header-right d-flex align-items-center justify-content-end" style="gap: 1.5rem;">
                       <div class="tp-header-search">
                          <button class="tp-header-search-btn tp-header-md-search-btn tp-search-click">
                             <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -108,7 +110,7 @@
                             </svg>
                          </button>
                       </div>
-                      <div class="tp-header-btn d-none d-sm-inline-block ml-10">
+                      <div class="tp-header-btn d-none d-sm-inline-block">
                          <NuxtLink to="/ubicaciones" class="tp-btn-md tp-btn-md-header tp-bg-theme-1 tp-left-right p-relative hover-text-white d-inline-block text-uppercase tp-text-grey-5 lh-1 fs-15 fw-800 tp-ff-dm">
                             <span class="mr10 td-text d-inline-block mr-5">Solicitar + info</span>
                             <span class="tp-arrow-angle">
@@ -119,12 +121,12 @@
                             </span>
                          </NuxtLink>
                       </div>
-                      <div class="husky-pass d-none d-lg-inline-flex align-items-center p-3" style="margin-right: 10px;">
+                      <div class="husky-pass d-none d-lg-inline-flex align-items-center">
                          <a href="https://admin.casitaiedis.edu.mx/login.php" class="d-inline-block">
                             <img src="/assets/img/IECS-IEDIS IMAGES/ID-HUSKY-PASS-HORIZONTAL.webp" alt="Husky Pass" class="img-hover" style="width: 120px;height: 35px;object-fit: fill;" data-no-retina="">
                          </a>
                       </div>
-                      <button class="tp-menu-bar tp-header-sidebar-btn tp-header-2-menu-btn tp-header-ai-menu-btn ml-20">
+                      <button class="tp-menu-bar tp-header-sidebar-btn tp-header-2-menu-btn tp-header-ai-menu-btn">
                          <span></span><span></span><span></span>
                       </button>
                    </div>
@@ -136,3 +138,32 @@
     </div>
   </header>
 </template>
+
+<style scoped>
+/* 
+  Locks the header to the top uniformly.
+  The global-page-shell in default.vue provides the coordinating offset padding. 
+*/
+.site-header-global {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  background-color: #ffffff;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.03);
+}
+
+/* Force elements strictly to one line to prevent squeezing/wrapping */
+.tp-header-right {
+  white-space: nowrap;
+}
+
+.tp-header-right > * {
+  flex-shrink: 0;
+}
+
+.tp-main-menu ul {
+  white-space: nowrap;
+}
+</style>
