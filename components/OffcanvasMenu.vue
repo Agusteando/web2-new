@@ -74,5 +74,14 @@
 </template>
 
 <script setup>
+import { watch } from 'vue'
+import { useRoute } from '#app'
+
 const isOpen = useState('isOffcanvasOpen', () => false)
+const route = useRoute()
+
+// Ensure the menu auto-closes smoothly when navigating to a new route via links inside the drawer
+watch(() => route.path, () => {
+  isOpen.value = false
+})
 </script>

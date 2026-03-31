@@ -36,5 +36,14 @@
 </template>
 
 <script setup>
+import { watch } from 'vue'
+import { useRoute } from '#app'
+
 const isOpen = useState('isSearchOpen', () => false)
+const route = useRoute()
+
+// Auto-close search form immediately upon navigation
+watch(() => route.path, () => {
+  isOpen.value = false
+})
 </script>

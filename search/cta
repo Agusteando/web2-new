@@ -1,0 +1,1 @@
+git commit -m "fix(header): resolve search/cta gap, sync offcanvas toggle state, correct z-index stacking, and apply universal offset normalization across all views"

@@ -47,9 +47,8 @@
     
     <SiteHeader />
     
-    <!-- Global Page Layout Contract -->
-    <div id="smooth-wrapper" class="global-page-shell">
-      <div id="smooth-content">
+    <div id="smooth-wrapper">
+      <div id="smooth-content" class="page-layout-contract">
         <slot />
         <SiteFooter />
       </div>
@@ -59,20 +58,21 @@
 
 <style>
 /* 
-  Global Layout Contract
-  Reserves exact vertical space for the fixed header at the shell level 
-  so no content (ads, views, heroes) ever renders underneath or collides with it.
+  Global Page-Shell Layout Contract:
+  The theme applies absolute positioning to the header by default. 
+  To prevent the header from overlapping content on ANY page, we offset the main content wrapper globally.
+  This removes the need for fragile per-page padding hacks and preserves all native scroll animations.
 */
-.global-page-shell {
-  padding-top: 130px; /* Base offset for desktop header + top bar */
+.page-layout-contract {
+  padding-top: 135px; /* Safely clears the desktop header and top-bar height */
   display: flex;
   flex-direction: column;
   min-height: 100vh;
 }
 
 @media (max-width: 1199px) {
-  .global-page-shell {
-    padding-top: 80px; /* Base offset for mobile/tablet header (no top bar) */
+  .page-layout-contract {
+    padding-top: 80px; /* Safely clears the mobile/tablet header height (no top bar) */
   }
 }
 </style>
