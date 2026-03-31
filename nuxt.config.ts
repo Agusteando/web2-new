@@ -10,7 +10,7 @@ export default defineNuxtConfig({
 
   vue: {
     compilerOptions: {
-      // Ignora advertencias de Web Components en la consola
+      // Evita advertencias en consola sobre Web Components
       isCustomElement: (tag) => tag.startsWith('ion-') || tag.startsWith('atropos-')
     }
   },
@@ -49,28 +49,15 @@ export default defineNuxtConfig({
     }
   },
 
-  nitro: {
-    // ESTO ES CLAVE: Ciega por completo a Nitro frente a los viejos interceptores
-    // para que Vue Router tome el control de todas las URLs.
-    ignore: [
-      '**/server/routes/index.get.ts',
-      '**/server/routes/index.html.get.ts',
-      '**/server/routes/legacy-*.ts',
-      '**/server/routes/__diag.get.ts',
-      '**/server/routes/\\[page\\].get.ts',
-      '**/server/routes/\\[page\\].html.get.ts',
-      '**/server/middleware/legacy-html.ts'
-    ],
-    ...(isProd
-      ? {
-          preset: 'node-server',
-          server: {
-            host: process.env.NITRO_HOST || process.env.HOST || '127.0.0.1',
-            port: Number(process.env.NITRO_PORT || process.env.PORT || 16767),
-          },
-        }
-      : {})
-  },
+  nitro: isProd
+    ? {
+        preset: 'node-server',
+        server: {
+          host: process.env.NITRO_HOST || process.env.HOST || '127.0.0.1',
+          port: Number(process.env.NITRO_PORT || process.env.PORT || 16767),
+        },
+      }
+    : {},
 
   runtimeConfig: {
     dbHost: process.env.NUXT_DB_HOST || process.env.DB_HOST || '',

@@ -1,4 +1,5 @@
 export default defineNitroPlugin(async () => {
+  // Reemplazado undici por la API nativa de Node:buffer para evitar errores de importación en Vite
   if (typeof globalThis.File === 'undefined') {
     try {
       const { Blob } = await import('node:buffer')
