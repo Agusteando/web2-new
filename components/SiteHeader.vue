@@ -87,7 +87,7 @@
 
               <!-- Zone 3: Strict Utility Boundary -->
               <div class="iecs-utils-zone">
-                <button class="iecs-icon-btn search-btn" @click.prevent="isSearchOpen = true" aria-label="Buscar">
+                <button class="iecs-icon-btn search-btn" @click.prevent="isSearchOpen = !isSearchOpen" :aria-expanded="isSearchOpen ? 'true' : 'false'" aria-label="Buscar">
                   <svg width="18" height="18" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M6.76923 1.23077C3.71042 1.23077 1.23077 3.71042 1.23077 6.76923C1.23077 9.82804 3.71042 12.3077 6.76923 12.3077C8.29881 12.3077 9.68258 11.6885 10.6855 10.6855C11.6885 9.68258 12.3077 8.29881 12.3077 6.76923C12.3077 3.71042 9.82804 1.23077 6.76923 1.23077ZM0 6.76923C0 3.03069 3.03069 0 6.76923 0C10.5078 0 13.5385 3.03069 13.5385 6.76923C13.5385 8.41668 12.9493 9.92743 11.9712 11.1009L15.8198 14.9495C16.0601 15.1898 16.0601 15.5794 15.8198 15.8198C15.5794 16.0601 15.1898 16.0601 14.9495 15.8198L11.1009 11.9712C9.92743 12.9493 8.41668 13.5385 6.76923 13.5385C3.03069 13.5385 0 10.5078 0 6.76923Z" fill="currentColor"/></svg>
                 </button>
                 
@@ -103,8 +103,10 @@
                 </a>
                 
                 <!-- Mobile/Tablet Toggle -->
-                <button class="iecs-hamburger d-xl-none" @click.prevent="isOffcanvasOpen = true" aria-label="Abrir menú">
-                  <span></span><span></span><span></span>
+                <button class="iecs-hamburger d-xl-none" @click.prevent="isOffcanvasOpen = !isOffcanvasOpen" :aria-expanded="isOffcanvasOpen ? 'true' : 'false'" aria-label="Alternar menú">
+                  <div class="iecs-hamburger-box" :class="{ 'is-active': isOffcanvasOpen }">
+                    <span></span><span></span><span></span>
+                  </div>
                 </button>
               </div>
 
@@ -359,27 +361,50 @@ const isSearchOpen = useState('isSearchOpen', () => false)
   opacity: 0.6;
 }
 
-/* Hamburger scoped purely to this wrapper */
+/* Styled Hamburger Toggle Matching Design Spec */
 .iecs-hamburger {
-  background: none;
+  background-color: #f3f4f6;
   border: none;
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
   display: flex;
-  flex-direction: column;
-  gap: 6px;
-  padding: 5px;
+  justify-content: center;
+  align-items: center;
   cursor: pointer;
+  transition: background-color 0.2s ease;
+  flex-shrink: 0;
+  padding: 0;
 }
 
-.iecs-hamburger span {
+.iecs-hamburger:hover {
+  background-color: #e5e7eb;
+}
+
+.iecs-hamburger-box {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 5px;
+}
+
+.iecs-hamburger-box span {
   display: block;
-  width: 28px;
-  height: 2px;
-  background-color: var(--tp-common-black-5, #141414);
-  border-radius: 2px;
+  height: 3px;
+  background-color: #222222;
+  border-radius: 3px;
   transition: all 0.3s ease;
 }
 
-.iecs-hamburger:hover span {
+.iecs-hamburger-box span:nth-child(1) { width: 14px; }
+.iecs-hamburger-box span:nth-child(2) { width: 24px; }
+.iecs-hamburger-box span:nth-child(3) { width: 14px; }
+
+/* Active/Toggle state */
+.iecs-hamburger:hover .iecs-hamburger-box span,
+.iecs-hamburger-box.is-active span {
   background-color: var(--tp-theme-1, #618B2F);
+  width: 24px;
 }
 </style>
