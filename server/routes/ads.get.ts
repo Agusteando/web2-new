@@ -1,4 +1,3 @@
-
 import { getRequestURL, setHeader } from "h3";
 import { getAdConfig, getAdDashboardStats } from "~/server/utils/adsDb";
 import { assertAdsDashboardAccess } from "~/server/utils/ads";
@@ -83,7 +82,7 @@ export default defineEventHandler(async (event) => {
       const metrics = bySegmentIndex[seg.key];
       const enabled = segmentEnabled[seg.key];
       const cardStateClass = enabled ? "segment-on" : "segment-off";
-      const statusText = enabled ? "Segmento activo" : "Segmento apagado";
+      const statusText = enabled ? "Activo" : "Apagado";
       const statusDetail = enabled
         ? "Puede recibir anuncios cuando el kill switch global está en ON."
         : "No recibe anuncios mientras este segmento esté en OFF.";
@@ -123,7 +122,7 @@ export default defineEventHandler(async (event) => {
                 <span class="metric-value">${metrics.eligible}</span>
               </div>
               <div class="metric">
-                <span class="metric-label">Con anuncio</span>
+                <span class="metric-label">Impresiones</span>
                 <span class="metric-value">${metrics.rendered}</span>
               </div>
             </div>
@@ -133,11 +132,12 @@ export default defineEventHandler(async (event) => {
     })
     .join("");
 
-  const killStatusText = globalEnabled ? "Anuncios ACTIVADOS" : "Anuncios DETENIDOS";
+  const killStatusText = globalEnabled ? "Anuncios Activados" : "Anuncios Detenidos";
   const killSubtitle = globalEnabled
-    ? "Los segmentos activos pueden recibir bloques de AdSense."
-    : "No se inyectarán bloques de AdSense hasta reactivar este switch.";
+    ? "Los segmentos activos recibirán bloques de AdSense."
+    : "Bloqueo maestro. La monetización está inactiva y no se inyectarán anuncios.";
 
+  // Fully Light-Only pristine SaaS aesthetic
   const html = `<!doctype html>
 <html lang="es">
 <head>
@@ -146,55 +146,62 @@ export default defineEventHandler(async (event) => {
   <meta name="viewport" content="width=device-width,initial-scale=1.0" />
   <style>
     :root {
-      color-scheme: light dark;
-      --bg: #020617;
-      --bg-elevated: #020617;
-      --bg-soft: #0b1120;
-      --border-subtle: rgba(148, 163, 184, 0.25);
-      --border-strong: rgba(148, 163, 184, 0.5);
+      /* Pure Light Theme Variables */
+      --bg: #f8fafc;
+      --bg-elevated: #ffffff;
+      --border-subtle: #e2e8f0;
+      --border-strong: #cbd5e1;
+      
       --accent: #22c55e;
-      --accent-soft: rgba(34, 197, 94, 0.18);
+      --accent-soft: #dcfce7;
+      --accent-border: #86efac;
       --accent-strong: #16a34a;
+      
       --danger: #ef4444;
-      --danger-soft: rgba(248, 113, 113, 0.16);
-      --text: #e5e7eb;
-      --text-soft: #9ca3af;
-      --text-subtle: #6b7280;
-      --surface-radius: 0.75rem;
-      --shadow-soft: 0 0.5rem 1.75rem rgba(15, 23, 42, 0.8);
+      --danger-soft: #fef2f2;
+      --danger-border: #fca5a5;
+      
+      --text: #0f172a;
+      --text-soft: #475569;
+      --text-subtle: #64748b;
+      
+      --surface-radius: 1rem;
+      --shadow-soft: 0 4px 6px -1px rgba(0,0,0,0.05), 0 2px 4px -1px rgba(0,0,0,0.03);
     }
 
-    * {
-      box-sizing: border-box;
-    }
+    * { box-sizing: border-box; }
 
     body {
       margin: 0;
       padding: 1.5rem;
-      background: radial-gradient(circle at top, #1f2937 0, #020617 50%);
+      background-color: var(--bg);
       color: var(--text);
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       font-size: 1rem;
       line-height: 1.5;
     }
 
     .page {
-      max-width: 70rem;
-      margin: 0 auto;
+      max-width: 68rem;
+      margin: 3rem auto;
       display: flex;
       flex-direction: column;
-      gap: 1.25rem;
+      gap: 1.5rem;
+    }
+
+    /* Base Card Styling */
+    .page-header, .section {
+      background: var(--bg-elevated);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--surface-radius);
+      box-shadow: var(--shadow-soft);
     }
 
     .page-header {
+      padding: 2rem;
       display: flex;
       flex-direction: column;
-      gap: 0.75rem;
-      padding: 1.25rem 1.5rem;
-      border-radius: var(--surface-radius);
-      border: 0.0625rem solid var(--border-subtle);
-      background: radial-gradient(circle at top left, #111827 0, #020617 60%);
-      box-shadow: var(--shadow-soft);
+      gap: 1.5rem;
     }
 
     .page-header-top {
@@ -207,68 +214,96 @@ export default defineEventHandler(async (event) => {
       display: inline-flex;
       align-items: center;
       gap: 0.5rem;
-      padding: 0.25rem 0.75rem;
-      border-radius: 999rem;
+      padding: 0.35rem 0.85rem;
+      border-radius: 9999px;
       font-size: 0.75rem;
       text-transform: uppercase;
-      letter-spacing: 0.08em;
-      background: rgba(15, 23, 42, 0.9);
-      border: 0.0625rem solid var(--border-subtle);
+      letter-spacing: 0.05em;
+      background: #f1f5f9;
+      border: 1px solid var(--border-subtle);
       color: var(--text-soft);
+      font-weight: 600;
+      align-self: flex-start;
+      margin-bottom: 0.5rem;
     }
 
     .badge-dot {
-      width: 0.5rem;
-      height: 0.5rem;
-      border-radius: 999rem;
+      width: 0.45rem;
+      height: 0.45rem;
+      border-radius: 50%;
       background: var(--accent);
+      box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.4);
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.4); }
+      70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(34, 197, 94, 0); }
+      100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); }
     }
 
     h1 {
       margin: 0;
-      font-size: 1.6rem;
-      letter-spacing: -0.03em;
+      font-size: 2.25rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+    }
+
+    .hint {
+      margin: 0;
+      font-size: 1.05rem;
+      color: var(--text-subtle);
     }
 
     .page-header-meta {
       display: flex;
       flex-wrap: wrap;
-      gap: 0.75rem;
-      margin-top: 0.25rem;
+      gap: 2rem;
+      border-top: 1px solid #f1f5f9;
+      padding-top: 1.25rem;
     }
 
     .meta-item {
-      font-size: 0.8rem;
-      color: var(--text-subtle);
+      display: flex;
+      flex-direction: column;
     }
 
     .meta-label {
-      font-weight: 500;
+      font-size: 0.75rem;
+      font-weight: 600;
       text-transform: uppercase;
-      letter-spacing: 0.09em;
-      margin-right: 0.35rem;
-      color: var(--text-soft);
+      letter-spacing: 0.05em;
+      color: var(--text-subtle);
+      margin-bottom: 0.25rem;
+    }
+
+    .meta-item span:last-child {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--text);
     }
 
     code {
       font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
       font-size: 0.8em;
-      padding: 0.08rem 0.3rem;
-      border-radius: 0.4rem;
-      background: rgba(15, 23, 42, 0.8);
-      border: 0.0625rem solid rgba(148, 163, 184, 0.35);
-      color: #cbd5f5;
+      padding: 0.2rem 0.4rem;
+      border-radius: 0.3rem;
+      background: #f1f5f9;
+      border: 1px solid var(--border-subtle);
+      color: var(--text);
+    }
+
+    .page-form {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
     }
 
     .section {
-      padding: 1.25rem 1.5rem;
-      border-radius: var(--surface-radius);
-      border: 0.0625rem solid var(--border-subtle);
-      background: var(--bg-soft);
-      box-shadow: var(--shadow-soft);
+      padding: 1.75rem;
       display: flex;
       flex-direction: column;
-      gap: 1rem;
+      gap: 1.5rem;
     }
 
     .section-header {
@@ -279,76 +314,48 @@ export default defineEventHandler(async (event) => {
 
     .section-title {
       margin: 0;
-      font-size: 1.1rem;
-      letter-spacing: -0.02em;
+      font-size: 1.25rem;
+      font-weight: 700;
+      letter-spacing: -0.01em;
     }
 
     .section-subtitle {
       margin: 0;
-      font-size: 0.85rem;
+      font-size: 0.9rem;
       color: var(--text-subtle);
     }
 
-    .stats-grid {
-      display: grid;
-      grid-template-columns: minmax(0, 1fr);
-      gap: 0.75rem;
-      margin-top: 0.75rem;
-    }
-
-    .stat-card {
-      border-radius: 0.75rem;
-      border: 0.0625rem solid var(--border-subtle);
-      background: radial-gradient(circle at top left, rgba(15, 23, 42, 0.95) 0, #020617 70%);
-      padding: 0.75rem 0.9rem;
-      display: flex;
-      flex-direction: column;
-      gap: 0.2rem;
-    }
-
-    .stat-label {
-      font-size: 0.8rem;
-      color: var(--text-subtle);
-      text-transform: uppercase;
-      letter-spacing: 0.09em;
-    }
-
-    .stat-value {
-      font-size: 1.2rem;
-      font-weight: 600;
-    }
-
-    .stat-note {
-      font-size: 0.8rem;
-      color: var(--text-subtle);
-    }
-
+    /* Master Kill Switch Box */
     .kill-container {
-      border-radius: 1rem;
-      padding: 1.1rem 1.2rem;
-      display: flex;
-      flex-direction: column;
-      gap: 0.9rem;
-      border: 0.0625rem solid var(--border-strong);
-      background: radial-gradient(circle at top, rgba(34, 197, 94, 0.18) 0, rgba(15, 23, 42, 0.9) 55%);
+      border-radius: 0.75rem;
+      padding: 1.5rem;
+      border: 1px solid var(--border-subtle);
+      background: var(--bg-elevated);
+      transition: all 0.3s ease;
+    }
+
+    .kill-container.kill-on {
+      background: var(--success-bg);
+      border-color: var(--accent-border);
     }
 
     .kill-container.kill-off {
-      background: radial-gradient(circle at top, rgba(239, 68, 68, 0.16) 0, rgba(15, 23, 42, 0.9) 55%);
+      background: var(--danger-soft);
+      border-color: var(--danger-border);
     }
 
     .kill-inner {
       display: flex;
       flex-direction: column;
-      gap: 0.9rem;
-      align-items: flex-start;
+      gap: 1rem;
       cursor: pointer;
     }
 
     .kill-row {
       display: flex;
-      flex-direction: column;
-      gap: 0.5rem;
+      flex-direction: row;
+      justify-content: space-between;
+      align-items: center;
       width: 100%;
     }
 
@@ -360,44 +367,23 @@ export default defineEventHandler(async (event) => {
 
     .kill-title {
       font-size: 1.2rem;
-      font-weight: 700;
-      letter-spacing: 0.08em;
+      font-weight: 800;
+      letter-spacing: -0.01em;
       text-transform: uppercase;
     }
 
-    .kill-container.kill-on .kill-title {
-      color: #bbf7d0;
-    }
-
-    .kill-container.kill-off .kill-title {
-      color: #fecaca;
-    }
+    .kill-container.kill-on .kill-title { color: #166534; }
+    .kill-container.kill-off .kill-title { color: #991b1b; }
 
     .kill-subtitle {
-      font-size: 0.85rem;
+      font-size: 0.9rem;
       color: var(--text-soft);
     }
 
-    .kill-toggle-wrap {
-      display: flex;
-      flex-direction: row;
-      align-items: center;
-      justify-content: space-between;
-      gap: 0.75rem;
-      width: 100%;
-    }
-
-    .kill-label {
-      font-size: 0.85rem;
-      text-transform: uppercase;
-      letter-spacing: 0.09em;
-      color: var(--text-soft);
-    }
-
+    /* iOS Style Toggle Switch */
     .kill-toggle {
       display: inline-flex;
       align-items: center;
-      justify-content: flex-end;
     }
 
     .kill-input {
@@ -407,27 +393,25 @@ export default defineEventHandler(async (event) => {
     }
 
     .kill-track {
-      width: 4.5rem;
-      height: 2.2rem;
-      border-radius: 999rem;
-      background: rgba(15, 23, 42, 0.9);
-      border: 0.09375rem solid rgba(148, 163, 184, 0.75);
-      display: flex;
-      align-items: center;
-      padding: 0 0.25rem;
-      box-shadow: inset 0 0.15rem 0.4rem rgba(0, 0, 0, 0.6);
-      transition: background-color 0.2s ease, border-color 0.2s ease;
+      width: 3.5rem;
+      height: 1.75rem;
+      border-radius: 999px;
+      background: var(--border-subtle);
+      border: 1px solid var(--border-strong);
       position: relative;
+      transition: all 0.3s ease;
     }
 
     .kill-thumb {
-      width: 1.7rem;
-      height: 1.7rem;
-      border-radius: 999rem;
-      background: #f9fafb;
-      box-shadow: 0 0.25rem 0.6rem rgba(15, 23, 42, 0.8);
-      transform: translateX(0);
-      transition: transform 0.2s ease, background-color 0.2s ease;
+      width: 1.35rem;
+      height: 1.35rem;
+      border-radius: 50%;
+      background: #ffffff;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      position: absolute;
+      top: 0.15rem;
+      left: 0.2rem;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
     .kill-container.kill-on .kill-track {
@@ -436,51 +420,43 @@ export default defineEventHandler(async (event) => {
     }
 
     .kill-container.kill-on .kill-thumb {
-      transform: translateX(2.1rem);
-      background: #ecfdf3;
+      transform: translateX(1.65rem);
     }
 
-    .kill-container.kill-off .kill-track {
-      background: rgba(31, 41, 55, 0.9);
-      border-color: rgba(148, 163, 184, 0.8);
-    }
-
-    .section-body {
-      display: flex;
-      flex-direction: column;
-      gap: 1rem;
-    }
-
+    /* Segment Cards Grid */
     .segment-grid {
       display: grid;
-      grid-template-columns: minmax(0, 1fr);
-      gap: 0.75rem;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 1.25rem;
     }
 
     .segment-card {
-      border-radius: 0.85rem;
-      border: 0.0625rem solid var(--border-subtle);
-      background: rgba(15, 23, 42, 0.9);
-      padding: 0.9rem 1rem;
+      border-radius: 0.75rem;
+      border: 1px solid var(--border-subtle);
+      background: var(--bg-elevated);
+      padding: 1.5rem;
       display: flex;
       flex-direction: row;
       gap: 0.75rem;
       cursor: pointer;
+      transition: all 0.2s ease;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.02);
+    }
+
+    .segment-card:hover {
+      background: var(--bg);
+      border-color: var(--border-strong);
+      box-shadow: var(--shadow-soft);
     }
 
     .segment-card.segment-on {
-      background: radial-gradient(circle at top left, var(--accent-soft) 0, rgba(15, 23, 42, 0.98) 55%);
-      border-color: rgba(34, 197, 94, 0.6);
-    }
-
-    .segment-card.segment-off {
-      background: radial-gradient(circle at top left, rgba(15, 23, 42, 0.98) 0, #020617 60%);
-      border-color: rgba(148, 163, 184, 0.45);
+      background: var(--success-bg);
+      border-color: var(--accent-border);
     }
 
     .segment-input {
       margin: 0;
-      margin-top: 0.2rem;
+      margin-top: 0.25rem;
       flex-shrink: 0;
       width: 1.15rem;
       height: 1.15rem;
@@ -490,7 +466,6 @@ export default defineEventHandler(async (event) => {
     .segment-content {
       display: flex;
       flex-direction: column;
-      gap: 0.6rem;
       width: 100%;
     }
 
@@ -498,61 +473,57 @@ export default defineEventHandler(async (event) => {
       display: flex;
       flex-direction: column;
       gap: 0.25rem;
+      margin-bottom: 0.85rem;
     }
 
     .segment-title-wrap {
       display: flex;
-      flex-direction: column;
-      gap: 0.25rem;
-    }
-
-    @media (min-width: 40rem) {
-      .segment-title-wrap {
-        flex-direction: row;
-        align-items: center;
-        justify-content: space-between;
-        gap: 0.75rem;
-      }
+      align-items: flex-start;
+      justify-content: space-between;
     }
 
     .segment-badge {
       display: inline-flex;
       align-items: center;
-      gap: 0.4rem;
-      padding: 0.15rem 0.6rem;
-      border-radius: 999rem;
-      font-size: 0.75rem;
+      gap: 0.35rem;
+      padding: 0.25rem 0.6rem;
+      border-radius: 999px;
+      font-size: 0.7rem;
       text-transform: uppercase;
-      letter-spacing: 0.08em;
-      border: 0.0625rem solid rgba(148, 163, 184, 0.6);
-      background: rgba(15, 23, 42, 0.9);
+      letter-spacing: 0.05em;
+      border: 1px solid var(--border-subtle);
+      background: #f1f5f9;
       color: var(--text-soft);
+      font-weight: 700;
     }
 
     .segment-card.segment-on .segment-badge {
-      border-color: rgba(34, 197, 94, 0.9);
-      background: rgba(22, 163, 74, 0.2);
-      color: #bbf7d0;
+      border-color: var(--accent-border);
+      background: var(--accent-soft);
+      color: #166534;
     }
 
     .segment-dot {
-      width: 0.4rem;
-      height: 0.4rem;
-      border-radius: 999rem;
-      background: rgba(148, 163, 184, 0.9);
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #94a3b8;
     }
 
     .segment-card.segment-on .segment-dot {
       background: var(--accent);
     }
 
-    .segment-status-text {
-      font-weight: 600;
+    .segment-title {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--text);
     }
 
-    .segment-title {
-      font-size: 0.9rem;
-      font-weight: 500;
+    .segment-card.segment-on code {
+      background: var(--accent-soft);
+      border-color: var(--accent-border);
+      color: #166534;
     }
 
     .segment-status-detail {
@@ -561,105 +532,114 @@ export default defineEventHandler(async (event) => {
     }
 
     .segment-desc {
-      margin: 0;
-      font-size: 0.8rem;
+      margin: 0 0 1.25rem;
+      font-size: 0.85rem;
       color: var(--text-soft);
+      line-height: 1.5;
     }
 
     .segment-metrics {
       display: grid;
       grid-template-columns: repeat(3, minmax(0, 1fr));
       gap: 0.5rem;
-      margin-top: 0.15rem;
+      border-top: 1px solid #f1f5f9;
+      padding-top: 1rem;
+    }
+
+    .segment-card.segment-on .segment-metrics {
+      border-top-color: #bbf7d0;
     }
 
     .metric {
       display: flex;
       flex-direction: column;
-      gap: 0.15rem;
     }
 
     .metric-label {
-      font-size: 0.75rem;
+      font-size: 0.7rem;
       color: var(--text-subtle);
       text-transform: uppercase;
-      letter-spacing: 0.08em;
+      letter-spacing: 0.05em;
+      font-weight: 600;
+      margin-bottom: 0.15rem;
     }
 
     .metric-value {
-      font-size: 0.95rem;
-      font-weight: 600;
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: var(--text);
     }
 
-    .hint {
-      font-size: 0.8rem;
-      color: var(--text-subtle);
-    }
-
+    /* Buttons & Presets */
     .btn-row {
       display: flex;
       flex-wrap: wrap;
-      gap: 0.7rem;
-      align-items: center;
-    }
-
-    button[type="submit"] {
-      border-radius: 999rem;
-      border: none;
-      padding: 0.55rem 1.6rem;
-      font-size: 0.85rem;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      cursor: pointer;
-      background: var(--accent);
-      color: #052e16;
-      box-shadow: 0 0.35rem 1.4rem rgba(22, 163, 74, 0.55);
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 0.4rem;
-    }
-
-    button[type="submit"]:hover {
-      filter: brightness(1.06);
-    }
-
-    .btn-secondary {
-      background: transparent;
-      color: #bbf7d0;
-      border: 0.0625rem solid rgba(34, 197, 94, 0.8);
-      box-shadow: none;
-    }
-
-    .btn-secondary:hover {
-      background: rgba(22, 163, 74, 0.18);
-    }
-
-    .preset-row {
-      display: flex;
-      flex-direction: column;
       gap: 0.75rem;
     }
 
-    @media (min-width: 48rem) {
-      .stats-grid {
-        grid-template-columns: repeat(3, minmax(0, 1fr));
-      }
-
-      .segment-grid {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-      }
-
-      .kill-inner {
-        flex-direction: column;
-      }
+    .btn-preset {
+      background: var(--bg-elevated);
+      color: var(--text-soft);
+      border: 1px solid var(--border-subtle);
+      padding: 0.5rem 1.25rem;
+      border-radius: 999px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
     }
 
-    @media (min-width: 60rem) {
-      .segment-grid {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-      }
+    .btn-preset:hover {
+      background: var(--bg);
+      border-color: var(--border-strong);
+      color: var(--text);
+    }
+
+    .btn-primary {
+      background: var(--text);
+      color: #ffffff;
+      border: none;
+      padding: 0.85rem 2.25rem;
+      border-radius: 999px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: 0 4px 14px rgba(15, 23, 42, 0.2);
+      transition: all 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .btn-primary:hover {
+      background: #1e293b;
+      transform: translateY(-1px);
+      box-shadow: 0 6px 20px rgba(15, 23, 42, 0.25);
+    }
+
+    .save-section {
+      background: transparent;
+      border: none;
+      box-shadow: none;
+      padding: 0;
+      margin-top: 0.5rem;
+    }
+
+    .save-row {
+      display: flex;
+      align-items: center;
+      gap: 1.25rem;
+    }
+
+    .save-hint {
+      font-size: 0.9rem;
+      color: var(--text-subtle);
+    }
+
+    @media (max-width: 768px) {
+      .page-header-meta { flex-direction: column; gap: 1rem; }
+      .kill-row { flex-direction: column; align-items: flex-start; gap: 1rem; }
+      .save-row { flex-direction: column; align-items: flex-start; }
     }
   </style>
 </head>
@@ -669,13 +649,10 @@ export default defineEventHandler(async (event) => {
       <div class="page-header-top">
         <div class="badge">
           <span class="badge-dot"></span>
-          <span>/ads · Panel de control de anuncios</span>
+          <span>Panel de control de monetización</span>
         </div>
-        <h1>Control en tiempo real de anuncios</h1>
-        <p class="hint">
-          Ajusta el kill switch global, la matriz de segmentos y los presets de forma segura.
-          No hay lógica oculta en el cliente: todo pasa por este panel del servidor.
-        </p>
+        <h1>Ads Control Dashboard</h1>
+        <p class="hint">Ajusta el motor de decisión, segmentos y comportamientos de forma global y reactiva.</p>
       </div>
       <div class="page-header-meta">
         <div class="meta-item">
@@ -687,138 +664,88 @@ export default defineEventHandler(async (event) => {
           <span>${stats.totalVisits}</span>
         </div>
         <div class="meta-item">
-          <span class="meta-label">Elegibles</span>
+          <span class="meta-label">Total Elegibles</span>
           <span>${stats.totalEligible}</span>
         </div>
         <div class="meta-item">
-          <span class="meta-label">Con anuncio</span>
+          <span class="meta-label">Anuncios Renderizados</span>
           <span>${stats.totalRendered}</span>
         </div>
       </div>
     </header>
 
     <form method="post" action="/ads" class="page-form">
+      
+      <!-- Kill Switch Global -->
       <section class="section">
         <div class="section-header">
-          <h2 class="section-title">Kill switch global</h2>
-          <p class="section-subtitle">
-            Corte maestro inmediato de todos los anuncios. Este es el control de pánico:
-            si se apaga, ningún visitante recibirá bloques de AdSense.
-          </p>
+          <h2 class="section-title">Kill Switch Global</h2>
+          <p class="section-subtitle">Corte maestro inmediato. Si se apaga, ningún visitante verá anuncios, sin importar sus segmentos habilitados.</p>
         </div>
-        <div class="section-body">
-          <div class="kill-container ${globalEnabled ? "kill-on" : "kill-off"}">
-            <label class="kill-inner">
-              <div class="kill-row">
-                <div class="kill-text">
-                  <span class="kill-title">${killStatusText}</span>
-                  <span class="kill-subtitle">${killSubtitle}</span>
-                </div>
-                <div class="kill-toggle-wrap">
-                  <span class="kill-label">Interruptor maestro</span>
-                  <div class="kill-toggle">
-                    <input
-                      type="checkbox"
-                      name="global_ads_enabled"
-                      value="1"
-                      class="kill-input"
-                      ${globalEnabled ? "checked" : ""}
-                    />
-                    <div class="kill-track">
-                      <div class="kill-thumb"></div>
-                    </div>
-                  </div>
+        <div class="kill-container ${globalEnabled ? "kill-on" : "kill-off"}">
+          <label class="kill-inner">
+            <div class="kill-row">
+              <div class="kill-text">
+                <span class="kill-title">${killStatusText}</span>
+                <span class="kill-subtitle">${killSubtitle}</span>
+              </div>
+              <div class="kill-toggle">
+                <input
+                  type="checkbox"
+                  name="global_ads_enabled"
+                  value="1"
+                  class="kill-input"
+                  ${globalEnabled ? "checked" : ""}
+                />
+                <div class="kill-track">
+                  <div class="kill-thumb"></div>
                 </div>
               </div>
-            </label>
-          </div>
-
-          <div class="stats-grid">
-            <div class="stat-card">
-              <span class="stat-label">Visitas totales</span>
-              <span class="stat-value">${stats.totalVisits}</span>
-              <span class="stat-note">Cada request que pasa por el motor de decisión.</span>
             </div>
-            <div class="stat-card">
-              <span class="stat-label">Elegibles (post-segmentación)</span>
-              <span class="stat-value">${stats.totalEligible}</span>
-              <span class="stat-note">Segmento activo + sin bloqueo individual.</span>
-            </div>
-            <div class="stat-card">
-              <span class="stat-label">Anuncios renderizados</span>
-              <span class="stat-value">${stats.totalRendered}</span>
-              <span class="stat-note">Solo cuando el kill switch global está en ON.</span>
-            </div>
-          </div>
+          </label>
         </div>
       </section>
 
+      <!-- Matriz por Segmento -->
       <section class="section">
         <div class="section-header">
-          <h2 class="section-title">Matriz por segmento</h2>
-          <p class="section-subtitle">
-            Control granular por tipo de usuario. Todo lo que está en ON aquí es potencialmente
-            elegible para anuncios cuando el kill switch global está activo.
-          </p>
+          <h2 class="section-title">Matriz por Segmento</h2>
+          <p class="section-subtitle">Activa selectivamente las audiencias. El algoritmo de segmentación define qué visitas son elegibles.</p>
         </div>
-        <div class="section-body">
-          <div class="segment-grid">
-            ${segmentCardsHtml}
-          </div>
-          <p class="hint">
-            Los KPIs por tarjeta muestran cuántas visitas tuvo cada segmento, cuántas fueron
-            elegibles y cuántas recibieron realmente un bloque de AdSense.
-          </p>
+        <div class="segment-grid">
+          ${segmentCardsHtml}
         </div>
       </section>
 
+      <!-- Presets -->
       <section class="section">
         <div class="section-header">
-          <h2 class="section-title">Acciones rápidas (presets)</h2>
-          <p class="section-subtitle">
-            Plantillas que ajustan automáticamente la matriz de segmentos y ponen el kill switch global en ON.
-          </p>
+          <h2 class="section-title">Acciones Rápidas (Presets)</h2>
+          <p class="section-subtitle">Patrones recomendados para rollouts progresivos sin intervención manual celda por celda.</p>
         </div>
-        <div class="section-body preset-row">
-          <div class="btn-row">
-            <button type="submit" name="preset" value="daycare-only" class="btn-secondary">
-              Preset: solo daycare
-            </button>
-            <button type="submit" name="preset" value="daycare-organic" class="btn-secondary">
-              Preset: daycare + orgánico
-            </button>
-            <button type="submit" name="preset" value="all-segments" class="btn-secondary">
-              Preset: todos los segmentos
-            </button>
-          </div>
-          <p class="hint">
-            Puedes usar estos presets para avanzar de forma controlada:
-            primero solo <code>daycare</code>, luego <code>daycare + organic</code> y,
-            cuando haya confianza, habilitar también <code>premium</code> e <code>internal</code>.
-          </p>
+        <div class="btn-row">
+          <button type="submit" name="preset" value="daycare-only" class="btn-preset">
+            Solo Guardería
+          </button>
+          <button type="submit" name="preset" value="daycare-organic" class="btn-preset">
+            Guardería + Orgánico
+          </button>
+          <button type="submit" name="preset" value="all-segments" class="btn-preset">
+            Activar todos
+          </button>
         </div>
       </section>
 
-      <section class="section">
-        <div class="section-header">
-          <h2 class="section-title">Guardar configuración actual</h2>
-          <p class="section-subtitle">
-            Persiste exactamente el estado actual del kill switch global y de la matriz por segmento.
-          </p>
-        </div>
-        <div class="section-body">
-          <div class="btn-row">
-            <button type="submit" name="action" value="save">
-              Guardar cambios
-            </button>
-            <p class="hint">
-              Los cambios se aplican de inmediato en el servidor. La página principal
-              <code>index.html</code> inyectará bloques reales de AdSense solo cuando el motor
-              de decisión lo permita.
-            </p>
-          </div>
+      <!-- Guardar -->
+      <section class="section save-section">
+        <div class="save-row">
+          <button type="submit" name="action" value="save" class="btn-primary">
+            Guardar Cambios
+          </button>
+          <span class="save-hint">Aplica instantáneamente en memoria y DB (Zero Downtime).</span>
         </div>
       </section>
+
     </form>
   </div>
 </body>
