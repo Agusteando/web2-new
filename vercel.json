@@ -1,0 +1,6 @@
+{
+  "rewrites": [
+    { "source": "/virtual/:path*", "destination": "https://admin.casitaiedis.edu.mx/:path*" },
+    { "source": "/signatures/:path*", "destination": "https://admin.casitaiedis.edu.mx/signatures/:path*" }
+  ]
+}
