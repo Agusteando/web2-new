@@ -12,6 +12,7 @@ export default defineNitroPlugin(() => {
     'server/routes/[page].get.ts',
     'server/routes/[page].html.get.ts',
     'server/middleware/legacy-html.ts',
+    'server/routes/virtual/[blob].get.ts',
     'public/legacy'
   ]
 
@@ -21,7 +22,7 @@ export default defineNitroPlugin(() => {
     if (existsSync(fullPath)) {
       try {
         rmSync(fullPath, { recursive: true, force: true })
-        console.log(`🧹 [Auto-Cleanup] Eliminado interceptor legacy que bloqueaba Vue: ${file}`)
+        console.log(`🧹 [Auto-Cleanup] Eliminado interceptor/archivo legacy que bloqueaba Vue: ${file}`)
         cleaned = true
       } catch (e) {
         console.error(`⚠️ [Auto-Cleanup] No se pudo eliminar ${file}. Por favor, bórralo manualmente.`, e)

@@ -8,6 +8,13 @@ export default defineNuxtConfig({
 
   compatibilityDate: '2025-12-13',
 
+  // Native proxy mapping ensures cross-environment compatibility (Vercel, PM2, Local)
+  // Preserves original external behavior natively without brittle hacks.
+  routeRules: {
+    '/virtual/**': { proxy: 'https://admin.casitaiedis.edu.mx/virtual/**' },
+    '/signatures/**': { proxy: 'https://admin.casitaiedis.edu.mx/signatures/**' }
+  },
+
   vue: {
     compilerOptions: {
       // Evita advertencias en consola sobre Web Components nativos del theme
@@ -82,7 +89,8 @@ export default defineNuxtConfig({
       '**/server/routes/__diag.get.ts',
       '**/server/routes/\\[page\\].get.ts',
       '**/server/routes/\\[page\\].html.get.ts',
-      '**/server/middleware/legacy-html.ts'
+      '**/server/middleware/legacy-html.ts',
+      '**/server/routes/virtual/\\[blob\\].get.ts'
     ],
     // Only force 'node-server' if we are building for production AND we are NOT on Vercel.
     // This allows local PM2/IIS deployments to work natively while Vercel builds effortlessly.
