@@ -48,7 +48,13 @@
     <SiteHeader />
     
     <div id="smooth-wrapper">
-      <div id="smooth-content" :class="{ 'page-layout-contract': route.path !== '/' }">
+      <!-- 
+        Standard GSAP/ScrollSmoother smooth-content div.
+        Only inner pages receive top padding to prevent content from hiding behind the sticky header.
+        Home page is strictly excluded, ensuring the transparent hero layout functions perfectly
+        and preserving the intended vertical scroll boundaries.
+      -->
+      <div id="smooth-content" :class="{ 'inner-page-offset': route.path !== '/' }">
         <slot />
         <SiteFooter />
       </div>
@@ -63,22 +69,19 @@ const route = useRoute()
 
 <style>
 /* 
-  Global Page-Shell Layout Contract:
-  The theme applies absolute positioning to the header by default. 
-  To prevent the header from overlapping content on inner pages, we offset the main content wrapper.
-  This removes the need for fragile per-page padding hacks and preserves all native scroll animations.
-  The Home page (`/`) is explicitly excluded to preserve its intentional transparent hero overlap.
+  Ensures inner pages securely clear the absolute header height without modifying 
+  global HTML/body rules, preventing arbitrary horizontal scroll generation. 
 */
-.page-layout-contract {
-  padding-top: 135px; /* Safely clears the desktop header and top-bar height */
+.inner-page-offset {
+  padding-top: 135px;
   display: flex;
   flex-direction: column;
   min-height: 100vh;
 }
 
 @media (max-width: 1199px) {
-  .page-layout-contract {
-    padding-top: 80px; /* Safely clears the mobile/tablet header height (no top bar) */
+  .inner-page-offset {
+    padding-top: 80px;
   }
 }
 </style>
