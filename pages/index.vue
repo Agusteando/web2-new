@@ -1,89 +1,123 @@
 <template>
   <main>
-    <!-- tp-hero-area-start -->
-    <div class="tp-hero-area pre-header tp-hero-md-spacing bg-position" style="background-image: url('/assets/img/hero/md/bg.jpg');">
-       <div class="container-fluid container-1824 containers">
-          <div class="row align-items-center">
-             <div class="col-xl-6">
-                <div class="tp-hero-md-content p-relative mb-40">
-                   <span class="tp-ff-dm fw-500 fs-20 fs-xs-17 ls-m-3 tp-text-common-black-5 mb-20 d-inline-block">⦿ Colegios IECS - IEDIS</span>
-                   <h2 class="tp-hero-md-title tp-ff-familjen fs-74 fs-lg-100 fs-md-80 fs-sm-70 fs-xs-50 tp-text-common-black-5 lh-1 ls-m-3 mb-25">Crecer con valores, <img src="/assets/img/IECS-IEDIS IMAGES/hero-shape.webp" alt=""> aprender con sentido. </h2>
-                   <p class="tp-hero-md-para tp-ff-dm fs-24 fs-xl-22 lh-140-per ls-m-3 tp-text-common-black-6 opacity-8 mb-45">Cultivamos una educación integral con calidez,<br> respeto y propósito.</p>
-                   <div class="tp-hero-md-btn d-flex align-items-center">
-                      <NuxtLink to="/ubicaciones" class="tp-btn-md tp-bg-theme-1 tp-left-right p-relative hover-text-white d-inline-block tp-text-grey-5 lh-1 fs-16 fw-700 tp-ff-dm">
-                         <span class="mr10 td-text d-inline-block mr-5">Agenda tu visita</span>
-                         <span class="tp-arrow-angle">
-                            <svg width="13" height="12" viewBox="0 0 13 12" fill="none" xmlns="http://www.w3.org/2000/svg">
-                               <path d="M1 11L12 1M12 1H3.44444M12 1V8.77778" stroke="#F3F1F2" stroke-width="1.5" stroke-linecap="round" />
-                               <path d="M1 11L12 1M12 1H3.44444M12 1V8.77778" stroke="#F3F1F2" stroke-width="1.5" stroke-linecap="round" />
-                            </svg>
-                         </span>
-                      </NuxtLink>
-                      <div class="tp-hero-video d-flex align-items-center">
-                         <a class="tp-hero-video-btn tp-hero-md-video-btn popup-video mr-15" href="https://youtu.be/cwX1iPY2kJE" target="_blank">
-                            <span>
-                               <svg width="15" height="18" viewBox="0 0 15 18" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                  <path d="M15 9L-8.15666e-07 17.6603L-5.85621e-08 0.339745L15 9Z" fill="#F3F1F2" />
-                               </svg>
-                            </span>
-                         </a>
-                         <p class="tp-hero-md-video-text tp-ff-dm lh-110-per mb-0 fw-600 fs-16 tp-text-common-black-5 opacity-8">Descubre nuestros espacios</p>
-                      </div>
-                   </div>
-                   <img class="tp-hero-md-shape tp-live-anim-spin" src="/assets/img/IECS-IEDIS IMAGES/104X104-AMBASSADORS.webp" alt="">
+    <!-- ISOLATED HERO SECTION REBUILD -->
+    <div class="iecs-hero-section" style="background-image: url('/assets/img/hero/md/bg.jpg');">
+       <div class="iecs-hero-container">
+          
+          <!-- LEFT COLUMN: STRICT TEXT COMPOSITION -->
+          <div class="iecs-hero-left">
+             <span class="iecs-hero-tag">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                   <circle cx="12" cy="12" r="9"></circle>
+                   <circle cx="12" cy="12" r="4" fill="currentColor"></circle>
+                </svg>
+                Colegios IECS - IEDIS
+             </span>
+             
+             <h1 class="iecs-hero-title">
+                <div class="iecs-hero-title-row">
+                   <span>Crecer con valores,</span>
+                   <img src="/assets/img/IECS-IEDIS IMAGES/hero-shape.webp" alt="" class="iecs-hero-shape">
                 </div>
+                <div class="iecs-hero-title-row">aprender con sentido.</div>
+             </h1>
+             
+             <p class="iecs-hero-desc">
+                Cultivamos una educación integral con calidez,<br class="d-none d-xl-block">
+                respeto y propósito.
+             </p>
+             
+             <div class="iecs-hero-actions">
+                <NuxtLink to="/ubicaciones" class="iecs-hero-btn-primary">
+                   Agenda tu visita
+                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <line x1="7" y1="17" x2="17" y2="7"></line>
+                      <polyline points="7 7 17 7 17 17"></polyline>
+                   </svg>
+                </NuxtLink>
+                
+                <a href="https://youtu.be/cwX1iPY2kJE" target="_blank" class="iecs-hero-btn-video popup-video">
+                   <span class="iecs-hero-play-icon">
+                      <svg width="14" height="16" viewBox="0 0 15 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+                         <path d="M15 9L0 17.6603L0 0.339745L15 9Z" fill="currentColor" />
+                      </svg>
+                   </span>
+                   <span class="iecs-hero-video-text">Descubre nuestros espacios</span>
+                </a>
              </div>
-             <div class="col-xl-6 mb-40">
-                <div class="tp-hero-md-row-custom">
-                   <div class="tp-hero-md-col-custom">
-                      <div class="tp-hero-md-panel-item p-relative">
-                         <div class="tp-hero-md-panel-thumb">
-                            <img src="/assets/img/IECS-IEDIS IMAGES/504x644-sunny.webp" alt="">
-                         </div>
-                         <div class="tp-hero-md-panel-content">
-                            <h4 class="tp-hero-md-panel-title mb-15"><NuxtLink to="/daycare" class="underline-black">Guardería <br class="font-montserrat-semibold"> | Daycare</NuxtLink></h4>
-                            <div class="tp-hero-md-panel-meta">
-                               <ion-icon name="paper-plane-outline"></ion-icon>
-                            </div>
-                         </div>
+
+             <img class="iecs-hero-ambassadors" src="/assets/img/IECS-IEDIS IMAGES/104X104-AMBASSADORS.webp" alt="">
+          </div>
+
+          <!-- RIGHT COLUMN: VERTICAL CARD CLUSTER -->
+          <div class="iecs-hero-right">
+             <div class="iecs-hero-accordion">
+                <div 
+                  class="iecs-accordion-item" 
+                  :class="{ 'is-active': activeCard === 1 }" 
+                  @mouseover="activeCard = 1"
+                  @focusin="activeCard = 1"
+                >
+                   <NuxtLink to="/daycare" class="iecs-accordion-link">
+                      <div class="iecs-accordion-bg">
+                         <img src="/assets/img/IECS-IEDIS IMAGES/504x644-sunny.webp" alt="Guardería / Daycare">
                       </div>
-                   </div>
-                   <div class="tp-hero-md-col-custom">
-                      <div class="tp-hero-md-panel-item p-relative">
-                         <div class="tp-hero-md-panel-thumb">
-                            <img src="/assets/img/IECS-IEDIS IMAGES/504x644-joy.webp" alt="">
-                         </div>
-                         <div class="tp-hero-md-panel-content">
-                            <h4 class="tp-hero-md-panel-title mb-15"><NuxtLink to="/preschool" class="underline-black">Presscolar <br class="font-montserrat-semibold"> | Preschool</NuxtLink></h4>
-                            <div class="tp-hero-md-panel-meta">
-                               <ion-icon name="paper-plane-outline"></ion-icon>
-                            </div>
-                         </div>
+                      <div class="iecs-accordion-overlay">
+                         <h4 class="iecs-accordion-title">Guardería<br>Daycare</h4>
                       </div>
-                   </div>
-                   <div class="tp-hero-md-col-custom active">
-                      <div class="tp-hero-md-panel-item p-relative">
-                         <div class="tp-hero-md-panel-thumb">
-                            <img src="/assets/img/IECS-IEDIS IMAGES/504x644-brave.webp" alt="">
-                         </div>
-                         <div class="tp-hero-md-panel-content">
-                            <h4 class="tp-hero-md-panel-title mb-15"><NuxtLink to="/elementary-school" class="underline-black">Primaria <br>Elementary School</NuxtLink></h4>
-                         </div>
+                   </NuxtLink>
+                </div>
+                
+                <div 
+                  class="iecs-accordion-item" 
+                  :class="{ 'is-active': activeCard === 2 }" 
+                  @mouseover="activeCard = 2"
+                  @focusin="activeCard = 2"
+                >
+                   <NuxtLink to="/preschool" class="iecs-accordion-link">
+                      <div class="iecs-accordion-bg">
+                         <img src="/assets/img/IECS-IEDIS IMAGES/504x644-joy.webp" alt="Preescolar / Preschool">
                       </div>
-                   </div>
-                   <div class="tp-hero-md-col-custom">
-                      <div class="tp-hero-md-panel-item p-relative">
-                         <div class="tp-hero-md-panel-thumb">
-                            <img src="/assets/img/IECS-IEDIS IMAGES/504x644-hope.webp" alt="">
-                         </div>
-                         <div class="tp-hero-md-panel-content">
-                            <h4 class="tp-hero-md-panel-title mb-15"><NuxtLink to="/middle-school" class="underline-black">Secundaria <br>Middle School</NuxtLink></h4>
-                         </div>
+                      <div class="iecs-accordion-overlay">
+                         <h4 class="iecs-accordion-title">Preescolar<br>Preschool</h4>
                       </div>
-                   </div>
+                   </NuxtLink>
+                </div>
+                
+                <div 
+                  class="iecs-accordion-item" 
+                  :class="{ 'is-active': activeCard === 3 }" 
+                  @mouseover="activeCard = 3"
+                  @focusin="activeCard = 3"
+                >
+                   <NuxtLink to="/elementary-school" class="iecs-accordion-link">
+                      <div class="iecs-accordion-bg">
+                         <img src="/assets/img/IECS-IEDIS IMAGES/504x644-brave.webp" alt="Primaria / Elementary School">
+                      </div>
+                      <div class="iecs-accordion-overlay">
+                         <h4 class="iecs-accordion-title">Primaria<br>Elementary School</h4>
+                      </div>
+                   </NuxtLink>
+                </div>
+                
+                <div 
+                  class="iecs-accordion-item" 
+                  :class="{ 'is-active': activeCard === 4 }" 
+                  @mouseover="activeCard = 4"
+                  @focusin="activeCard = 4"
+                >
+                   <NuxtLink to="/middle-school" class="iecs-accordion-link">
+                      <div class="iecs-accordion-bg">
+                         <img src="/assets/img/IECS-IEDIS IMAGES/504x644-hope.webp" alt="Secundaria / Middle School">
+                      </div>
+                      <div class="iecs-accordion-overlay">
+                         <h4 class="iecs-accordion-title">Secundaria<br>Middle School</h4>
+                      </div>
+                   </NuxtLink>
                 </div>
              </div>
           </div>
+          
        </div>
     </div>
     
@@ -681,7 +715,7 @@
        <div class="container-fluid container-1824">
           <div class="row align-items-end mb-20">
              <div class="col-lg-8">
-                <div class="tp-testimonial-ai-title-wrap mb-30">
+               <div class="tp-testimonial-ai-title-wrap mb-30">
                    <span class="tp-text-revel-anim fix tp-section-md-subtitle tp-ff-dm fw-600 fs-16 ls-m-3 tp-text-common-black d-inline-block mb-10">Acompáñanos a revivir los momentos que hacen especial cada jornada en IECS–IEDIS.</span>
                    <h2 class="tp-text-revel-anim fix tp-section-md-title tp-ff-familjen fs-62 lh-1 ls-m-3 tp-text-common-black-5 mb-20">Nuestro día a día <br> en acción.</h2>
                 </div>
@@ -738,6 +772,10 @@
 </template>
 
 <script setup>
+import { ref } from 'vue'
+
+const activeCard = ref(4)
+
 const { data: noticias } = await useFetch('/api/noticias', { query: { limit: 3 } })
 
 const fallbacks = [
@@ -757,3 +795,325 @@ const resolveImage = (img, index) => {
   return /^https?:\/\//i.test(img) ? img : (img.startsWith('/') ? img : `/${img}`)
 }
 </script>
+
+<style scoped>
+/* ==========================================================
+   ISOLATED HERO ARCHITECTURE
+   Pixel-faithful reproduction matching exact reference.
+   Self-contained, namespaced, and resilient responsive grid.
+   ========================================================== */
+
+.iecs-hero-section {
+  position: relative;
+  /* Extra top padding ensures it securely clears the sticky transparent header */
+  padding: 190px 0 120px;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  /* Graceful fallback replicating the soft cyan glow if image is unavailable */
+  background-color: #f4fbfc; 
+  background-image: radial-gradient(circle at 0% 0%, #e0f2fe 0%, #ffffff 50%);
+  overflow: hidden;
+}
+
+.iecs-hero-container {
+  max-width: 1760px; /* Accommodates exact visual rhythm */
+  margin: 0 auto;
+  padding: 0 15px;
+  display: grid;
+  /* True two-column layout - left stack gets slightly more room */
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
+  gap: 50px;
+  align-items: center;
+}
+
+/* --- Left Stack (Text & CTA) --- */
+.iecs-hero-left {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  position: relative;
+  padding-right: 20px;
+}
+
+.iecs-hero-tag {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 18px;
+  font-weight: 400;
+  color: #54595E;
+  margin-bottom: 25px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  letter-spacing: 0.3px;
+}
+
+.iecs-hero-title {
+  font-family: 'Fredoka', sans-serif;
+  /* Precise font sizing to match line breaks and width on desktop */
+  font-size: clamp(42px, 5.2vw, 88px); 
+  line-height: 1.15;
+  color: #54595E; /* Precise dark slate from reference */
+  margin: 0 0 35px 0;
+  font-weight: 700;
+  letter-spacing: -1.5px;
+  display: flex;
+  flex-direction: column; /* Forces exact line structure */
+  gap: 6px;
+}
+
+.iecs-hero-title-row {
+  display: flex;
+  align-items: center;
+}
+
+.iecs-hero-shape {
+  height: 1.3em;
+  width: auto;
+  margin-left: 20px;
+  flex-shrink: 0;
+}
+
+.iecs-hero-desc {
+  font-family: 'Montserrat', sans-serif;
+  font-size: clamp(18px, 1.8vw, 24px);
+  line-height: 1.4;
+  color: #6b7280; /* Lighter slate grey from reference */
+  margin: 0 0 50px 0;
+  font-weight: 300;
+  letter-spacing: -0.2px;
+}
+
+/* --- CTA Row --- */
+.iecs-hero-actions {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+  flex-wrap: wrap;
+  position: relative;
+  z-index: 2;
+}
+
+.iecs-hero-btn-primary {
+  background-color: #d97706; /* Precise match to the reference orange */
+  color: #ffffff;
+  padding: 16px 36px;
+  border-radius: 50px;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 700;
+  font-size: 18px;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+}
+
+.iecs-hero-btn-primary:hover {
+  background-color: #b46305;
+  transform: translateY(-2px);
+  color: #ffffff;
+}
+
+.iecs-hero-btn-video {
+  display: inline-flex;
+  align-items: center;
+  gap: 16px;
+  text-decoration: none;
+  color: #6b7280;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 600;
+  font-size: 18px;
+  transition: color 0.3s ease;
+}
+
+.iecs-hero-btn-video:hover {
+  color: #54595E;
+}
+
+.iecs-hero-play-icon {
+  width: 56px;
+  height: 56px;
+  background-color: #54595E; /* Slate grey matching text */
+  color: #ffffff;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-left: 4px; /* Optical centering for the play triangle */
+  transition: background-color 0.3s ease;
+}
+
+.iecs-hero-btn-video:hover .iecs-hero-play-icon {
+  background-color: #d97706;
+}
+
+.iecs-hero-video-text {
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+/* --- Floating Shape (Ambassadors) --- */
+.iecs-hero-ambassadors {
+  position: absolute;
+  bottom: -60px;
+  right: 15%;
+  width: 104px;
+  height: 104px;
+  animation: iecs-spin 15s linear infinite;
+  z-index: 1;
+}
+
+@keyframes iecs-spin {
+  100% { transform: rotate(360deg); }
+}
+
+/* --- Right Stack (Accordion Cluster) --- */
+.iecs-hero-right {
+  display: flex;
+  justify-content: flex-end;
+  width: 100%;
+}
+
+.iecs-hero-accordion {
+  display: flex;
+  gap: 20px;
+  height: clamp(500px, 70vh, 660px); /* Matches text block height proportionally */
+  width: 100%;
+}
+
+.iecs-accordion-item {
+  flex: 1; /* Inactive panels default to equal narrow slices */
+  border-radius: 40px; /* Heavy pill masking */
+  overflow: hidden;
+  position: relative;
+  transition: flex 0.6s cubic-bezier(0.25, 1, 0.5, 1);
+  cursor: pointer;
+  background-color: #f3f4f6;
+  transform: translateZ(0); /* Prevents hardware-acceleration clipping bugs in Safari */
+}
+
+/* The active panel expands to claim ~55% of available width based on flex-grow */
+.iecs-accordion-item.is-active {
+  flex: 3.5; 
+}
+
+.iecs-accordion-link {
+  display: block;
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
+
+.iecs-accordion-bg {
+  position: absolute;
+  top: 0; left: 0; width: 100%; height: 100%;
+}
+
+.iecs-accordion-bg img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  transition: transform 0.8s ease;
+}
+
+.iecs-accordion-item:hover .iecs-accordion-bg img {
+  transform: scale(1.05);
+}
+
+.iecs-accordion-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(0,0,0,0.65) 0%, rgba(0,0,0,0.2) 35%, rgba(0,0,0,0) 65%);
+  display: flex;
+  align-items: flex-end;
+  padding: 40px 35px;
+  opacity: 0;
+  transition: opacity 0.5s ease;
+  pointer-events: none; /* Mouse events pass safely to the underlying link */
+}
+
+.iecs-accordion-item.is-active .iecs-accordion-overlay {
+  opacity: 1;
+}
+
+.iecs-accordion-title {
+  color: #ffffff;
+  font-family: 'Fredoka', sans-serif;
+  font-size: 32px;
+  line-height: 1.1;
+  margin: 0;
+  font-weight: 700;
+  transform: translateY(20px);
+  transition: transform 0.5s cubic-bezier(0.25, 1, 0.5, 1);
+  letter-spacing: -0.5px;
+}
+
+.iecs-accordion-item.is-active .iecs-accordion-title {
+  transform: translateY(0);
+}
+
+/* --- Responsive Adjustments --- */
+@media (min-width: 992px) {
+  /* Locks the top line together with the image to perfectly match reference */
+  .iecs-hero-title-row:first-child {
+    white-space: nowrap;
+  }
+}
+
+@media (max-width: 1199px) {
+  .iecs-hero-section {
+    padding: 150px 0 80px;
+  }
+  .iecs-hero-container {
+    grid-template-columns: 1fr;
+    gap: 70px;
+  }
+  .iecs-hero-left {
+    padding-right: 0;
+  }
+  .iecs-hero-ambassadors {
+    display: none;
+  }
+}
+
+@media (max-width: 991px) {
+  .iecs-hero-title-row {
+    flex-wrap: wrap;
+  }
+  .iecs-hero-accordion {
+    flex-direction: column;
+    height: auto;
+    gap: 20px;
+  }
+  .iecs-accordion-item {
+    flex: none;
+    height: 180px;
+    border-radius: 20px;
+  }
+  .iecs-accordion-item.is-active {
+    flex: none;
+  }
+  .iecs-accordion-overlay {
+    opacity: 1; /* Keep text visible at all times on touch interfaces */
+    background: linear-gradient(to top, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0) 70%);
+    padding: 20px 25px;
+  }
+  .iecs-accordion-title {
+    transform: translateY(0);
+    font-size: 26px;
+  }
+}
+
+@media (max-width: 767px) {
+  .iecs-hero-section {
+    padding: 120px 0 60px;
+  }
+  .iecs-hero-actions {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+</style>
