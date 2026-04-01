@@ -1,20 +1,17 @@
-
 import { readFile } from "node:fs/promises";
 import { join } from "node:path";
+import { defineEventHandler, setHeader } from "h3";
 
 /**
  * Ensure /ads.txt is always accessible at the root, even with
- * catch-all routes like server/routes/[page].get.ts present.
- *
- * Reads from:
- *   - public/ads.txt        (dev)
- *   - .output/public/ads.txt (production build)
+ * catch-all routing architectures or serverless deployment models.
  */
 export default defineEventHandler(async (event) => {
   const debug =
     (process.env.DEBUG_LEGACY ?? "").toLowerCase() === "1" ||
     (process.env.DEBUG_LEGACY ?? "").toLowerCase() === "true";
 
+  // Standard local or PM2 paths
   const devPath = join(process.cwd(), "public", "ads.txt");
   const prodPath = join(process.cwd(), ".output", "public", "ads.txt");
 
@@ -34,19 +31,17 @@ export default defineEventHandler(async (event) => {
     }
   }
 
+  // Resiliency for Serverless (Vercel):
+  // Serverless functions do not bundle the physical 'public' directory files with the execution context. 
+  // If the file system read fails, we provide the raw text natively to ensure Google AdSense 
+  // validators never receive a 404/500 if they hit this server route.
   if (!txt) {
     if (debug) {
       // eslint-disable-next-line no-console
-      console.warn("[ads] ads.txt not found in public/ or .output/public/", {
-        devPath,
-        prodPath,
-      });
+      console.warn("[ads] ads.txt physical file not found (likely serverless environment), falling back to raw payload.");
     }
-
-    throw createError({
-      statusCode: 404,
-      statusMessage: "ads.txt not found",
-    });
+    txt = "google.com, pub-1644096973273978, DIRECT, f08c47fec0942fa0";
+    source = "serverless_fallback";
   }
 
   if (debug) {

@@ -1,4 +1,6 @@
 const isProd = process.env.NODE_ENV === 'production'
+// Automatically detect Vercel environment to prevent forcing 'node-server'
+const isVercel = !!process.env.VERCEL || process.env.VERCEL_ENV !== undefined
 
 export default defineNuxtConfig({
   ssr: true,
@@ -82,7 +84,9 @@ export default defineNuxtConfig({
       '**/server/routes/\\[page\\].html.get.ts',
       '**/server/middleware/legacy-html.ts'
     ],
-    ...(isProd
+    // Only force 'node-server' if we are building for production AND we are NOT on Vercel.
+    // This allows local PM2/IIS deployments to work natively while Vercel builds effortlessly.
+    ...(isProd && !isVercel
       ? {
           preset: 'node-server',
           server: {
