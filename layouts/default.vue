@@ -1,5 +1,3 @@
-## layouts/default.vue
-
 <template>
   <div>
     <!-- Preloader manejado nativamente por main.js -->
@@ -49,11 +47,6 @@
     
     <SiteHeader />
     
-    <!-- 
-      GSAP ScrollSmoother (smooth-wrapper/smooth-content) has been REMOVED.
-      This structurally restores natural browser vertical scrolling across all routes,
-      eliminating JS viewport locking and unintended nested scroll containers.
-    -->
     <div class="iecs-layout-wrapper">
       <div class="iecs-layout-content" :class="{ 'inner-page-offset': route.path !== '/' }">
         <slot />
@@ -64,58 +57,17 @@
 </template>
 
 <script setup>
-import { onMounted, onUnmounted, watch } from 'vue'
+import { watch } from 'vue'
 import { useRoute } from '#app'
 
 const route = useRoute()
-let resizeObserver = null
-let refreshTimer = null
-
-// Debounced GSAP Refresh function.
-// Forces ScrollTrigger to recalculate parallax/reveal triggers accurately 
-// without hijacking the native scroll layout.
-const forceGsapRefresh = () => {
-  if (import.meta.client && window.ScrollTrigger) {
-    clearTimeout(refreshTimer)
-    refreshTimer = setTimeout(() => {
-      window.ScrollTrigger.refresh()
-    }, 150)
-  }
-}
-
-onMounted(() => {
-  if (import.meta.client) {
-    const layoutContent = document.querySelector('.iecs-layout-content')
-    
-    if (layoutContent) {
-      // 1. Observe structural DOM changes (Vue swapping out page components)
-      resizeObserver = new ResizeObserver(() => {
-        forceGsapRefresh()
-      })
-      resizeObserver.observe(layoutContent)
-      
-      // 2. Global image load listener to catch late layout shifts
-      document.addEventListener('load', (e) => {
-        if (e.target && e.target.tagName === 'IMG') {
-          forceGsapRefresh()
-        }
-      }, true) // Use capture phase to catch all bubbling load events
-    }
-  }
-})
 
 // Ensures scroll position returns to top securely for SPAs
+// Note: Heavy ResizeObservers were removed from here to completely eliminate scroll lag and layout thrashing
 watch(() => route.path, () => {
   if (import.meta.client) {
-    // Native scroll reset since GSAP ScrollSmoother is removed
     window.scrollTo({ top: 0, left: 0, behavior: 'instant' })
-    forceGsapRefresh()
   }
-})
-
-onUnmounted(() => {
-  if (resizeObserver) resizeObserver.disconnect()
-  clearTimeout(refreshTimer)
 })
 </script>
 
