@@ -100,16 +100,38 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
+/* 
+  =========================================================
+  GLOBAL OVERFLOW CLAMP
+  =========================================================
+  Strictly eliminates horizontal scrolling everywhere without 
+  breaking sticky headers. 'clip' is superior to 'hidden' 
+  because it isolates layout without establishing a scroll 
+  container that corrupts position: sticky.
+*/
+html, body {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: clip !important;
+}
+
+#__nuxt {
+  width: 100%;
+  overflow-x: clip;
+}
+
 .iecs-layout-wrapper {
   position: relative;
   width: 100%;
-  overflow: visible;
+  max-width: 100%;
+  overflow-x: clip; 
 }
 
 .iecs-layout-content {
   position: relative;
   width: 100%;
-  overflow: visible;
+  max-width: 100%;
+  overflow-x: clip; 
   display: block;
 }
 
