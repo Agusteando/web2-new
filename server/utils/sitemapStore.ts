@@ -9,22 +9,7 @@ export interface RouteOverride {
 
 export type SitemapOverrides = Record<string, RouteOverride>;
 
-// Garantiza que la tabla de control exista sin requerir migraciones manuales
-async function ensureTable() {
-  const pool = getDbPool();
-  await pool.query(`
-    CREATE TABLE IF NOT EXISTS route_overrides (
-      path VARCHAR(255) PRIMARY KEY,
-      type VARCHAR(50) NOT NULL,
-      target TEXT NOT NULL,
-      status_code INT NOT NULL DEFAULT 302,
-      updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-    )
-  `);
-}
-
 export async function getSitemapOverrides(): Promise<SitemapOverrides> {
-  await ensureTable();
   const pool = getDbPool();
   const [rows] = await pool.query<RowDataPacket[]>('SELECT path, type, target, status_code FROM route_overrides');
   
@@ -40,7 +25,6 @@ export async function getSitemapOverrides(): Promise<SitemapOverrides> {
 }
 
 export async function saveSitemapOverride(path: string, override: RouteOverride): Promise<void> {
-  await ensureTable();
   const pool = getDbPool();
   
   if (override.type === 'default') {
