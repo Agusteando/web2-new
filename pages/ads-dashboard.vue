@@ -2,7 +2,6 @@
   <div class="ads-dashboard-wrapper">
     <div class="page-container">
       
-      <!-- Minimalist Header -->
       <header class="page-header">
         <div class="header-titles">
           <span class="badge-pill">
@@ -13,7 +12,6 @@
           <p class="page-subtitle">Visibilidad operativa, métricas de tráfico y control de anuncios.</p>
         </div>
         
-        <!-- Date Filters -->
         <div class="time-filters">
           <button @click="setFilter('today')" :class="{ active: currentFilter === 'today' }">Hoy</button>
           <button @click="setFilter('7d')" :class="{ active: currentFilter === '7d' }">Últimos 7 días</button>
@@ -22,115 +20,108 @@
         </div>
       </header>
 
-      <!-- Top Metrics -->
-      <div class="metrics-grid">
-        <div class="metric-card">
-          <span class="metric-label">Visitas del Periodo</span>
-          <div class="metric-value-row">
-            <span class="metric-value">{{ stats.totalVisits || 0 }}</span>
-            <span class="metric-trend" v-if="stats.todayVisits && currentFilter !== 'today'">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"></polyline><polyline points="16 7 22 7 22 13"></polyline></svg>
-              +{{ stats.todayVisits }} hoy
+      <!-- KPI Row -->
+      <div class="kpi-grid">
+        <div class="kpi-card">
+          <span class="kpi-label">Visitas del Periodo</span>
+          <div class="kpi-value-row">
+            <span class="kpi-value">{{ stats.totalVisits?.toLocaleString() || 0 }}</span>
+            <span class="kpi-trend" v-if="stats.todayVisits && currentFilter !== 'today'" title="Visitas de hoy">
+              +{{ stats.todayVisits.toLocaleString() }}
             </span>
           </div>
         </div>
-        <div class="metric-card">
-          <span class="metric-label">Tráfico Elegible</span>
-          <div class="metric-value-row">
-            <span class="metric-value">{{ stats.totalEligible || 0 }}</span>
+        <div class="kpi-card">
+          <span class="kpi-label">Tráfico Elegible</span>
+          <div class="kpi-value-row">
+            <span class="kpi-value">{{ stats.totalEligible?.toLocaleString() || 0 }}</span>
           </div>
         </div>
-        <div class="metric-card highlight-card">
-          <span class="metric-label">Anuncios Mostrados</span>
-          <div class="metric-value-row">
-            <span class="metric-value">{{ stats.totalRendered || 0 }}</span>
+        <div class="kpi-card highlight-card">
+          <span class="kpi-label">Anuncios Mostrados</span>
+          <div class="kpi-value-row">
+            <span class="kpi-value">{{ stats.totalRendered?.toLocaleString() || 0 }}</span>
           </div>
         </div>
       </div>
 
-      <div class="dashboard-layout">
+      <!-- Main Dense Layout -->
+      <div class="main-grid">
         
-        <!-- Left Column: Controls -->
-        <div class="control-column">
-          <!-- Master Control (Kill Switch) -->
-          <section class="dashboard-section">
-            <label class="master-control-card" :class="{ 'is-active': config.global_ads_enabled }">
-              <div class="master-control-info">
-                <h2 class="section-title">Control Maestro</h2>
-                <p class="section-desc">Activa o detiene la monetización en todo el sitio web al instante.</p>
-              </div>
-              <div class="custom-toggle">
-                <input type="checkbox" v-model="config.global_ads_enabled" class="hidden-input" />
-                <div class="toggle-track">
-                  <div class="toggle-thumb"></div>
-                </div>
-              </div>
-            </label>
-          </section>
-
-          <!-- Audiences (Segments) -->
-          <section class="dashboard-section">
-            <div class="section-header">
-              <h2 class="section-title">Audiencias Activas</h2>
-              <p class="section-desc">Selecciona qué grupos de usuarios verán anuncios si el control maestro está activo.</p>
+        <!-- Left Pane: Controls & Segments -->
+        <div class="control-pane">
+          <div class="panel-card master-panel" :class="{ 'is-active': config.global_ads_enabled }">
+            <div class="master-info">
+              <h2 class="panel-title">Control Maestro</h2>
+              <p class="panel-desc">Habilita la monetización en el sitio.</p>
             </div>
-            
-            <div class="segments-list">
-              <label v-for="seg in segmentDefs" :key="seg.key" class="segment-row" :class="{ 'is-active': config[seg.inputName] }">
-                <div class="segment-info">
-                  <span class="segment-name">{{ seg.label }}</span>
-                  <div class="segment-mini-metrics">
-                    <span title="Visitas">👁 {{ getSegmentStat(seg.key, 'visits') }}</span>
-                    <span title="Mostrados">✦ {{ getSegmentStat(seg.key, 'rendered') }}</span>
-                  </div>
-                </div>
-                <div class="custom-toggle small-toggle">
-                  <input type="checkbox" v-model="config[seg.inputName]" class="hidden-input" />
-                  <div class="toggle-track">
-                    <div class="toggle-thumb"></div>
+            <div class="custom-toggle">
+              <input type="checkbox" v-model="config.global_ads_enabled" class="hidden-input" />
+              <div class="toggle-track"><div class="toggle-thumb"></div></div>
+            </div>
+          </div>
+
+          <div class="panel-card segments-panel">
+            <h2 class="panel-title mb-10">Audiencias</h2>
+            <div class="segment-table">
+              <div class="segment-th">
+                <span>Segmento</span>
+                <span>Hits</span>
+                <span>Ads</span>
+                <span class="text-right">Activo</span>
+              </div>
+              <label v-for="seg in segmentDefs" :key="seg.key" class="segment-tr" :class="{ 'is-active': config[seg.inputName] }">
+                <span class="s-name">{{ seg.label }}</span>
+                <span class="s-num">{{ getSegmentStat(seg.key, 'visits') }}</span>
+                <span class="s-num highlight">{{ getSegmentStat(seg.key, 'rendered') }}</span>
+                <div class="s-action">
+                  <div class="custom-toggle small-toggle">
+                    <input type="checkbox" v-model="config[seg.inputName]" class="hidden-input" />
+                    <div class="toggle-track"><div class="toggle-thumb"></div></div>
                   </div>
                 </div>
               </label>
             </div>
-          </section>
+          </div>
 
-          <!-- Actions Footer -->
-          <section class="action-footer">
-            <div class="presets-group">
+          <div class="panel-card actions-panel">
+            <div class="presets-row">
               <button class="btn-preset" @click="applyPreset('daycare-only')">Solo Guardería</button>
-              <button class="btn-preset" @click="applyPreset('all-segments')">Activar todos</button>
+              <button class="btn-preset" @click="applyPreset('all-segments')">Activar Todos</button>
             </div>
-            
-            <button class="btn-primary" @click="saveChanges" :disabled="isSaving">
+            <button class="btn-primary mt-15" @click="saveChanges" :disabled="isSaving">
               <svg v-if="isSaving" class="spinner" viewBox="0 0 24 24"><circle class="path" cx="12" cy="12" r="10" fill="none" stroke-width="4"></circle></svg>
               <span v-else>Guardar Cambios</span>
             </button>
-          </section>
+          </div>
         </div>
 
-        <!-- Right Column: Insights & Routes -->
-        <div class="insights-column">
-          <section class="dashboard-section h-100">
-            <div class="routes-card">
-              <div class="section-header mb-4">
-                <h2 class="section-title">Rutas Más Visitadas</h2>
-                <p class="section-desc">Actividad de tráfico detallada durante el periodo seleccionado.</p>
+        <!-- Right Pane: Route Analytics -->
+        <div class="analytics-pane">
+          <div class="panel-card h-100">
+            <div class="route-header">
+              <h2 class="panel-title">Rutas Más Visitadas</h2>
+              <p class="panel-desc">Actividad detallada de enrutamiento y exposición.</p>
+            </div>
+            
+            <div class="route-list">
+              <div v-if="!stats.topRoutes || stats.topRoutes.length === 0" class="empty-state">
+                No hay datos de rutas registrados en este periodo.
               </div>
-              
-              <div class="route-list">
-                <div v-if="!stats.topRoutes || stats.topRoutes.length === 0" class="empty-routes">
-                  No hay datos de rutas disponibles para este periodo.
-                </div>
-                <div v-else v-for="(r, idx) in stats.topRoutes" :key="idx" class="route-item">
-                  <span class="route-path">{{ r.route }}</span>
-                  <div class="route-badges">
-                    <span class="r-badge r-visits">{{ r.visits }} hits</span>
-                    <span class="r-badge r-rendered" v-if="r.rendered > 0">{{ r.rendered }} ads</span>
+              <div v-else v-for="(r, idx) in stats.topRoutes" :key="idx" class="route-row">
+                <div class="route-info">
+                  <span class="route-path">{{ r.route || '/' }}</span>
+                  <div class="route-metrics">
+                    <span class="r-badge">{{ r.visits }} hits</span>
+                    <span class="r-badge r-ads" v-if="r.rendered > 0">{{ r.rendered }} ads</span>
                   </div>
+                </div>
+                <div class="route-bar-container">
+                  <div class="route-bar" :style="{ width: Math.max(2, (r.visits / Math.max(stats.maxRouteVisits, 1)) * 100) + '%' }"></div>
                 </div>
               </div>
             </div>
-          </section>
+          </div>
         </div>
 
       </div>
@@ -138,7 +129,7 @@
     
     <div :class="['toast-notification', { 'show': showToast }]">
        <svg class="toast-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
-       <span>Configuración actualizada correctamente</span>
+       <span>Configuración guardada correctamente</span>
     </div>
   </div>
 </template>
@@ -165,7 +156,8 @@ const stats = ref({
   totalRendered: 0,
   todayVisits: 0,
   bySegment: [],
-  topRoutes: []
+  topRoutes: [],
+  maxRouteVisits: 1
 })
 
 watchEffect(() => {
@@ -190,14 +182,14 @@ const setFilter = async (f) => {
 
 const segmentDefs = [
   { key: 'daycare', inputName: 'ads_for_daycare', label: 'Guardería' },
-  { key: 'organic', inputName: 'ads_for_organic', label: 'Tráfico Orgánico' },
-  { key: 'premium', inputName: 'ads_for_premium', label: 'Familias Particulares' },
-  { key: 'internal', inputName: 'ads_for_internal', label: 'Staff Interno' }
+  { key: 'organic', inputName: 'ads_for_organic', label: 'Orgánico' },
+  { key: 'premium', inputName: 'ads_for_premium', label: 'Particular' },
+  { key: 'internal', inputName: 'ads_for_internal', label: 'Interno' }
 ]
 
 const getSegmentStat = (key, metric) => {
   const row = stats.value.bySegment?.find(s => s.user_segment === key)
-  return row ? row[metric] : 0
+  return row ? row[metric].toLocaleString() : 0
 }
 
 const applyPreset = (preset) => {
@@ -244,31 +236,31 @@ useHead({
 </script>
 
 <style scoped>
-@import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Montserrat:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Montserrat:wght@500;600;700&display=swap');
 
 .ads-dashboard-wrapper {
   min-height: 100vh;
-  background-color: #f8fafc; /* Lighter, cleaner background */
+  background-color: #f8fafc;
   color: #141414;
   font-family: 'Montserrat', sans-serif;
-  padding: 4rem 1.5rem;
+  padding: 3rem 1.5rem;
   box-sizing: border-box;
 }
 
 .page-container {
-  max-width: 72rem;
+  max-width: 1440px;
   margin: 0 auto;
   display: flex;
   flex-direction: column;
-  gap: 2rem;
+  gap: 1.5rem;
 }
 
-/* Header & Typography */
+/* Header */
 .page-header {
   display: flex;
   justify-content: space-between;
   align-items: flex-end;
-  gap: 2rem;
+  gap: 1.5rem;
   flex-wrap: wrap;
 }
 
@@ -276,23 +268,22 @@ useHead({
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  max-width: 32rem;
 }
 
 .badge-pill {
   display: inline-flex;
   align-items: center;
   gap: 0.4rem;
-  padding: 0.3rem 0.8rem;
+  padding: 0.25rem 0.75rem;
   border-radius: 20px;
   background: #ffffff;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.03);
-  font-size: 0.75rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  font-size: 0.7rem;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.05em;
   color: #618B2F;
-  margin-bottom: 1.25rem;
+  margin-bottom: 0.75rem;
 }
 
 .badge-dot {
@@ -315,436 +306,319 @@ useHead({
 
 .page-title {
   font-family: 'Fredoka', sans-serif;
-  font-size: 2.75rem;
+  font-size: 2.25rem;
   font-weight: 700;
-  color: #141414;
-  margin: 0 0 0.5rem;
-  letter-spacing: -0.02em;
+  margin: 0 0 0.25rem;
   line-height: 1.1;
+  letter-spacing: -0.02em;
 }
 
 .page-subtitle {
-  color: #6b7280;
-  font-size: 1.05rem;
-  line-height: 1.5;
+  color: #64748b;
+  font-size: 0.95rem;
   margin: 0;
 }
 
-/* Time Filters */
+/* Filters */
 .time-filters {
   display: flex;
   background: #ffffff;
-  padding: 6px;
-  border-radius: 12px;
-  gap: 6px;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.02);
-  flex-wrap: wrap;
+  padding: 4px;
+  border-radius: 10px;
+  gap: 4px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.03);
 }
 
 .time-filters button {
   background: transparent;
   border: none;
-  padding: 8px 16px;
-  border-radius: 8px;
+  padding: 6px 12px;
+  border-radius: 6px;
   font-family: 'Montserrat', sans-serif;
-  font-size: 0.85rem;
+  font-size: 0.8rem;
   font-weight: 600;
-  color: #6b7280;
+  color: #64748b;
   cursor: pointer;
   transition: all 0.2s;
 }
 
 .time-filters button.active {
   background: #f1f5f9;
-  color: #141414;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.03);
+  color: #0f172a;
 }
 
-.time-filters button:hover:not(.active) {
-  color: #141414;
-}
+.time-filters button:hover:not(.active) { color: #0f172a; }
 
-/* Top Metrics */
-.metrics-grid {
+/* KPIs */
+.kpi-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  gap: 1.5rem;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.25rem;
 }
 
-.metric-card {
+.kpi-card {
   background: #ffffff;
-  padding: 1.75rem 2rem;
-  border-radius: 20px;
-  box-shadow: 0 6px 20px rgba(0,0,0,0.02);
+  padding: 1.25rem 1.5rem;
+  border-radius: 16px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.02);
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
-  position: relative;
-  overflow: hidden;
+  gap: 0.4rem;
 }
 
-.metric-card.highlight-card {
-  background: #fdfefc;
+.kpi-card.highlight-card {
   border: 1px solid #dcfce7;
+  background: #fdfefc;
 }
 
-.metric-label {
-  font-size: 0.8rem;
+.kpi-label {
+  font-size: 0.75rem;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  color: #6b7280;
+  color: #64748b;
 }
 
-.metric-value-row {
+.kpi-value-row {
   display: flex;
   align-items: baseline;
-  gap: 1rem;
+  gap: 0.75rem;
 }
 
-.metric-value {
+.kpi-value {
   font-family: 'Fredoka', sans-serif;
-  font-size: 2.5rem;
+  font-size: 2rem;
   font-weight: 700;
-  color: #141414;
+  color: #0f172a;
   line-height: 1;
 }
 
-.metric-trend {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  font-size: 0.85rem;
-  font-weight: 600;
-  color: #16a34a;
+.kpi-trend {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #15803d;
   background: #dcfce7;
-  padding: 4px 10px;
-  border-radius: 20px;
+  padding: 3px 8px;
+  border-radius: 12px;
 }
-.metric-trend svg { width: 14px; height: 14px; }
 
-/* Dashboard Layout */
-.dashboard-layout {
+/* Main Grid */
+.main-grid {
   display: grid;
-  grid-template-columns: 360px 1fr;
+  grid-template-columns: 420px 1fr;
   gap: 1.5rem;
   align-items: start;
 }
 
-.dashboard-section {
-  margin-bottom: 1.5rem;
+.control-pane {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
 }
 
-.section-header {
-  margin-bottom: 1.25rem;
+.panel-card {
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 1.5rem;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.02);
 }
 
-.section-title {
+.panel-title {
   font-family: 'Fredoka', sans-serif;
-  font-size: 1.35rem;
+  font-size: 1.2rem;
   font-weight: 600;
-  color: #141414;
-  margin: 0 0 0.25rem;
+  color: #0f172a;
+  margin: 0 0 0.2rem;
 }
 
-.section-desc {
-  font-size: 0.9rem;
-  color: #6b7280;
+.panel-desc {
+  font-size: 0.85rem;
+  color: #64748b;
   margin: 0;
   line-height: 1.4;
 }
 
-/* Master Control Card */
-.master-control-card {
+.mb-10 { margin-bottom: 1rem; }
+.mt-15 { margin-top: 1.5rem; }
+.text-right { text-align: right; }
+.h-100 { height: 100%; display: flex; flex-direction: column; }
+
+/* Master Panel */
+.master-panel {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: #ffffff;
-  padding: 1.75rem;
-  border-radius: 20px;
-  box-shadow: 0 6px 20px rgba(0,0,0,0.02);
-  cursor: pointer;
-  transition: all 0.3s ease;
   border: 2px solid transparent;
+  transition: all 0.2s ease;
+  padding: 1.25rem 1.5rem;
 }
-
-.master-control-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 10px 30px rgba(0,0,0,0.04);
-}
-
-.master-control-card.is-active {
+.master-panel.is-active {
   background: #fdfefc;
   border-color: #dcfce7;
 }
 
-.master-control-info {
+/* Dense Segment Table */
+.segment-table {
   display: flex;
   flex-direction: column;
-  gap: 0.25rem;
-  max-width: 220px;
 }
 
-/* Audiences List */
-.segments-list {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-
-.segment-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background: #ffffff;
-  padding: 1rem 1.25rem;
-  border-radius: 16px;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.01);
-  cursor: pointer;
-  transition: all 0.2s ease;
-  border: 1px solid transparent;
-}
-
-.segment-row:hover {
-  border-color: #e2e8f0;
-}
-
-.segment-row.is-active {
-  background: #fdfefc;
-  border-color: #e0f2fe;
-}
-
-.segment-info {
-  display: flex;
-  flex-direction: column;
-  gap: 0.2rem;
-}
-
-.segment-name {
-  font-family: 'Montserrat', sans-serif;
-  font-size: 0.95rem;
-  font-weight: 600;
-  color: #141414;
-}
-
-.segment-mini-metrics {
-  display: flex;
-  gap: 12px;
-  font-size: 0.75rem;
+.segment-th {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 50px;
+  padding: 0 10px 8px;
+  border-bottom: 1px solid #e2e8f0;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
   color: #94a3b8;
-  font-weight: 600;
 }
 
-/* Route Insights */
-.routes-card {
-  background: #ffffff;
-  border-radius: 20px;
-  padding: 1.75rem;
-  box-shadow: 0 6px 20px rgba(0,0,0,0.02);
-  height: 100%;
-}
-
-.route-list {
-  display: flex;
-  flex-direction: column;
-}
-
-.route-item {
-  display: flex;
-  justify-content: space-between;
+.segment-tr {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 50px;
   align-items: center;
-  padding: 12px 16px;
+  padding: 10px;
   border-bottom: 1px solid #f1f5f9;
+  cursor: pointer;
   transition: background 0.2s;
   border-radius: 8px;
 }
+.segment-tr:hover { background: #f8fafc; }
+.segment-tr.is-active { background: #fdfefc; }
+.segment-tr:last-child { border-bottom: none; }
 
-.route-item:hover {
-  background: #f8fafc;
-}
+.s-name { font-size: 0.9rem; font-weight: 600; color: #1e293b; }
+.s-num { font-size: 0.9rem; font-weight: 500; color: #475569; }
+.s-num.highlight { color: #d97706; font-weight: 600; }
+.s-action { display: flex; justify-content: flex-end; }
 
-.route-item:last-child {
-  border-bottom: none;
-}
-
-.route-path {
-  font-family: monospace;
-  font-size: 0.95rem;
-  color: #334155;
-  font-weight: 500;
-  word-break: break-all;
-  padding-right: 15px;
-}
-
-.route-badges {
+/* Actions */
+.presets-row {
   display: flex;
-  gap: 8px;
-  flex-shrink: 0;
-}
-
-.r-badge {
-  font-size: 0.75rem;
-  font-weight: 700;
-  padding: 4px 10px;
-  border-radius: 12px;
-  white-space: nowrap;
-}
-
-.r-visits {
-  background: #f1f5f9;
-  color: #475569;
-}
-
-.r-rendered {
-  background: #fef3c7;
-  color: #d97706;
-}
-
-.empty-routes {
-  padding: 3rem 1rem;
-  text-align: center;
-  color: #94a3b8;
-  font-size: 0.95rem;
-  font-style: italic;
-}
-
-/* Toggles */
-.hidden-input {
-  position: absolute;
-  opacity: 0;
-  pointer-events: none;
-}
-
-.custom-toggle {
-  display: inline-flex;
-  align-items: center;
-  flex-shrink: 0;
-}
-
-.toggle-track {
-  width: 3.5rem;
-  height: 2rem;
-  background: #e5e7eb;
-  border-radius: 999px;
-  position: relative;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.toggle-thumb {
-  width: 1.6rem;
-  height: 1.6rem;
-  background: #ffffff;
-  border-radius: 50%;
-  position: absolute;
-  top: 0.2rem;
-  left: 0.2rem;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 2px 5px rgba(0,0,0,0.15);
-}
-
-input:checked + .toggle-track {
-  background: #618B2F;
-}
-
-input:checked + .toggle-track .toggle-thumb {
-  transform: translateX(1.5rem);
-}
-
-.small-toggle .toggle-track {
-  width: 2.8rem;
-  height: 1.6rem;
-}
-
-.small-toggle .toggle-thumb {
-  width: 1.2rem;
-  height: 1.2rem;
-}
-
-.small-toggle input:checked + .toggle-track .toggle-thumb {
-  transform: translateX(1.2rem);
-}
-
-/* Actions Footer */
-.action-footer {
-  display: flex;
-  flex-direction: column;
-  background: #ffffff;
-  padding: 1.5rem;
-  border-radius: 20px;
-  box-shadow: 0 6px 20px rgba(0,0,0,0.02);
-  gap: 1rem;
-}
-
-.presets-group {
-  display: flex;
-  align-items: center;
   gap: 0.5rem;
-  width: 100%;
 }
 
 .btn-preset {
   flex: 1;
   background: #f8fafc;
-  color: #475569;
   border: 1px solid #e2e8f0;
-  padding: 0.6rem 0.5rem;
-  border-radius: 12px;
+  color: #475569;
+  padding: 0.5rem;
+  border-radius: 8px;
   font-size: 0.8rem;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.2s;
   font-family: 'Montserrat', sans-serif;
-  text-align: center;
 }
-
-.btn-preset:hover {
-  background: #ffffff;
-  border-color: #cbd5e1;
-  color: #141414;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.03);
-}
+.btn-preset:hover { background: #ffffff; border-color: #cbd5e1; color: #0f172a; }
 
 .btn-primary {
+  width: 100%;
   background: #618B2F;
   color: #ffffff;
   border: none;
-  padding: 1rem;
-  border-radius: 12px;
+  padding: 0.8rem;
+  border-radius: 10px;
   font-family: 'Montserrat', sans-serif;
-  font-size: 1rem;
+  font-size: 0.95rem;
   font-weight: 700;
   cursor: pointer;
-  box-shadow: 0 8px 20px rgba(97, 139, 47, 0.25);
-  transition: all 0.3s ease;
-  display: inline-flex;
-  align-items: center;
+  transition: all 0.2s;
+  display: flex;
   justify-content: center;
+}
+.btn-primary:hover:not(:disabled) { background: #507524; }
+.btn-primary:disabled { opacity: 0.7; cursor: not-allowed; }
+
+/* Route Analytics */
+.route-header { margin-bottom: 1.5rem; }
+
+.route-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  overflow-y: auto;
+}
+
+.route-row {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.route-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.route-path {
+  font-family: monospace;
+  font-size: 0.85rem;
+  color: #334155;
+  font-weight: 600;
+}
+
+.route-metrics {
+  display: flex;
+  gap: 6px;
+}
+
+.r-badge {
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 10px;
+  background: #f1f5f9;
+  color: #64748b;
+}
+
+.r-ads {
+  background: #fef3c7;
+  color: #d97706;
+}
+
+.route-bar-container {
   width: 100%;
+  height: 4px;
+  background: #f1f5f9;
+  border-radius: 2px;
+  overflow: hidden;
 }
 
-.btn-primary:hover:not(:disabled) {
-  background: #507524;
-  transform: translateY(-2px);
-  box-shadow: 0 12px 25px rgba(97, 139, 47, 0.3);
+.route-bar {
+  height: 100%;
+  background: #618B2F;
+  border-radius: 2px;
+  transition: width 0.5s ease;
 }
 
-.btn-primary:disabled {
-  opacity: 0.7;
-  cursor: not-allowed;
+.empty-state {
+  padding: 3rem 1rem;
+  text-align: center;
+  color: #94a3b8;
+  font-size: 0.9rem;
+  font-style: italic;
 }
+
+/* Toggles */
+.hidden-input { position: absolute; opacity: 0; pointer-events: none; }
+.custom-toggle { display: inline-flex; align-items: center; }
+.toggle-track { width: 3rem; height: 1.75rem; background: #cbd5e1; border-radius: 999px; position: relative; transition: all 0.3s; }
+.toggle-thumb { width: 1.35rem; height: 1.35rem; background: #ffffff; border-radius: 50%; position: absolute; top: 0.2rem; left: 0.2rem; transition: all 0.3s; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+input:checked + .toggle-track { background: #618B2F; }
+input:checked + .toggle-track .toggle-thumb { transform: translateX(1.25rem); }
+
+.small-toggle .toggle-track { width: 2.4rem; height: 1.4rem; }
+.small-toggle .toggle-thumb { width: 1rem; height: 1rem; top: 0.2rem; left: 0.2rem; }
+.small-toggle input:checked + .toggle-track .toggle-thumb { transform: translateX(1rem); }
 
 /* Spinner & Toast */
-.spinner {
-  animation: rotate 2s linear infinite;
-  width: 22px;
-  height: 22px;
-}
-.spinner .path {
-  stroke: #ffffff;
-  stroke-linecap: round;
-  animation: dash 1.5s ease-in-out infinite;
-}
-
+.spinner { animation: rotate 2s linear infinite; width: 20px; height: 20px; }
+.spinner .path { stroke: #ffffff; stroke-linecap: round; animation: dash 1.5s ease-in-out infinite; }
 @keyframes rotate { 100% { transform: rotate(360deg); } }
 @keyframes dash {
   0% { stroke-dasharray: 1, 150; stroke-dashoffset: 0; }
@@ -756,43 +630,32 @@ input:checked + .toggle-track .toggle-thumb {
   position: fixed;
   bottom: 2rem;
   right: 2rem;
-  background: #141414;
+  background: #0f172a;
   color: #ffffff;
   padding: 1rem 1.5rem;
-  border-radius: 16px;
+  border-radius: 12px;
   display: flex;
   align-items: center;
   gap: 0.75rem;
-  box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.15);
   transform: translateY(100px);
   opacity: 0;
   transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
   z-index: 50;
   font-weight: 500;
+  font-size: 0.95rem;
 }
 
-.toast-notification.show {
-  transform: translateY(0);
-  opacity: 1;
-}
-
-.toast-icon {
-  width: 20px;
-  height: 20px;
-  color: #618B2F;
-}
+.toast-notification.show { transform: translateY(0); opacity: 1; }
+.toast-icon { width: 20px; height: 20px; color: #618B2F; }
 
 /* Responsive */
 @media (max-width: 991px) {
-  .dashboard-layout { grid-template-columns: 1fr; }
-  .page-header { flex-direction: column; align-items: stretch; gap: 1.5rem; }
-  .header-titles { max-width: 100%; }
+  .main-grid { grid-template-columns: 1fr; }
+  .page-header { flex-direction: column; align-items: stretch; }
 }
-
 @media (max-width: 575px) {
-  .ads-dashboard-wrapper { padding: 2rem 1rem; }
-  .master-control-card { flex-direction: column; align-items: flex-start; gap: 1.5rem; padding: 1.5rem; }
-  .metric-card { padding: 1.25rem 1.5rem; }
+  .ads-dashboard-wrapper { padding: 1.5rem 1rem; }
   .toast-notification { right: 1rem; left: 1rem; bottom: 1rem; justify-content: center; }
 }
 </style>

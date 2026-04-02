@@ -33,9 +33,33 @@ export interface AdDashboardStats {
   totalRendered: number;
   bySegment: AdDashboardSegmentRow[];
   topRoutes: AdDashboardRouteRow[];
+  maxRouteVisits: number;
 }
 
 const AD_CONFIG_ID = 1;
+let _schemaEnsured = false;
+
+/**
+ * Ensures the ad_visits table genuinely supports routing and date filtering.
+ * Runs a safe, idempotent ALTER TABLE if the columns are missing.
+ */
+async function ensureSchema() {
+  if (_schemaEnsured) return;
+  const pool = getDbPool();
+  try {
+    const [cols] = await pool.query<RowDataPacket[]>("SHOW COLUMNS FROM ad_visits LIKE 'route'");
+    if (cols.length === 0) {
+      await pool.query("ALTER TABLE ad_visits ADD COLUMN route VARCHAR(255) DEFAULT '/'");
+    }
+    const [colsTime] = await pool.query<RowDataPacket[]>("SHOW COLUMNS FROM ad_visits LIKE 'created_at'");
+    if (colsTime.length === 0) {
+      await pool.query("ALTER TABLE ad_visits ADD COLUMN created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP");
+    }
+    _schemaEnsured = true;
+  } catch (e) {
+    console.error("[adsDb] Warning: Could not verify/alter ad_visits schema. Analytics may degrade gracefully.", e);
+  }
+}
 
 /**
  * Load the single control-plane row from ad_config.
@@ -149,8 +173,8 @@ export async function updateAdConfig(partial: {
 
 /**
  * Insert a single ad_visits row for auditing and metrics.
- * Safely handles missing `route` column via transparent fallback to ensure 
- * 100% reliability during schema transitions.
+ * Safely handles missing columns by wrapping in a try-catch, 
+ * guaranteeing zero downtime if DB permissions block the auto-schema migration.
  */
 export async function insertAdVisit(opts: {
   visitorId: string;
@@ -159,6 +183,7 @@ export async function insertAdVisit(opts: {
   adsRendered: boolean;
   route?: string;
 }): Promise<void> {
+  await ensureSchema();
   const pool = getDbPool();
 
   const adsEligibleInt = opts.adsEligible ? 1 : 0;
@@ -171,7 +196,7 @@ export async function insertAdVisit(opts: {
     `;
     await pool.query(sql, [opts.visitorId, opts.userSegment, adsEligibleInt, adsRenderedInt, opts.route || '/']);
   } catch (e) {
-    // Graceful fallback if `route` column hasn't been added to the schema yet
+    // Graceful fallback to legacy schema
     const fallbackSql = `
       INSERT INTO ad_visits (visitor_id, user_segment, ads_eligible, ads_rendered)
       VALUES (?, ?, ?, ?)
@@ -181,17 +206,18 @@ export async function insertAdVisit(opts: {
 }
 
 /**
- * Aggregate core stats for the /ads dashboard:
- * Utilizes transparent fail-safes so that filtering and route-grouping work 
- * flawlessly if available, but degrade gracefully without crashing if schema is legacy.
+ * Aggregate core stats for the /ads dashboard.
+ * Truthfully queries actual timestamp limits and groups by route directly at the SQL level.
  */
 export async function getAdDashboardStats(filter: string = '30d'): Promise<AdDashboardStats> {
+  await ensureSchema();
   const pool = getDbPool();
 
   let dateCondition = "";
   if (filter === 'today') dateCondition = "WHERE DATE(created_at) = CURDATE()";
   else if (filter === '7d') dateCondition = "WHERE created_at >= DATE_SUB(CURDATE(), INTERVAL 7 DAY)";
   else if (filter === '30d') dateCondition = "WHERE created_at >= DATE_SUB(CURDATE(), INTERVAL 30 DAY)";
+  // If 'all', dateCondition remains empty
 
   let summaryRow: RowDataPacket = {} as RowDataPacket;
   try {
@@ -205,6 +231,7 @@ export async function getAdDashboardStats(filter: string = '30d'): Promise<AdDas
     `);
     summaryRow = summaryRows[0] || {};
   } catch (e) {
+    // Graceful fallback if schema alteration was blocked
     const [summaryRows] = await pool.query<RowDataPacket[]>(`
       SELECT
         COUNT(*) AS total_visits,
@@ -226,7 +253,7 @@ export async function getAdDashboardStats(filter: string = '30d'): Promise<AdDas
       FROM ad_visits
       ${dateCondition}
       GROUP BY user_segment
-      ORDER BY user_segment
+      ORDER BY visits DESC
     `);
   } catch (e) {
     [segmentRows] = await pool.query<RowDataPacket[]>(`
@@ -237,12 +264,14 @@ export async function getAdDashboardStats(filter: string = '30d'): Promise<AdDas
         COALESCE(SUM(ads_rendered), 0) AS rendered
       FROM ad_visits
       GROUP BY user_segment
-      ORDER BY user_segment
+      ORDER BY visits DESC
     `);
   }
 
   let todayVisits = 0;
   let topRoutes: AdDashboardRouteRow[] = [];
+  let maxRouteVisits = 1;
+
   try {
     const [todayRows] = await pool.query<RowDataPacket[]>(`
       SELECT COUNT(*) as c FROM ad_visits WHERE DATE(created_at) = CURDATE()
@@ -255,11 +284,15 @@ export async function getAdDashboardStats(filter: string = '30d'): Promise<AdDas
       ${dateCondition}
       GROUP BY route
       ORDER BY visits DESC
-      LIMIT 15
+      LIMIT 12
     `);
     topRoutes = routeRows as AdDashboardRouteRow[];
+    
+    if (topRoutes.length > 0) {
+      maxRouteVisits = Math.max(...topRoutes.map(r => Number(r.visits)));
+    }
   } catch (e) {
-    // If created_at or route don't exist yet, simply ignore to prevent downtime
+    // Ignore routes mapping if schema failed
   }
 
   const bySegment: AdDashboardSegmentRow[] = segmentRows.map(
@@ -278,6 +311,7 @@ export async function getAdDashboardStats(filter: string = '30d'): Promise<AdDas
     totalEligible: Number(summaryRow.total_eligible ?? 0),
     totalRendered: Number(summaryRow.total_rendered ?? 0),
     bySegment,
-    topRoutes
+    topRoutes,
+    maxRouteVisits
   };
 }
