@@ -63,35 +63,62 @@
 </template>
 
 <script setup>
-import { onMounted, onUnmounted } from 'vue'
+import { onMounted, onUnmounted, watch } from 'vue'
 import { useRoute } from '#app'
 
 const route = useRoute()
 let resizeObserver = null
+let refreshTimer = null
+
+// Debounced GSAP Refresh function.
+// Forces ScrollSmoother and ScrollTrigger to recalculate the page height accurately.
+const forceGsapRefresh = () => {
+  if (import.meta.client && window.ScrollTrigger) {
+    clearTimeout(refreshTimer)
+    refreshTimer = setTimeout(() => {
+      window.ScrollTrigger.refresh()
+    }, 150)
+  }
+}
 
 onMounted(() => {
   if (import.meta.client) {
     const smoothContent = document.getElementById('smooth-content')
     
     if (smoothContent) {
-      // Bulletproof SPA Fix para GSAP ScrollSmoother:
-      // Monitorea continuamente la altura del DOM. Si Vue inyecta nuevas rutas 
-      // o imágenes cargan tarde alterando la altura, esto obliga a GSAP a recalcular 
-      // los límites de scroll instantáneamente para evitar bloqueos.
+      // 1. Observe structural DOM changes (Vue swapping out page components)
       resizeObserver = new ResizeObserver(() => {
-        if (window.ScrollTrigger && typeof window.ScrollTrigger.refresh === 'function') {
-          window.ScrollTrigger.refresh()
-        }
+        forceGsapRefresh()
       })
       resizeObserver.observe(smoothContent)
+      
+      // 2. Global image load listener to catch late layout shifts from slow images
+      document.addEventListener('load', (e) => {
+        if (e.target && e.target.tagName === 'IMG') {
+          forceGsapRefresh()
+        }
+      }, true) // Use capture phase to catch all bubbling load events
     }
   }
 })
 
-onUnmounted(() => {
-  if (resizeObserver) {
-    resizeObserver.disconnect()
+// Ensures scroll position returns to top securely for SPAs
+watch(() => route.path, () => {
+  if (import.meta.client) {
+    // Reset GSAP Smoother matrix translation specifically
+    if (window.ScrollSmoother) {
+      const smoother = window.ScrollSmoother.get()
+      if (smoother) smoother.scrollTop(0)
+    }
+    // Backup Native scroll reset
+    window.scrollTo(0, 0)
+    forceGsapRefresh()
   }
+})
+
+onUnmounted(() => {
+  if (resizeObserver) resizeObserver.disconnect()
+  clearTimeout(refreshTimer)
 })
 </script>
 
