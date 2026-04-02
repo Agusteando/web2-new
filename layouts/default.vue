@@ -62,11 +62,20 @@ import { useRoute } from '#app'
 
 const route = useRoute()
 
-// Ensures scroll position returns to top securely for SPAs
-// Note: Heavy ResizeObservers were removed from here to completely eliminate scroll lag and layout thrashing
+// Ensures scroll position returns to top securely and seamlessly for SPAs
 watch(() => route.path, () => {
   if (import.meta.client) {
+    // Temporarily disable smooth scroll to allow an instant jump to the top on route change
+    document.documentElement.style.scrollBehavior = 'auto'
     window.scrollTo({ top: 0, left: 0, behavior: 'instant' })
+    
+    // Restore smooth scroll and refresh GSAP triggers after the new layout settles
+    setTimeout(() => {
+      document.documentElement.style.scrollBehavior = 'smooth'
+      if (window.ScrollTrigger) {
+        window.ScrollTrigger.refresh()
+      }
+    }, 100)
   }
 })
 </script>
@@ -78,11 +87,17 @@ watch(() => route.path, () => {
   =========================================================
   Forces natural browser scrolling, permanently disabling 
   any JS-based viewport locking that traps the scroll or 
-  clips content.
+  clips content. Improves site-wide motion smoothness.
 */
-html, body {
+html {
+  scroll-behavior: smooth;
+}
+
+body {
   height: auto;
   min-height: 100%;
+  overscroll-behavior-y: none; /* Prevents native bounce effects from fighting the scroll */
+  -webkit-font-smoothing: antialiased;
 }
 
 .iecs-layout-wrapper {
@@ -111,5 +126,10 @@ html, body {
   .inner-page-offset {
     padding-top: 80px;
   }
+}
+
+/* Structural safeguard: Hint browsers to optimize GSAP elements, reducing scroll jank */
+.tp_fade_anim {
+  will-change: transform, opacity;
 }
 </style>

@@ -15,19 +15,21 @@ export default defineNuxtPlugin((nuxtApp) => {
       return; 
     }
 
-    // 2. GSAP Deep Teardown
-    // STRUCTURAL FIX: Eliminates scroll lag by destroying orphaned ScrollTrigger instances 
-    // that attempt to calculate dimensions on DOM elements that Vue has already unmounted.
+    // 2. GSAP Deep Teardown & Memory Management
+    // STRUCTURAL FIX: Eliminates scroll lag by clearing cached scroll positions and destroying 
+    // orphaned ScrollTrigger instances that attempt to calculate dimensions on unmounted DOM.
     if ((window as any).ScrollTrigger) {
+      (window as any).ScrollTrigger.clearScrollMemory();
       (window as any).ScrollTrigger.getAll().forEach((trigger: any) => trigger.kill());
     }
+    
     if ((window as any).ScrollSmoother) {
       const smoother = (window as any).ScrollSmoother.get();
       if (smoother) smoother.kill();
     }
 
     // 3. Script Lifecycle Re-injection
-    // STRUCTURAL FIX: Force the browser to re-evaluate the vanilla JS theme scripts.
+    // Force the browser to re-evaluate the vanilla JS theme scripts.
     // This perfectly restores broken homepage effects (Swiper, HoverEffects, GSAP timelines) 
     // by making the external scripts bind to the freshly mounted Vue DOM components.
     const scriptsToReload = [
@@ -51,15 +53,22 @@ export default defineNuxtPlugin((nuxtApp) => {
       document.body.appendChild(newScript);
     });
 
-    // 4. Legacy Event Triggers
+    // 4. Legacy Event Triggers & Layout Recalculation
     // Ensures components relying strictly on jQuery document/window lifecycle are awakened
     setTimeout(() => {
       if ((window as any).jQuery) {
         (window as any).jQuery(document).trigger('ready');
         (window as any).jQuery(window).trigger('load');
       }
+      
       // Force viewport recalculation to align sticky headers and parallax depths
       window.dispatchEvent(new Event('resize'));
-    }, 150);
+      
+      // Final ScrollTrigger refresh after the DOM and new scripts have completely settled.
+      // This is crucial for ensuring fade animations calculate their trigger points correctly.
+      if ((window as any).ScrollTrigger) {
+        (window as any).ScrollTrigger.refresh();
+      }
+    }, 300);
   });
 });

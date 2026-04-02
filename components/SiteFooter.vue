@@ -52,8 +52,9 @@
              <div class="row align-items-end">
                 <div class="col-lg-9">
                    <div class="tp-footer-top-social-wrap mb-30">
-                      <h2 class="-title tp-text-common-white text-uppercase fw-50 fs-30 rotate-text-anim">"Compartiendo contigo la formación integral de tus hijos".</h2>
-                      <div class="tp-footer-social tp_fade_anim">
+                      <!-- Structural Fix: Removed brittle rotation/fade classes to guarantee text visibility -->
+                      <h2 class="-title tp-text-common-white text-uppercase fw-50 fs-30">"Compartiendo contigo la formación integral de tus hijos".</h2>
+                      <div class="tp-footer-social">
                          <ul>
                             <li><a href="https://www.facebook.com/profile.php?id=61574164795795"><i class="fa-brands fa-facebook"></i> Facebook</a></li>
                             <li><a href="https://www.instagram.com/iecsi_edis/"><i class="fa-brands fa-instagram"></i> Instagram</a></li>
@@ -64,7 +65,7 @@
                    </div>
                 </div>
                 <div class="col-lg-3">
-                   <div class="tp-rounded-btn-wrap tp-footer-btn text-lg-end mb-40 tp_fade_anim">
+                   <div class="tp-rounded-btn-wrap tp-footer-btn text-lg-end mb-40">
                       <div class="btn_wrapper d-inline-block">
                          <NuxtLink to="/ubicaciones" class="tp-btn-rounded btn-item">
                             <span class="d-block mb-10">
@@ -85,7 +86,7 @@
           <div class="container">
              <div class="row">
                 <div class="col-lg-5 col-md-6">
-                   <div class="tp-footer-widget mb-45 tp_fade_anim">
+                   <div class="tp-footer-widget mb-45">
                       <div class="tp-footer-logo mb-25">
                          <img data-width="140" src="/assets/img/IECS-IEDIS IMAGES/IMAGOTIPO-IECS-IEDIS-23-24.webp" alt="" style="width: 140px;">
                       </div>
@@ -98,13 +99,13 @@
                 <div class="col-lg-7">
                    <div class="row">
                       <div class="col-lg-7 col-md-6 col-sm-6">
-                         <div class="tp-footer-widget mb-60 tp_fade_anim">
+                         <div class="tp-footer-widget mb-60">
                             <h3 class="tp-footer-widget-title tp-ff-heading fs-25 mb-15 text-uppercase tp-text-common-white">Campus Toluca / Ocoyoacac / Calimaya</h3>
                             <a class="fw-500 fs-18 tp-text-grey-2 lh-28 hover-text-white" href="https://wa.me/message/PI6TZB36CIWYD1">Llamada / Whatsapp:<br>722 572 5729</a>
                          </div>
                       </div>
                       <div class="col-lg-5 col-md-6 col-sm-6">
-                         <div class="tp-footer-widget mb-60 tp_fade_anim">
+                         <div class="tp-footer-widget mb-60">
                             <h3 class="tp-footer-widget-title tp-ff-heading fs-25 mb-15 text-uppercase tp-text-common-white">Campus Metepec</h3>
                             <a class="fw-500 fs-18 tp-text-grey-2 lh-28 hover-text-white" href="https://wa.me/message/KBRAQHE4ITIRD1">Llamada /  Whatsapp:<br>722 109 5789</a>
                          </div>
