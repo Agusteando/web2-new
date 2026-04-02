@@ -39,13 +39,14 @@
                 <a href="https://youtu.be/cwX1iPY2kJE" target="_blank" class="iecs-hero-btn-video popup-video">
                    <span class="iecs-hero-play-icon">
                       <svg width="14" height="16" viewBox="0 0 15 18" fill="none" xmlns="http://www.w3.org/2000/svg">
-                     </svg>
+                         <path d="M15 9L0 17.6603L0 0.339745L15 9Z" fill="currentColor" />
+                      </svg>
                    </span>
                    <span class="iecs-hero-video-text">Descubre nuestros espacios</span>
                 </a>
              </div>
 
-             <img class="iecs-hero-ambassadors" src="/assets/img/IECS-IEDIS IMAGES/104X104-AMBASSADORS.svg" alt="">
+             <img class="iecs-hero-ambassadors" src="/assets/img/IECS-IEDIS IMAGES/104X104-AMBASSADORS.webp" alt="">
           </div>
 
           <!-- RIGHT COLUMN: VERTICAL CARD CLUSTER -->
@@ -391,7 +392,7 @@
                          </h2>
                          <div id="order__collapse_one" class="accordion-collapse collapse show" aria-labelledby="order_one" data-bs-parent="#general_faqaccordion">
                             <div class="accordion-body tp-faq-details-para">
-                               <p>Branding is the process of creating a unique identity for your business, <b>including visuals, messaging, and positioning.</b> It helps build trust, recognition.</p>
+                               <p>El proceso de inscripción está diseñado para ser sencillo y transparente. Inicia agendando una visita guiada en el campus de tu interés para conocer nuestras instalaciones y modelo educativo. Posteriormente, se programa una evaluación diagnóstica (a partir de nivel Primaria) y una entrevista con coordinación. Una vez aprobada, se procede con la entrega de documentación y pago de inscripción.</p>
                             </div>
                          </div>
                       </div>
@@ -404,7 +405,7 @@
                          </h2>
                          <div id="order__collapse_two" class="accordion-collapse collapse" aria-labelledby="order_two" data-bs-parent="#general_faqaccordion">
                             <div class="accordion-body tp-faq-details-para">
-                               <p>Branding is the process of creating a unique identity for your business, <b>including visuals, messaging, and positioning.</b> It helps build trust, recognition.</p>
+                               <p>Nuestro colegio se enorgullece de ofrecer un modelo bicultural en Preescolar, destinando la mitad de la jornada al idioma inglés y la otra al español. En Primaria y Secundaria, llevamos un programa intensivo apoyado por la metodología del Sistema UNOi, culminando con certificaciones internacionales oficiales de Cambridge Assessment English.</p>
                             </div>
                          </div>
                       </div>
@@ -417,7 +418,7 @@
                          </h2>
                          <div id="order__collapse_three" class="accordion-collapse collapse" aria-labelledby="order_three" data-bs-parent="#general_faqaccordion">
                             <div class="accordion-body tp-faq-details-para">
-                               <p>Branding is the process of creating a unique identity for your business, <b>including visuals, messaging, and positioning.</b> It helps build trust, recognition.</p>
+                               <p>Contamos con 6 planteles ubicados estratégicamente para brindar la mejor cobertura en el Valle de Toluca. Puedes encontrarnos en San Mateo Oxtotitlán (Toluca), San José La Pila y San Mateo (Metepec), Ocoyoacac y Calimaya. Cada campus ofrece instalaciones diseñadas específicamente para las necesidades de cada nivel educativo.</p>
                             </div>
                          </div>
                       </div>
