@@ -1,4 +1,3 @@
-
 import { randomUUID, timingSafeEqual } from "node:crypto";
 import type { H3Event } from "h3";
 import { createError, getCookie, getRequestURL, readBody, setCookie, setHeader } from "h3";
@@ -27,11 +26,6 @@ function normalizeEnvBoolean(raw: string | undefined | null): "true" | "false" |
 
 /**
  * Hard env-based kill switch legacy helper.
- *
- * Actualmente NO se usa en el motor de decisión; el kill switch efectivo
- * es exclusivamente el flag global_ads_enabled controlado desde /ads.
- * Se mantiene como utilidad opcional por si en el futuro se requiere un
- * override de emergencia a nivel infraestructura.
  */
 export function isEnvAdsHardDisabled(): boolean {
   const raw =
@@ -45,10 +39,8 @@ export function isEnvAdsHardDisabled(): boolean {
 
 /**
  * Legacy helper for ENABLE_INDEX_ADS / NUXT_ENABLE_INDEX_ADS.
- * No se usa en el nuevo motor, se conserva para compatibilidad.
  */
 export function isIndexAdsEnabled(runtimeConfig?: NitroRuntimeConfig): boolean {
-  // Prefer explicit runtime config if present.
   // @ts-expect-error runtimeConfig may or may not expose public.enableIndexAds
   const cfgValue = runtimeConfig?.public?.enableIndexAds as unknown;
 
@@ -73,7 +65,6 @@ function getCookieDomainForEvent(event: H3Event): string | undefined {
     return ".casitaiedis.edu.mx";
   }
 
-  // For localhost, previews, etc., fall back to host-only cookies.
   return undefined;
 }
 
@@ -105,8 +96,7 @@ function parseBooleanCookie(raw: string | undefined | null): boolean {
 }
 
 /**
- * Timing-safe string comparison to avoid trivial timing attacks
- * against the Basic Auth credentials.
+ * Timing-safe string comparison to avoid trivial timing attacks.
  */
 function safeEqual(a: string, b: string): boolean {
   const aBuf = Buffer.from(a);
@@ -125,13 +115,6 @@ function safeEqual(a: string, b: string): boolean {
 
 /**
  * Normalize an IP string so IPv6 loopback / IPv4-mapped / "ip:port" collapse cleanly.
- *
- * Examples:
- *   "::1"                    -> "127.0.0.1"
- *   "::ffff:127.0.0.1"       -> "127.0.0.1"
- *   "148.230.251.169:61540"  -> "148.230.251.169"
- *   "148.230.251.169"        -> "148.230.251.169"
- *   "::ffff:148.230.251.169" -> "148.230.251.169"
  */
 function normalizeIp(raw: string | undefined | null): string {
   if (!raw) return "";
@@ -145,22 +128,17 @@ function normalizeIp(raw: string | undefined | null): string {
     ip = ip.slice("::ffff:".length);
   }
 
-  // Strip ":port" for IPv4-style strings (whether they came from remoteAddress or env).
-  // Matches:
-  //   1.2.3.4
-  //   1.2.3.4:1234
   const ipv4WithOptionalPort = /^(\d{1,3}(?:\.\d{1,3}){3})(?::\d+)?$/;
   const m = ip.match(ipv4WithOptionalPort);
   if (m) {
     return m[1];
   }
 
-  // For non-IPv4 forms (plain IPv6, etc.), just return as-is.
   return ip;
 }
 
 /**
- * Extract the client IP (considering X-Forwarded-For) and normalize it.
+ * Extract the client IP.
  */
 function getClientIp(event: H3Event): string {
   const xff = event.node.req.headers["x-forwarded-for"];
@@ -201,7 +179,6 @@ export async function getOrCreateVisitorContext(event: H3Event): Promise<Visitor
   }
 
   if (!userSegment) {
-    // No prior segmentation: treat as ORGANIC, never logged in.
     userSegment = "organic";
     adsSuppressed = false;
     lastLoginType = "none";
@@ -220,7 +197,7 @@ export async function getOrCreateVisitorContext(event: H3Event): Promise<Visitor
       secure,
       sameSite: "lax" as const,
       domain,
-      maxAge: 60 * 60 * 24 * 365, // one year
+      maxAge: 60 * 60 * 24 * 365,
     };
 
     setCookie(event, COOKIE_VISITOR_ID, visitorId, cookieOptions);
@@ -252,23 +229,14 @@ export async function getOrCreateVisitorContext(event: H3Event): Promise<Visitor
 
 /**
  * Core ad decision engine.
- *
- * - Respeta un bloqueo duro por cookie ads_suppressed=true (opt-out individual).
- * - Después aplica la matriz de toggles por segmento definida en ad_config
- *   (incluye internal y premium).
- * - No hay rollout porcentual: si el segmento está habilitado, la visita es
- *   elegible al 100%.
- * - adsRendered aplica además únicamente el kill switch global (global_ads_enabled).
  */
 export function computeAdDecision(visitor: VisitorContext, config: AdConfigRow): AdDecisionResult {
   const segment: UserSegment = visitor.userSegment;
 
-  // Bloqueo duro por cookie (por ejemplo, opt-out individual).
   if (visitor.adsSuppressed === true) {
     return { adsEligible: false, adsRendered: false };
   }
 
-  // Matriz de toggles por segmento (incluye internal y premium).
   let segmentAllowed = false;
   switch (segment) {
     case "internal":
@@ -292,12 +260,8 @@ export function computeAdDecision(visitor: VisitorContext, config: AdConfigRow):
     return { adsEligible: false, adsRendered: false };
   }
 
-  // Sin rollout porcentual: todo visitante del segmento habilitado es elegible.
   const adsEligible = true;
-
-  // Kill switch global: controlado exclusivamente desde /ads (ad_config.global_ads_enabled).
   const globalEnabled = config.global_ads_enabled === 1;
-
   const adsRendered = adsEligible && globalEnabled;
 
   return { adsEligible, adsRendered };
@@ -318,20 +282,16 @@ export async function evaluateAdsForEvent(event: H3Event): Promise<{
   const visitor = await getOrCreateVisitorContext(event);
   const config = await getAdConfig();
   const decision = computeAdDecision(visitor, config);
+  const routePath = getRequestURL(event).pathname;
 
   if (debug) {
     // eslint-disable-next-line no-console
     console.log("[ads] Decision", {
       visitorId: visitor.visitorId,
       userSegment: visitor.userSegment,
-      adsSuppressed: visitor.adsSuppressed,
-      global_ads_enabled: config.global_ads_enabled,
-      ads_for_internal: config.ads_for_internal,
-      ads_for_premium: config.ads_for_premium,
-      ads_for_daycare: config.ads_for_daycare,
-      ads_for_organic: config.ads_for_organic,
       adsEligible: decision.adsEligible,
       adsRendered: decision.adsRendered,
+      route: routePath
     });
   }
 
@@ -341,6 +301,7 @@ export async function evaluateAdsForEvent(event: H3Event): Promise<{
       userSegment: visitor.userSegment,
       adsEligible: decision.adsEligible,
       adsRendered: decision.adsRendered,
+      route: routePath
     });
   } catch (err) {
     if (debug) {
@@ -360,7 +321,6 @@ export function assertAdsDashboardAccess(event: H3Event): void {
     (process.env.DEBUG_LEGACY ?? "").toLowerCase() === "1" ||
     (process.env.DEBUG_LEGACY ?? "").toLowerCase() === "true";
 
-  // 1) IP allowlist
   const allowListRaw = process.env.ADS_DASHBOARD_IP_ALLOWLIST ?? "";
   const allowList = allowListRaw
     .split(",")
@@ -374,19 +334,14 @@ export function assertAdsDashboardAccess(event: H3Event): void {
   if (!ipAllowed) {
     if (debug) {
       // eslint-disable-next-line no-console
-      console.warn("[ads] Dashboard access denied by IP gate", {
-        clientIp,
-        allowList,
-      });
+      console.warn("[ads] Dashboard access denied by IP gate", { clientIp, allowList });
     }
-
     throw createError({
       statusCode: 403,
       statusMessage: "Forbidden: Ads dashboard is internal only",
     });
   }
 
-  // 2) HTTP Basic Auth (always required once IP passes)
   const envUser =
     process.env.ADS_DASHBOARD_BASIC_USER ??
     process.env.NUXT_ADS_DASHBOARD_BASIC_USER ??
@@ -403,11 +358,8 @@ export function assertAdsDashboardAccess(event: H3Event): void {
   if (!basicConfigured) {
     if (debug) {
       // eslint-disable-next-line no-console
-      console.warn("[ads] Dashboard Basic Auth not configured; denying access", {
-        clientIp,
-      });
+      console.warn("[ads] Dashboard Basic Auth not configured; denying access", { clientIp });
     }
-
     throw createError({
       statusCode: 403,
       statusMessage: "Forbidden: Ads dashboard is internal only",
@@ -432,9 +384,7 @@ export function assertAdsDashboardAccess(event: H3Event): void {
   if (!authHeader || !authHeader.toString().startsWith("Basic ")) {
     if (debug) {
       // eslint-disable-next-line no-console
-      console.warn("[ads] Dashboard Basic Auth missing or malformed Authorization header", {
-        clientIp,
-      });
+      console.warn("[ads] Dashboard Basic Auth missing or malformed Authorization header", { clientIp });
     }
     challenge();
   }
@@ -446,9 +396,7 @@ export function assertAdsDashboardAccess(event: H3Event): void {
   } catch {
     if (debug) {
       // eslint-disable-next-line no-console
-      console.warn("[ads] Dashboard Basic Auth header could not be base64-decoded", {
-        clientIp,
-      });
+      console.warn("[ads] Dashboard Basic Auth header could not be base64-decoded", { clientIp });
     }
     challenge();
   }
@@ -463,27 +411,19 @@ export function assertAdsDashboardAccess(event: H3Event): void {
   if (!okUser || !okPass) {
     if (debug) {
       // eslint-disable-next-line no-console
-      console.warn("[ads] Dashboard Basic Auth invalid credentials", {
-        user,
-        clientIp,
-      });
+      console.warn("[ads] Dashboard Basic Auth invalid credentials", { user, clientIp });
     }
     challenge();
   }
 
   if (debug) {
     // eslint-disable-next-line no-console
-    console.log("[ads] Dashboard access granted via IP + HTTP Basic Auth", {
-      user,
-      clientIp,
-    });
+    console.log("[ads] Dashboard access granted via IP + HTTP Basic Auth", { user, clientIp });
   }
 }
 
 /**
  * Helper for the INTERNAL login flow (/login, Google OAuth).
- *
- * Ahora ya no fuerza ads_suppressed=true; el control se hace vía /ads.
  */
 export function applyInternalLoginCookies(event: H3Event): VisitorContext {
   const domain = getCookieDomainForEvent(event);
@@ -505,7 +445,6 @@ export function applyInternalLoginCookies(event: H3Event): VisitorContext {
 
   setCookie(event, COOKIE_VISITOR_ID, visitorId, cookieOptions);
   setCookie(event, COOKIE_USER_SEGMENT, "internal", cookieOptions);
-  // Por defecto, no suprimimos anuncios: se controla con ads_for_internal en /ads.
   setCookie(event, COOKIE_ADS_SUPPRESSED, "false", cookieOptions);
   setCookie(event, COOKIE_LAST_LOGIN_TYPE, "google", cookieOptions);
 
@@ -519,9 +458,6 @@ export function applyInternalLoginCookies(event: H3Event): VisitorContext {
 
 /**
  * Helper for the PHP parent login flow (login.php).
- *
- * PREMIUM y DAYCARE se segmentan por longitud de usuario, pero la
- * exposición a anuncios se controla siempre desde ad_config.
  */
 export async function applyPhpLoginCookiesForUsername(
   event: H3Event,
@@ -538,7 +474,6 @@ export async function applyPhpLoginCookiesForUsername(
   const isPremium = username.length === 6;
   const userSegment: UserSegment = isPremium ? "premium" : "daycare";
 
-  // No suprimimos anuncios por cookie; se controla desde /ads por segmento.
   const adsSuppressed = false;
 
   const cookieOptions = {

@@ -10,59 +10,79 @@
             Panel de control
           </span>
           <h1 class="page-title">Monetización</h1>
-          <p class="page-subtitle">Gestiona la visibilidad de anuncios de forma global y por audiencias.</p>
+          <p class="page-subtitle">Visibilidad operativa, métricas de tráfico y control de anuncios.</p>
         </div>
         
-        <!-- Refined Stats Strip -->
-        <div class="stats-strip">
-          <div class="stat-item">
-            <span class="stat-value">{{ stats.totalVisits }}</span>
-            <span class="stat-label">Visitas totales</span>
-          </div>
-          <div class="stat-divider"></div>
-          <div class="stat-item">
-            <span class="stat-value">{{ stats.totalEligible }}</span>
-            <span class="stat-label">Elegibles</span>
-          </div>
-          <div class="stat-divider"></div>
-          <div class="stat-item">
-            <span class="stat-value">{{ stats.totalRendered }}</span>
-            <span class="stat-label">Anuncios mostrados</span>
-          </div>
+        <!-- Date Filters -->
+        <div class="time-filters">
+          <button @click="setFilter('today')" :class="{ active: currentFilter === 'today' }">Hoy</button>
+          <button @click="setFilter('7d')" :class="{ active: currentFilter === '7d' }">Últimos 7 días</button>
+          <button @click="setFilter('30d')" :class="{ active: currentFilter === '30d' }">Últimos 30 días</button>
+          <button @click="setFilter('all')" :class="{ active: currentFilter === 'all' }">Histórico</button>
         </div>
       </header>
 
-      <div class="sections-layout">
-        
-        <!-- Master Control (Kill Switch) -->
-        <section class="dashboard-section">
-          <label class="master-control-card" :class="{ 'is-active': config.global_ads_enabled }">
-            <div class="master-control-info">
-              <h2 class="section-title">Control Maestro</h2>
-              <p class="section-desc">Activa o detiene la monetización en todo el sitio web al instante.</p>
-            </div>
-            <div class="custom-toggle">
-              <input type="checkbox" v-model="config.global_ads_enabled" class="hidden-input" />
-              <div class="toggle-track">
-                <div class="toggle-thumb"></div>
-              </div>
-            </div>
-          </label>
-        </section>
-
-        <!-- Audiences (Segments) -->
-        <section class="dashboard-section">
-          <div class="section-header">
-            <h2 class="section-title">Audiencias</h2>
-            <p class="section-desc">Selecciona qué grupos de usuarios podrán ver anuncios cuando el control maestro esté activo.</p>
+      <!-- Top Metrics -->
+      <div class="metrics-grid">
+        <div class="metric-card">
+          <span class="metric-label">Visitas del Periodo</span>
+          <div class="metric-value-row">
+            <span class="metric-value">{{ stats.totalVisits || 0 }}</span>
+            <span class="metric-trend" v-if="stats.todayVisits && currentFilter !== 'today'">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"></polyline><polyline points="16 7 22 7 22 13"></polyline></svg>
+              +{{ stats.todayVisits }} hoy
+            </span>
           </div>
-          
-          <div class="segments-grid">
-            <label v-for="seg in segmentDefs" :key="seg.key" class="segment-card" :class="{ 'is-active': config[seg.inputName] }">
-              <div class="segment-header">
-                <div class="segment-title-group">
+        </div>
+        <div class="metric-card">
+          <span class="metric-label">Tráfico Elegible</span>
+          <div class="metric-value-row">
+            <span class="metric-value">{{ stats.totalEligible || 0 }}</span>
+          </div>
+        </div>
+        <div class="metric-card highlight-card">
+          <span class="metric-label">Anuncios Mostrados</span>
+          <div class="metric-value-row">
+            <span class="metric-value">{{ stats.totalRendered || 0 }}</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="dashboard-layout">
+        
+        <!-- Left Column: Controls -->
+        <div class="control-column">
+          <!-- Master Control (Kill Switch) -->
+          <section class="dashboard-section">
+            <label class="master-control-card" :class="{ 'is-active': config.global_ads_enabled }">
+              <div class="master-control-info">
+                <h2 class="section-title">Control Maestro</h2>
+                <p class="section-desc">Activa o detiene la monetización en todo el sitio web al instante.</p>
+              </div>
+              <div class="custom-toggle">
+                <input type="checkbox" v-model="config.global_ads_enabled" class="hidden-input" />
+                <div class="toggle-track">
+                  <div class="toggle-thumb"></div>
+                </div>
+              </div>
+            </label>
+          </section>
+
+          <!-- Audiences (Segments) -->
+          <section class="dashboard-section">
+            <div class="section-header">
+              <h2 class="section-title">Audiencias Activas</h2>
+              <p class="section-desc">Selecciona qué grupos de usuarios verán anuncios si el control maestro está activo.</p>
+            </div>
+            
+            <div class="segments-list">
+              <label v-for="seg in segmentDefs" :key="seg.key" class="segment-row" :class="{ 'is-active': config[seg.inputName] }">
+                <div class="segment-info">
                   <span class="segment-name">{{ seg.label }}</span>
-                  <span class="segment-desc">{{ seg.description }}</span>
+                  <div class="segment-mini-metrics">
+                    <span title="Visitas">👁 {{ getSegmentStat(seg.key, 'visits') }}</span>
+                    <span title="Mostrados">✦ {{ getSegmentStat(seg.key, 'rendered') }}</span>
+                  </div>
                 </div>
                 <div class="custom-toggle small-toggle">
                   <input type="checkbox" v-model="config[seg.inputName]" class="hidden-input" />
@@ -70,31 +90,48 @@
                     <div class="toggle-thumb"></div>
                   </div>
                 </div>
+              </label>
+            </div>
+          </section>
+
+          <!-- Actions Footer -->
+          <section class="action-footer">
+            <div class="presets-group">
+              <button class="btn-preset" @click="applyPreset('daycare-only')">Solo Guardería</button>
+              <button class="btn-preset" @click="applyPreset('all-segments')">Activar todos</button>
+            </div>
+            
+            <button class="btn-primary" @click="saveChanges" :disabled="isSaving">
+              <svg v-if="isSaving" class="spinner" viewBox="0 0 24 24"><circle class="path" cx="12" cy="12" r="10" fill="none" stroke-width="4"></circle></svg>
+              <span v-else>Guardar Cambios</span>
+            </button>
+          </section>
+        </div>
+
+        <!-- Right Column: Insights & Routes -->
+        <div class="insights-column">
+          <section class="dashboard-section h-100">
+            <div class="routes-card">
+              <div class="section-header mb-4">
+                <h2 class="section-title">Rutas Más Visitadas</h2>
+                <p class="section-desc">Actividad de tráfico detallada durante el periodo seleccionado.</p>
               </div>
               
-              <div class="segment-metrics">
-                <div class="s-metric"><span>Visitas</span><strong>{{ getSegmentStat(seg.key, 'visits') }}</strong></div>
-                <div class="s-metric"><span>Elegibles</span><strong>{{ getSegmentStat(seg.key, 'eligible') }}</strong></div>
-                <div class="s-metric"><span>Mostrados</span><strong>{{ getSegmentStat(seg.key, 'rendered') }}</strong></div>
+              <div class="route-list">
+                <div v-if="!stats.topRoutes || stats.topRoutes.length === 0" class="empty-routes">
+                  No hay datos de rutas disponibles para este periodo.
+                </div>
+                <div v-else v-for="(r, idx) in stats.topRoutes" :key="idx" class="route-item">
+                  <span class="route-path">{{ r.route }}</span>
+                  <div class="route-badges">
+                    <span class="r-badge r-visits">{{ r.visits }} hits</span>
+                    <span class="r-badge r-rendered" v-if="r.rendered > 0">{{ r.rendered }} ads</span>
+                  </div>
+                </div>
               </div>
-            </label>
-          </div>
-        </section>
-
-        <!-- Actions Footer -->
-        <section class="action-footer">
-          <div class="presets-group">
-            <span class="presets-label">Acciones rápidas:</span>
-            <button class="btn-preset" @click="applyPreset('daycare-only')">Solo Guardería</button>
-            <button class="btn-preset" @click="applyPreset('daycare-organic')">Guardería + Orgánico</button>
-            <button class="btn-preset" @click="applyPreset('all-segments')">Activar todos</button>
-          </div>
-          
-          <button class="btn-primary" @click="saveChanges" :disabled="isSaving">
-            <svg v-if="isSaving" class="spinner" viewBox="0 0 24 24"><circle class="path" cx="12" cy="12" r="10" fill="none" stroke-width="4"></circle></svg>
-            <span v-else>Guardar Cambios</span>
-          </button>
-        </section>
+            </div>
+          </section>
+        </div>
 
       </div>
     </div>
@@ -110,8 +147,9 @@
 import { ref, watchEffect } from 'vue'
 
 const headers = useRequestHeaders(['authorization'])
+const currentFilter = ref('30d')
 
-const { data, refresh } = await useFetch('/api/ads/dashboard', { headers })
+const { data, refresh } = await useFetch(() => `/api/ads/dashboard?filter=${currentFilter.value}`, { headers })
 
 const config = ref({
   global_ads_enabled: false,
@@ -125,7 +163,9 @@ const stats = ref({
   totalVisits: 0,
   totalEligible: 0,
   totalRendered: 0,
-  bySegment: []
+  todayVisits: 0,
+  bySegment: [],
+  topRoutes: []
 })
 
 watchEffect(() => {
@@ -143,11 +183,16 @@ watchEffect(() => {
   }
 })
 
+const setFilter = async (f) => {
+  currentFilter.value = f
+  await refresh()
+}
+
 const segmentDefs = [
-  { key: 'daycare', inputName: 'ads_for_daycare', label: 'Guardería', description: 'Padres y madres con cuentas de nivel inicial.' },
-  { key: 'organic', inputName: 'ads_for_organic', label: 'Tráfico Orgánico', description: 'Visitantes públicos y prospectos sin cuenta activa.' },
-  { key: 'premium', inputName: 'ads_for_premium', label: 'Familias Particulares', description: 'Usuarios matriculados en niveles superiores.' },
-  { key: 'internal', inputName: 'ads_for_internal', label: 'Staff Interno', description: 'Personal administrativo (Login Google).' }
+  { key: 'daycare', inputName: 'ads_for_daycare', label: 'Guardería' },
+  { key: 'organic', inputName: 'ads_for_organic', label: 'Tráfico Orgánico' },
+  { key: 'premium', inputName: 'ads_for_premium', label: 'Familias Particulares' },
+  { key: 'internal', inputName: 'ads_for_internal', label: 'Staff Interno' }
 ]
 
 const getSegmentStat = (key, metric) => {
@@ -161,10 +206,6 @@ const applyPreset = (preset) => {
   
   if (preset === 'daycare-only') {
     config.value.ads_for_organic = false
-    config.value.ads_for_premium = false
-    config.value.ads_for_internal = false
-  } else if (preset === 'daycare-organic') {
-    config.value.ads_for_organic = true
     config.value.ads_for_premium = false
     config.value.ads_for_internal = false
   } else if (preset === 'all-segments') {
@@ -203,19 +244,11 @@ useHead({
 </script>
 
 <style scoped>
-/* 
-  =============================================================
-  ELEVATED BRAND UI
-  Soft, light-only, minimal cognitive load. Matches main website
-  typography (Fredoka + Montserrat) and color palette.
-  =============================================================
-*/
-
 @import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Montserrat:wght@400;500;600;700&display=swap');
 
 .ads-dashboard-wrapper {
   min-height: 100vh;
-  background-color: #f4fbfc; /* Soft brand cyan tint matching hero fallback */
+  background-color: #f8fafc; /* Lighter, cleaner background */
   color: #141414;
   font-family: 'Montserrat', sans-serif;
   padding: 4rem 1.5rem;
@@ -223,11 +256,11 @@ useHead({
 }
 
 .page-container {
-  max-width: 64rem;
+  max-width: 72rem;
   margin: 0 auto;
   display: flex;
   flex-direction: column;
-  gap: 2.5rem;
+  gap: 2rem;
 }
 
 /* Header & Typography */
@@ -258,7 +291,7 @@ useHead({
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  color: #618B2F; /* Brand Green */
+  color: #618B2F;
   margin-bottom: 1.25rem;
 }
 
@@ -291,74 +324,134 @@ useHead({
 }
 
 .page-subtitle {
-  color: #555555;
-  font-size: 1.1rem;
+  color: #6b7280;
+  font-size: 1.05rem;
   line-height: 1.5;
   margin: 0;
 }
 
+/* Time Filters */
+.time-filters {
+  display: flex;
+  background: #ffffff;
+  padding: 6px;
+  border-radius: 12px;
+  gap: 6px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.02);
+  flex-wrap: wrap;
+}
+
+.time-filters button {
+  background: transparent;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #6b7280;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.time-filters button.active {
+  background: #f1f5f9;
+  color: #141414;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.03);
+}
+
+.time-filters button:hover:not(.active) {
+  color: #141414;
+}
+
+/* Top Metrics */
+.metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1.5rem;
+}
+
+.metric-card {
+  background: #ffffff;
+  padding: 1.75rem 2rem;
+  border-radius: 20px;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.02);
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.metric-card.highlight-card {
+  background: #fdfefc;
+  border: 1px solid #dcfce7;
+}
+
+.metric-label {
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #6b7280;
+}
+
+.metric-value-row {
+  display: flex;
+  align-items: baseline;
+  gap: 1rem;
+}
+
+.metric-value {
+  font-family: 'Fredoka', sans-serif;
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #141414;
+  line-height: 1;
+}
+
+.metric-trend {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #16a34a;
+  background: #dcfce7;
+  padding: 4px 10px;
+  border-radius: 20px;
+}
+.metric-trend svg { width: 14px; height: 14px; }
+
+/* Dashboard Layout */
+.dashboard-layout {
+  display: grid;
+  grid-template-columns: 360px 1fr;
+  gap: 1.5rem;
+  align-items: start;
+}
+
+.dashboard-section {
+  margin-bottom: 1.5rem;
+}
+
+.section-header {
+  margin-bottom: 1.25rem;
+}
+
 .section-title {
   font-family: 'Fredoka', sans-serif;
-  font-size: 1.5rem;
+  font-size: 1.35rem;
   font-weight: 600;
   color: #141414;
   margin: 0 0 0.25rem;
 }
 
 .section-desc {
-  font-size: 0.95rem;
+  font-size: 0.9rem;
   color: #6b7280;
   margin: 0;
-}
-
-/* Stats Strip */
-.stats-strip {
-  display: flex;
-  align-items: center;
-  background: #ffffff;
-  padding: 1.25rem 2rem;
-  border-radius: 24px;
-  box-shadow: 0 10px 40px rgba(0,0,0,0.04);
-  gap: 2rem;
-}
-
-.stat-item {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-}
-
-.stat-value {
-  font-family: 'Fredoka', sans-serif;
-  font-size: 1.75rem;
-  font-weight: 700;
-  color: #141414;
-  line-height: 1.2;
-}
-
-.stat-label {
-  font-size: 0.75rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: #6b7280;
-}
-
-.stat-divider {
-  width: 1px;
-  height: 2.5rem;
-  background-color: #f0f0f0;
-}
-
-/* Layout */
-.sections-layout {
-  display: flex;
-  flex-direction: column;
-  gap: 2rem;
-}
-
-.section-header {
-  margin-bottom: 1.25rem;
+  line-height: 1.4;
 }
 
 /* Master Control Card */
@@ -367,9 +460,9 @@ useHead({
   justify-content: space-between;
   align-items: center;
   background: #ffffff;
-  padding: 2rem 2.5rem;
-  border-radius: 24px;
-  box-shadow: 0 10px 40px rgba(0,0,0,0.04);
+  padding: 1.75rem;
+  border-radius: 20px;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.02);
   cursor: pointer;
   transition: all 0.3s ease;
   border: 2px solid transparent;
@@ -377,7 +470,7 @@ useHead({
 
 .master-control-card:hover {
   transform: translateY(-2px);
-  box-shadow: 0 15px 40px rgba(0,0,0,0.06);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.04);
 }
 
 .master-control-card.is-active {
@@ -389,89 +482,130 @@ useHead({
   display: flex;
   flex-direction: column;
   gap: 0.25rem;
+  max-width: 220px;
 }
 
-/* Segments Grid */
-.segments-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: 1.25rem;
-}
-
-.segment-card {
+/* Audiences List */
+.segments-list {
   display: flex;
   flex-direction: column;
+  gap: 0.5rem;
+}
+
+.segment-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   background: #ffffff;
-  padding: 1.75rem;
-  border-radius: 24px;
-  box-shadow: 0 6px 20px rgba(0,0,0,0.03);
+  padding: 1rem 1.25rem;
+  border-radius: 16px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.01);
   cursor: pointer;
-  transition: all 0.3s ease;
-  border: 2px solid transparent;
+  transition: all 0.2s ease;
+  border: 1px solid transparent;
 }
 
-.segment-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 12px 30px rgba(0,0,0,0.05);
+.segment-row:hover {
+  border-color: #e2e8f0;
 }
 
-.segment-card.is-active {
+.segment-row.is-active {
   background: #fdfefc;
-  border-color: #e0f2fe; /* Soft blue/cyan hint from the brand */
+  border-color: #e0f2fe;
 }
 
-.segment-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  margin-bottom: 1.5rem;
-  gap: 1rem;
-}
-
-.segment-title-group {
-  display: flex;
-  flex-direction: column;
-  gap: 0.35rem;
-}
-
-.segment-name {
-  font-family: 'Fredoka', sans-serif;
-  font-size: 1.25rem;
-  font-weight: 600;
-  color: #141414;
-}
-
-.segment-desc {
-  font-size: 0.85rem;
-  color: #6b7280;
-  line-height: 1.4;
-}
-
-.segment-metrics {
-  display: flex;
-  justify-content: space-between;
-  padding-top: 1.25rem;
-  border-top: 1px solid #f3f4f6;
-}
-
-.s-metric {
+.segment-info {
   display: flex;
   flex-direction: column;
   gap: 0.2rem;
 }
 
-.s-metric span {
-  font-size: 0.7rem;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: #9ca3af;
+.segment-name {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #141414;
+}
+
+.segment-mini-metrics {
+  display: flex;
+  gap: 12px;
+  font-size: 0.75rem;
+  color: #94a3b8;
   font-weight: 600;
 }
 
-.s-metric strong {
-  font-size: 1.1rem;
+/* Route Insights */
+.routes-card {
+  background: #ffffff;
+  border-radius: 20px;
+  padding: 1.75rem;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.02);
+  height: 100%;
+}
+
+.route-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.route-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  border-bottom: 1px solid #f1f5f9;
+  transition: background 0.2s;
+  border-radius: 8px;
+}
+
+.route-item:hover {
+  background: #f8fafc;
+}
+
+.route-item:last-child {
+  border-bottom: none;
+}
+
+.route-path {
+  font-family: monospace;
+  font-size: 0.95rem;
+  color: #334155;
+  font-weight: 500;
+  word-break: break-all;
+  padding-right: 15px;
+}
+
+.route-badges {
+  display: flex;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.r-badge {
+  font-size: 0.75rem;
   font-weight: 700;
-  color: #141414;
+  padding: 4px 10px;
+  border-radius: 12px;
+  white-space: nowrap;
+}
+
+.r-visits {
+  background: #f1f5f9;
+  color: #475569;
+}
+
+.r-rendered {
+  background: #fef3c7;
+  color: #d97706;
+}
+
+.empty-routes {
+  padding: 3rem 1rem;
+  text-align: center;
+  color: #94a3b8;
+  font-size: 0.95rem;
+  font-style: italic;
 }
 
 /* Toggles */
@@ -488,8 +622,8 @@ useHead({
 }
 
 .toggle-track {
-  width: 4rem;
-  height: 2.25rem;
+  width: 3.5rem;
+  height: 2rem;
   background: #e5e7eb;
   border-radius: 999px;
   position: relative;
@@ -497,8 +631,8 @@ useHead({
 }
 
 .toggle-thumb {
-  width: 1.85rem;
-  height: 1.85rem;
+  width: 1.6rem;
+  height: 1.6rem;
   background: #ffffff;
   border-radius: 50%;
   position: absolute;
@@ -509,66 +643,58 @@ useHead({
 }
 
 input:checked + .toggle-track {
-  background: #618B2F; /* Brand Green */
+  background: #618B2F;
 }
 
 input:checked + .toggle-track .toggle-thumb {
-  transform: translateX(1.75rem);
+  transform: translateX(1.5rem);
 }
 
 .small-toggle .toggle-track {
-  width: 3rem;
-  height: 1.75rem;
+  width: 2.8rem;
+  height: 1.6rem;
 }
 
 .small-toggle .toggle-thumb {
-  width: 1.35rem;
-  height: 1.35rem;
+  width: 1.2rem;
+  height: 1.2rem;
 }
 
 .small-toggle input:checked + .toggle-track .toggle-thumb {
-  transform: translateX(1.25rem);
+  transform: translateX(1.2rem);
 }
 
 /* Actions Footer */
 .action-footer {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
+  flex-direction: column;
   background: #ffffff;
-  padding: 1.5rem 2.5rem;
-  border-radius: 24px;
-  box-shadow: 0 10px 40px rgba(0,0,0,0.04);
-  flex-wrap: wrap;
-  gap: 1.5rem;
-  margin-top: 1rem;
+  padding: 1.5rem;
+  border-radius: 20px;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.02);
+  gap: 1rem;
 }
 
 .presets-group {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
-  flex-wrap: wrap;
-}
-
-.presets-label {
-  font-size: 0.85rem;
-  font-weight: 600;
-  color: #6b7280;
-  margin-right: 0.5rem;
+  gap: 0.5rem;
+  width: 100%;
 }
 
 .btn-preset {
-  background: #f9fafb;
-  color: #4b5563;
-  border: 1px solid #e5e7eb;
-  padding: 0.5rem 1rem;
-  border-radius: 999px;
-  font-size: 0.85rem;
+  flex: 1;
+  background: #f8fafc;
+  color: #475569;
+  border: 1px solid #e2e8f0;
+  padding: 0.6rem 0.5rem;
+  border-radius: 12px;
+  font-size: 0.8rem;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s ease;
   font-family: 'Montserrat', sans-serif;
+  text-align: center;
 }
 
 .btn-preset:hover {
@@ -579,11 +705,11 @@ input:checked + .toggle-track .toggle-thumb {
 }
 
 .btn-primary {
-  background: #618B2F; /* Brand Green */
+  background: #618B2F;
   color: #ffffff;
   border: none;
-  padding: 1rem 2.5rem;
-  border-radius: 999px;
+  padding: 1rem;
+  border-radius: 12px;
   font-family: 'Montserrat', sans-serif;
   font-size: 1rem;
   font-weight: 700;
@@ -593,7 +719,7 @@ input:checked + .toggle-track .toggle-thumb {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-width: 200px;
+  width: 100%;
 }
 
 .btn-primary:hover:not(:disabled) {
@@ -658,19 +784,15 @@ input:checked + .toggle-track .toggle-thumb {
 
 /* Responsive */
 @media (max-width: 991px) {
+  .dashboard-layout { grid-template-columns: 1fr; }
   .page-header { flex-direction: column; align-items: stretch; gap: 1.5rem; }
   .header-titles { max-width: 100%; }
-  .stats-strip { justify-content: space-between; }
-  .action-footer { flex-direction: column; align-items: stretch; }
-  .presets-group { justify-content: center; }
 }
 
 @media (max-width: 575px) {
   .ads-dashboard-wrapper { padding: 2rem 1rem; }
   .master-control-card { flex-direction: column; align-items: flex-start; gap: 1.5rem; padding: 1.5rem; }
-  .stats-strip { flex-direction: column; gap: 1rem; align-items: center; text-align: center; }
-  .stat-divider { width: 100%; height: 1px; }
-  .action-footer { padding: 1.5rem; }
+  .metric-card { padding: 1.25rem 1.5rem; }
   .toast-notification { right: 1rem; left: 1rem; bottom: 1rem; justify-content: center; }
 }
 </style>

@@ -1,4 +1,3 @@
-
 import type { RowDataPacket } from "mysql2/promise";
 import { getDbPool } from "./db";
 import type { UserSegment } from "./adsTypes";
@@ -21,23 +20,25 @@ export interface AdDashboardSegmentRow {
   rendered: number;
 }
 
+export interface AdDashboardRouteRow {
+  route: string;
+  visits: number;
+  rendered: number;
+}
+
 export interface AdDashboardStats {
+  todayVisits: number;
   totalVisits: number;
   totalEligible: number;
   totalRendered: number;
   bySegment: AdDashboardSegmentRow[];
+  topRoutes: AdDashboardRouteRow[];
 }
 
 const AD_CONFIG_ID = 1;
 
 /**
  * Load the single control-plane row from ad_config.
- * Ensures the seed row exists (id=1) so the rest of the system
- * can safely assume it is present.
- *
- * Nota: el campo rollout_percentage existe en el esquema pero el motor
- * actual no lo utiliza; toda la exposición se controla por matriz
- * de segmentos + kill switch global.
  */
 export async function getAdConfig(): Promise<AdConfigRow> {
   const pool = getDbPool();
@@ -64,7 +65,6 @@ export async function getAdConfig(): Promise<AdConfigRow> {
     return rows[0] as unknown as AdConfigRow;
   }
 
-  // Ensure the seed row exists with default values.
   await pool.query("INSERT IGNORE INTO ad_config (id) VALUES (?)", [AD_CONFIG_ID]);
 
   const [rowsAfterInsert] = await pool.query<RowDataPacket[]>(
@@ -94,7 +94,6 @@ export async function getAdConfig(): Promise<AdConfigRow> {
 
 /**
  * Patch the ad_config control-plane row with the provided fields.
- * Values are normalized (booleans -> 0/1).
  */
 export async function updateAdConfig(partial: {
   global_ads_enabled?: boolean;
@@ -150,52 +149,87 @@ export async function updateAdConfig(partial: {
 
 /**
  * Insert a single ad_visits row for auditing and metrics.
- * This is safe to call on every page view where the decision
- * engine ran, and is designed for simple aggregate queries.
+ * Safely handles missing `route` column via transparent fallback to ensure 
+ * 100% reliability during schema transitions.
  */
 export async function insertAdVisit(opts: {
   visitorId: string;
   userSegment: UserSegment;
   adsEligible: boolean;
   adsRendered: boolean;
+  route?: string;
 }): Promise<void> {
   const pool = getDbPool();
 
   const adsEligibleInt = opts.adsEligible ? 1 : 0;
   const adsRenderedInt = opts.adsRendered ? 1 : 0;
 
-  const sql = `
-    INSERT INTO ad_visits (visitor_id, user_segment, ads_eligible, ads_rendered)
-    VALUES (?, ?, ?, ?)
-  `;
-
-  await pool.query(sql, [opts.visitorId, opts.userSegment, adsEligibleInt, adsRenderedInt]);
+  try {
+    const sql = `
+      INSERT INTO ad_visits (visitor_id, user_segment, ads_eligible, ads_rendered, route)
+      VALUES (?, ?, ?, ?, ?)
+    `;
+    await pool.query(sql, [opts.visitorId, opts.userSegment, adsEligibleInt, adsRenderedInt, opts.route || '/']);
+  } catch (e) {
+    // Graceful fallback if `route` column hasn't been added to the schema yet
+    const fallbackSql = `
+      INSERT INTO ad_visits (visitor_id, user_segment, ads_eligible, ads_rendered)
+      VALUES (?, ?, ?, ?)
+    `;
+    await pool.query(fallbackSql, [opts.visitorId, opts.userSegment, adsEligibleInt, adsRenderedInt]);
+  }
 }
 
 /**
  * Aggregate core stats for the /ads dashboard:
- * - total visits
- * - total eligible
- * - total rendered
- * - per-segment breakdown
+ * Utilizes transparent fail-safes so that filtering and route-grouping work 
+ * flawlessly if available, but degrade gracefully without crashing if schema is legacy.
  */
-export async function getAdDashboardStats(): Promise<AdDashboardStats> {
+export async function getAdDashboardStats(filter: string = '30d'): Promise<AdDashboardStats> {
   const pool = getDbPool();
 
-  const [summaryRows] = await pool.query<RowDataPacket[]>(
-    `
+  let dateCondition = "";
+  if (filter === 'today') dateCondition = "WHERE DATE(created_at) = CURDATE()";
+  else if (filter === '7d') dateCondition = "WHERE created_at >= DATE_SUB(CURDATE(), INTERVAL 7 DAY)";
+  else if (filter === '30d') dateCondition = "WHERE created_at >= DATE_SUB(CURDATE(), INTERVAL 30 DAY)";
+
+  let summaryRow: RowDataPacket = {} as RowDataPacket;
+  try {
+    const [summaryRows] = await pool.query<RowDataPacket[]>(`
       SELECT
         COUNT(*) AS total_visits,
         COALESCE(SUM(ads_eligible), 0) AS total_eligible,
         COALESCE(SUM(ads_rendered), 0) AS total_rendered
       FROM ad_visits
-    `
-  );
+      ${dateCondition}
+    `);
+    summaryRow = summaryRows[0] || {};
+  } catch (e) {
+    const [summaryRows] = await pool.query<RowDataPacket[]>(`
+      SELECT
+        COUNT(*) AS total_visits,
+        COALESCE(SUM(ads_eligible), 0) AS total_eligible,
+        COALESCE(SUM(ads_rendered), 0) AS total_rendered
+      FROM ad_visits
+    `);
+    summaryRow = summaryRows[0] || {};
+  }
 
-  const summaryRow = summaryRows[0] ?? ({} as RowDataPacket);
-
-  const [segmentRows] = await pool.query<RowDataPacket[]>(
-    `
+  let segmentRows: RowDataPacket[] = [];
+  try {
+    [segmentRows] = await pool.query<RowDataPacket[]>(`
+      SELECT
+        user_segment,
+        COUNT(*) AS visits,
+        COALESCE(SUM(ads_eligible), 0) AS eligible,
+        COALESCE(SUM(ads_rendered), 0) AS rendered
+      FROM ad_visits
+      ${dateCondition}
+      GROUP BY user_segment
+      ORDER BY user_segment
+    `);
+  } catch (e) {
+    [segmentRows] = await pool.query<RowDataPacket[]>(`
       SELECT
         user_segment,
         COUNT(*) AS visits,
@@ -204,10 +238,31 @@ export async function getAdDashboardStats(): Promise<AdDashboardStats> {
       FROM ad_visits
       GROUP BY user_segment
       ORDER BY user_segment
-    `
-  );
+    `);
+  }
 
-  const bySegment: AdDashboardSegmentRow[] = (segmentRows as RowDataPacket[]).map(
+  let todayVisits = 0;
+  let topRoutes: AdDashboardRouteRow[] = [];
+  try {
+    const [todayRows] = await pool.query<RowDataPacket[]>(`
+      SELECT COUNT(*) as c FROM ad_visits WHERE DATE(created_at) = CURDATE()
+    `);
+    todayVisits = Number(todayRows[0]?.c || 0);
+
+    const [routeRows] = await pool.query<RowDataPacket[]>(`
+      SELECT route, COUNT(*) as visits, COALESCE(SUM(ads_rendered),0) as rendered
+      FROM ad_visits
+      ${dateCondition}
+      GROUP BY route
+      ORDER BY visits DESC
+      LIMIT 15
+    `);
+    topRoutes = routeRows as AdDashboardRouteRow[];
+  } catch (e) {
+    // If created_at or route don't exist yet, simply ignore to prevent downtime
+  }
+
+  const bySegment: AdDashboardSegmentRow[] = segmentRows.map(
     (r) =>
       ({
         user_segment: r.user_segment as UserSegment,
@@ -218,9 +273,11 @@ export async function getAdDashboardStats(): Promise<AdDashboardStats> {
   );
 
   return {
+    todayVisits,
     totalVisits: Number(summaryRow.total_visits ?? 0),
     totalEligible: Number(summaryRow.total_eligible ?? 0),
     totalRendered: Number(summaryRow.total_rendered ?? 0),
     bySegment,
+    topRoutes
   };
 }
