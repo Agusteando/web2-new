@@ -22,7 +22,7 @@
                 <div class="position-relative">
                    <div style="width: 380px; height: 380px; background: rgba(255,255,255,0.05); border: 2px dashed rgba(255,255,255,0.2); border-radius: 50%; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); animation: spin-slow 20s linear infinite;"></div>
                    <div style="width: 320px; height: 320px; background: rgba(255,255,255,0.1); border-radius: 50%; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);"></div>
-                   <img src="/assets/img/IECS-IEDIS IMAGES/104X104-AMBASSADORS.webp" alt="Husky Mascot" style="width: 250px; position: relative; z-index: 2; animation: float 4s ease-in-out infinite;">
+                   <img src="/assets/img/IECS-IEDIS IMAGES/104X104-AMBASSADORS.svg" alt="Husky Mascot" style="width: 250px; position: relative; z-index: 2; animation: float 4s ease-in-out infinite;">
                 </div>
              </div>
           </div>

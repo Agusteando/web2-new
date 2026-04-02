@@ -39,14 +39,13 @@
                 <a href="https://youtu.be/cwX1iPY2kJE" target="_blank" class="iecs-hero-btn-video popup-video">
                    <span class="iecs-hero-play-icon">
                       <svg width="14" height="16" viewBox="0 0 15 18" fill="none" xmlns="http://www.w3.org/2000/svg">
-                         <path d="M15 9L0 17.6603L0 0.339745L15 9Z" fill="currentColor" />
-                      </svg>
+                     </svg>
                    </span>
                    <span class="iecs-hero-video-text">Descubre nuestros espacios</span>
                 </a>
              </div>
 
-             <img class="iecs-hero-ambassadors" src="/assets/img/IECS-IEDIS IMAGES/104X104-AMBASSADORS.webp" alt="">
+             <img class="iecs-hero-ambassadors" src="/assets/img/IECS-IEDIS IMAGES/104X104-AMBASSADORS.svg" alt="">
           </div>
 
           <!-- RIGHT COLUMN: VERTICAL CARD CLUSTER -->
