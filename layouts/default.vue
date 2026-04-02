@@ -1,3 +1,5 @@
+## layouts/default.vue
+
 <template>
   <div>
     <!-- Preloader manejado nativamente por main.js -->
@@ -47,14 +49,13 @@
     
     <SiteHeader />
     
-    <div id="smooth-wrapper">
-      <!-- 
-        Standard GSAP/ScrollSmoother smooth-content div.
-        Only inner pages receive top padding to prevent content from hiding behind the sticky header.
-        Home page is strictly excluded, ensuring the transparent hero layout functions perfectly
-        and preserving the intended vertical scroll boundaries.
-      -->
-      <div id="smooth-content" :class="{ 'inner-page-offset': route.path !== '/' }">
+    <!-- 
+      GSAP ScrollSmoother (smooth-wrapper/smooth-content) has been REMOVED.
+      This structurally restores natural browser vertical scrolling across all routes,
+      eliminating JS viewport locking and unintended nested scroll containers.
+    -->
+    <div class="iecs-layout-wrapper">
+      <div class="iecs-layout-content" :class="{ 'inner-page-offset': route.path !== '/' }">
         <slot />
         <SiteFooter />
       </div>
@@ -71,7 +72,8 @@ let resizeObserver = null
 let refreshTimer = null
 
 // Debounced GSAP Refresh function.
-// Forces ScrollSmoother and ScrollTrigger to recalculate the page height accurately.
+// Forces ScrollTrigger to recalculate parallax/reveal triggers accurately 
+// without hijacking the native scroll layout.
 const forceGsapRefresh = () => {
   if (import.meta.client && window.ScrollTrigger) {
     clearTimeout(refreshTimer)
@@ -83,16 +85,16 @@ const forceGsapRefresh = () => {
 
 onMounted(() => {
   if (import.meta.client) {
-    const smoothContent = document.getElementById('smooth-content')
+    const layoutContent = document.querySelector('.iecs-layout-content')
     
-    if (smoothContent) {
+    if (layoutContent) {
       // 1. Observe structural DOM changes (Vue swapping out page components)
       resizeObserver = new ResizeObserver(() => {
         forceGsapRefresh()
       })
-      resizeObserver.observe(smoothContent)
+      resizeObserver.observe(layoutContent)
       
-      // 2. Global image load listener to catch late layout shifts from slow images
+      // 2. Global image load listener to catch late layout shifts
       document.addEventListener('load', (e) => {
         if (e.target && e.target.tagName === 'IMG') {
           forceGsapRefresh()
@@ -105,13 +107,8 @@ onMounted(() => {
 // Ensures scroll position returns to top securely for SPAs
 watch(() => route.path, () => {
   if (import.meta.client) {
-    // Reset GSAP Smoother matrix translation specifically
-    if (window.ScrollSmoother) {
-      const smoother = window.ScrollSmoother.get()
-      if (smoother) smoother.scrollTop(0)
-    }
-    // Backup Native scroll reset
-    window.scrollTo(0, 0)
+    // Native scroll reset since GSAP ScrollSmoother is removed
+    window.scrollTo({ top: 0, left: 0, behavior: 'instant' })
     forceGsapRefresh()
   }
 })
@@ -123,6 +120,32 @@ onUnmounted(() => {
 </script>
 
 <style>
+/*
+  =========================================================
+  SCROLL RESTORATION & NATIVE FLOW
+  =========================================================
+  Forces natural browser scrolling, permanently disabling 
+  any JS-based viewport locking that traps the scroll or 
+  clips content.
+*/
+html, body {
+  height: auto;
+  min-height: 100%;
+}
+
+.iecs-layout-wrapper {
+  position: relative;
+  width: 100%;
+  overflow: visible;
+}
+
+.iecs-layout-content {
+  position: relative;
+  width: 100%;
+  overflow: visible;
+  display: block;
+}
+
 /* 
   Ensures inner pages securely clear the absolute header height without modifying 
   global HTML/body rules, preventing arbitrary horizontal scroll generation. 
@@ -130,8 +153,6 @@ onUnmounted(() => {
 .inner-page-offset {
   padding-top: 135px;
   min-height: 100vh;
-  /* IMPORTANTE: Removido display: flex para prevenir bugs de cálculo matemático 
-     de ScrollSmoother y ScrollTrigger causados por collapsing margins en flexbox */
 }
 
 @media (max-width: 1199px) {
