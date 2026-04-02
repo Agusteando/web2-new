@@ -63,8 +63,36 @@
 </template>
 
 <script setup>
+import { onMounted, onUnmounted } from 'vue'
 import { useRoute } from '#app'
+
 const route = useRoute()
+let resizeObserver = null
+
+onMounted(() => {
+  if (import.meta.client) {
+    const smoothContent = document.getElementById('smooth-content')
+    
+    if (smoothContent) {
+      // Bulletproof SPA Fix para GSAP ScrollSmoother:
+      // Monitorea continuamente la altura del DOM. Si Vue inyecta nuevas rutas 
+      // o imágenes cargan tarde alterando la altura, esto obliga a GSAP a recalcular 
+      // los límites de scroll instantáneamente para evitar bloqueos.
+      resizeObserver = new ResizeObserver(() => {
+        if (window.ScrollTrigger && typeof window.ScrollTrigger.refresh === 'function') {
+          window.ScrollTrigger.refresh()
+        }
+      })
+      resizeObserver.observe(smoothContent)
+    }
+  }
+})
+
+onUnmounted(() => {
+  if (resizeObserver) {
+    resizeObserver.disconnect()
+  }
+})
 </script>
 
 <style>
@@ -74,9 +102,9 @@ const route = useRoute()
 */
 .inner-page-offset {
   padding-top: 135px;
-  display: flex;
-  flex-direction: column;
   min-height: 100vh;
+  /* IMPORTANTE: Removido display: flex para prevenir bugs de cálculo matemático 
+     de ScrollSmoother y ScrollTrigger causados por collapsing margins en flexbox */
 }
 
 @media (max-width: 1199px) {
