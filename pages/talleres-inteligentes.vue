@@ -1,21 +1,20 @@
 <template>
   <main>
-    <!-- HERO SECTION -->
-    <div class="tp-faq-hero-area pre-header tp-faq-hero-spacing bg-position p-relative">
-       <div class="bg-position" data-background="/assets/img/IECS-IEDIS IMAGES/HERO-TALLERES.jpg" style="background-image: url('/assets/img/IECS-IEDIS IMAGES/HERO-TALLERES.jpg');">
-          <div class="container-fluid container-1524 containers">
-             <div class="row">
-                <div class="col-xl-12 col-lg-12 col-md-9">
-                   <div class="tp-faq-hero-title-wrap">
-                      <h2 class="tp-section-ai-title mb-45 fs-70 fs-xl-65 fs-lg-55 fs-sm-45 fs-xs-40 fw-600 ls-m-4 tp-ff-familjen mb-15 tp-text-common-white">Talleres<br> Inteligentes</h2>
-                      <div class="tp-breadcrumb-list tp-breadcrumb-2-list tp-breadcrumb-3-white pt-35">
-                         <ul>
-                            <li><NuxtLink to="/">Home</NuxtLink></li>
-                            <li><span></span></li>
-                            <li>Talleres Inteligentes</li>
-                         </ul>
-                      </div>
-                   </div>
+    <!-- HERO SECTION (Clean native flow: perfectly flush with the header offset, no negative margins, no legacy spacing classes) -->
+    <div class="p-relative z-index-1" style="background-image: url('/assets/img/IECS-IEDIS IMAGES/HERO-TALLERES.jpg'); background-size: cover; background-position: center;">
+       <!-- Overlay para garantizar contraste del texto -->
+       <div style="position: absolute; inset: 0; background: rgba(0,0,0,0.35); z-index: 0;"></div>
+       
+       <div class="container-fluid container-1524 containers position-relative z-index-1 pt-120 pb-100">
+          <div class="row">
+             <div class="col-xl-12 col-lg-12 col-md-9 text-center text-md-start">
+                <h2 class="tp-section-ai-title mb-20 fs-70 fs-xl-65 fs-lg-55 fs-sm-45 fs-xs-40 fw-600 ls-m-4 tp-ff-familjen tp-text-common-white tp_fade_anim" data-delay=".2">Talleres<br> Inteligentes</h2>
+                <div class="tp-breadcrumb-list tp-breadcrumb-2-list tp-breadcrumb-3-white tp_fade_anim" data-delay=".4">
+                   <ul>
+                      <li><NuxtLink to="/">Home</NuxtLink></li>
+                      <li><span></span></li>
+                      <li>Talleres Inteligentes</li>
+                   </ul>
                 </div>
              </div>
           </div>
@@ -23,7 +22,7 @@
     </div>
     
     <!-- ABOUT TALLERES SECTION -->
-    <div class="tp-about-area section-m-spacing p-relative z-index-1 pt-130 pb-70">
+    <div class="tp-about-area p-relative z-index-1 pt-100 pb-70">
        <div class="container">
           <div class="row">
              <div class="col-lg-12">
@@ -101,7 +100,7 @@
           <div class="row gx-15">
              
              <!-- Taller Card Dynamic Rendering -->
-             <div v-for="(taller, index) in talleres" :key="index" class="col-lg-3 col-md-6">
+             <div v-for="(taller, index) in talleres" :key="index" class="col-lg-3 col-md-6 tp_fade_anim" :data-delay="0.1 * (index % 4)">
                 <div class="tp-team-it-item mb-90" data-speed=".9" data-lag="0">
                    <img :src="taller.image" :alt="taller.name">
                    <div class="tp-team-it-content p-relative">
@@ -127,9 +126,9 @@
        <div class="container-fluid container-1524">
           <div class="row gx-15">
              <div class="col-lg-10">
-                <div class="tp-team-details-title mb-80">
+                <div class="tp-team-details-title mb-80 tp_fade_anim" data-delay=".3">
                    <h2 class="tp-section-ai-title fs-72 fs-xl-60 fs-lg-55 fs-sm-45 fs-xs-40 fw-600 ls-m-4 tp-ff-dm tp-text-common-black-6">Explora, elige y <br>  potencia su talento.</h2>
-                   <div class="tp-hero-md-btn d-flex align-items-center">
+                   <div class="tp-hero-md-btn d-flex align-items-center mt-30">
                         <NuxtLink to="/ubicaciones" class="tp-btn-md tp-bg-theme-1 tp-left-right p-relative hover-text-white d-inline-block tp-text-grey-5 lh-1 fs-16 fw-700 tp-ff-dm">
                             <span class="mr10 td-text d-inline-block mr-5">Consulta costos y horarios</span>
                             <span class="tp-arrow-angle">

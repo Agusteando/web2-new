@@ -37,29 +37,6 @@ export interface AdDashboardStats {
 }
 
 const AD_CONFIG_ID = 1;
-let _schemaEnsured = false;
-
-/**
- * Ensures the ad_visits table genuinely supports routing and date filtering.
- * Runs a safe, idempotent ALTER TABLE if the columns are missing.
- */
-async function ensureSchema() {
-  if (_schemaEnsured) return;
-  const pool = getDbPool();
-  try {
-    const [cols] = await pool.query<RowDataPacket[]>("SHOW COLUMNS FROM ad_visits LIKE 'route'");
-    if (cols.length === 0) {
-      await pool.query("ALTER TABLE ad_visits ADD COLUMN route VARCHAR(255) DEFAULT '/'");
-    }
-    const [colsTime] = await pool.query<RowDataPacket[]>("SHOW COLUMNS FROM ad_visits LIKE 'created_at'");
-    if (colsTime.length === 0) {
-      await pool.query("ALTER TABLE ad_visits ADD COLUMN created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP");
-    }
-    _schemaEnsured = true;
-  } catch (e) {
-    console.error("[adsDb] Warning: Could not verify/alter ad_visits schema. Analytics may degrade gracefully.", e);
-  }
-}
 
 /**
  * Load the single control-plane row from ad_config.
@@ -173,8 +150,6 @@ export async function updateAdConfig(partial: {
 
 /**
  * Insert a single ad_visits row for auditing and metrics.
- * Safely handles missing columns by wrapping in a try-catch, 
- * guaranteeing zero downtime if DB permissions block the auto-schema migration.
  */
 export async function insertAdVisit(opts: {
   visitorId: string;
@@ -183,116 +158,72 @@ export async function insertAdVisit(opts: {
   adsRendered: boolean;
   route?: string;
 }): Promise<void> {
-  await ensureSchema();
   const pool = getDbPool();
 
   const adsEligibleInt = opts.adsEligible ? 1 : 0;
   const adsRenderedInt = opts.adsRendered ? 1 : 0;
 
-  try {
-    const sql = `
-      INSERT INTO ad_visits (visitor_id, user_segment, ads_eligible, ads_rendered, route)
-      VALUES (?, ?, ?, ?, ?)
-    `;
-    await pool.query(sql, [opts.visitorId, opts.userSegment, adsEligibleInt, adsRenderedInt, opts.route || '/']);
-  } catch (e) {
-    // Graceful fallback to legacy schema
-    const fallbackSql = `
-      INSERT INTO ad_visits (visitor_id, user_segment, ads_eligible, ads_rendered)
-      VALUES (?, ?, ?, ?)
-    `;
-    await pool.query(fallbackSql, [opts.visitorId, opts.userSegment, adsEligibleInt, adsRenderedInt]);
-  }
+  const sql = `
+    INSERT INTO ad_visits (visitor_id, user_segment, ads_eligible, ads_rendered, route)
+    VALUES (?, ?, ?, ?, ?)
+  `;
+  await pool.query(sql, [opts.visitorId, opts.userSegment, adsEligibleInt, adsRenderedInt, opts.route || '/']);
 }
 
 /**
  * Aggregate core stats for the /ads dashboard.
- * Truthfully queries actual timestamp limits and groups by route directly at the SQL level.
  */
 export async function getAdDashboardStats(filter: string = '30d'): Promise<AdDashboardStats> {
-  await ensureSchema();
   const pool = getDbPool();
 
   let dateCondition = "";
   if (filter === 'today') dateCondition = "WHERE DATE(created_at) = CURDATE()";
   else if (filter === '7d') dateCondition = "WHERE created_at >= DATE_SUB(CURDATE(), INTERVAL 7 DAY)";
   else if (filter === '30d') dateCondition = "WHERE created_at >= DATE_SUB(CURDATE(), INTERVAL 30 DAY)";
-  // If 'all', dateCondition remains empty
 
-  let summaryRow: RowDataPacket = {} as RowDataPacket;
-  try {
-    const [summaryRows] = await pool.query<RowDataPacket[]>(`
-      SELECT
-        COUNT(*) AS total_visits,
-        COALESCE(SUM(ads_eligible), 0) AS total_eligible,
-        COALESCE(SUM(ads_rendered), 0) AS total_rendered
-      FROM ad_visits
-      ${dateCondition}
-    `);
-    summaryRow = summaryRows[0] || {};
-  } catch (e) {
-    // Graceful fallback if schema alteration was blocked
-    const [summaryRows] = await pool.query<RowDataPacket[]>(`
-      SELECT
-        COUNT(*) AS total_visits,
-        COALESCE(SUM(ads_eligible), 0) AS total_eligible,
-        COALESCE(SUM(ads_rendered), 0) AS total_rendered
-      FROM ad_visits
-    `);
-    summaryRow = summaryRows[0] || {};
-  }
+  const [summaryRows] = await pool.query<RowDataPacket[]>(`
+    SELECT
+      COUNT(*) AS total_visits,
+      COALESCE(SUM(ads_eligible), 0) AS total_eligible,
+      COALESCE(SUM(ads_rendered), 0) AS total_rendered
+    FROM ad_visits
+    ${dateCondition}
+  `);
+  const summaryRow = summaryRows[0] || {};
 
-  let segmentRows: RowDataPacket[] = [];
-  try {
-    [segmentRows] = await pool.query<RowDataPacket[]>(`
-      SELECT
-        user_segment,
-        COUNT(*) AS visits,
-        COALESCE(SUM(ads_eligible), 0) AS eligible,
-        COALESCE(SUM(ads_rendered), 0) AS rendered
-      FROM ad_visits
-      ${dateCondition}
-      GROUP BY user_segment
-      ORDER BY visits DESC
-    `);
-  } catch (e) {
-    [segmentRows] = await pool.query<RowDataPacket[]>(`
-      SELECT
-        user_segment,
-        COUNT(*) AS visits,
-        COALESCE(SUM(ads_eligible), 0) AS eligible,
-        COALESCE(SUM(ads_rendered), 0) AS rendered
-      FROM ad_visits
-      GROUP BY user_segment
-      ORDER BY visits DESC
-    `);
-  }
+  const [segmentRows] = await pool.query<RowDataPacket[]>(`
+    SELECT
+      user_segment,
+      COUNT(*) AS visits,
+      COALESCE(SUM(ads_eligible), 0) AS eligible,
+      COALESCE(SUM(ads_rendered), 0) AS rendered
+    FROM ad_visits
+    ${dateCondition}
+    GROUP BY user_segment
+    ORDER BY visits DESC
+  `);
 
   let todayVisits = 0;
   let topRoutes: AdDashboardRouteRow[] = [];
   let maxRouteVisits = 1;
 
-  try {
-    const [todayRows] = await pool.query<RowDataPacket[]>(`
-      SELECT COUNT(*) as c FROM ad_visits WHERE DATE(created_at) = CURDATE()
-    `);
-    todayVisits = Number(todayRows[0]?.c || 0);
+  const [todayRows] = await pool.query<RowDataPacket[]>(`
+    SELECT COUNT(*) as c FROM ad_visits WHERE DATE(created_at) = CURDATE()
+  `);
+  todayVisits = Number(todayRows[0]?.c || 0);
 
-    const [routeRows] = await pool.query<RowDataPacket[]>(`
-      SELECT route, COUNT(*) as visits, COALESCE(SUM(ads_rendered),0) as rendered
-      FROM ad_visits
-      ${dateCondition}
-      GROUP BY route
-      ORDER BY visits DESC
-      LIMIT 12
-    `);
-    topRoutes = routeRows as AdDashboardRouteRow[];
-    
-    if (topRoutes.length > 0) {
-      maxRouteVisits = Math.max(...topRoutes.map(r => Number(r.visits)));
-    }
-  } catch (e) {
-    // Ignore routes mapping if schema failed
+  const [routeRows] = await pool.query<RowDataPacket[]>(`
+    SELECT route, COUNT(*) as visits, COALESCE(SUM(ads_rendered),0) as rendered
+    FROM ad_visits
+    ${dateCondition}
+    GROUP BY route
+    ORDER BY visits DESC
+    LIMIT 12
+  `);
+  topRoutes = routeRows as AdDashboardRouteRow[];
+  
+  if (topRoutes.length > 0) {
+    maxRouteVisits = Math.max(...topRoutes.map(r => Number(r.visits)));
   }
 
   const bySegment: AdDashboardSegmentRow[] = segmentRows.map(

@@ -88,17 +88,17 @@
               <!-- Zone 3: Strict Utility Boundary -->
               <div class="iecs-utils-zone">
                 <button class="iecs-icon-btn search-btn" @click.prevent="isSearchOpen = true" aria-label="Buscar">
-                  <svg width="18" height="18" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M6.76923 1.23077C3.71042 1.23077 1.23077 3.71042 1.23077 6.76923C1.23077 9.82804 3.71042 12.3077 6.76923 12.3077C8.29881 12.3077 9.68258 11.6885 10.6855 10.6855C11.6885 9.68258 12.3077 8.29881 12.3077 6.76923C12.3077 3.71042 9.82804 1.23077 6.76923 1.23077ZM0 6.76923C0 3.03069 3.03069 0 6.76923 0C10.5078 0 13.5385 3.03069 13.5385 6.76923C13.5385 8.41668 12.9493 9.92743 11.9712 11.1009L15.8198 14.9495C16.0601 15.1898 16.0601 15.5794 15.8198 15.8198C15.5794 16.0601 15.1898 16.0601 14.9495 15.8198L11.1009 11.9712C9.92743 12.9493 8.41668 13.5385 6.76923 13.5385C3.03069 13.5385 0 10.5078 0 6.76923Z" fill="currentColor"/></svg>
+                  <svg width="22" height="22" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M6.76923 1.23077C3.71042 1.23077 1.23077 3.71042 1.23077 6.76923C1.23077 9.82804 3.71042 12.3077 6.76923 12.3077C8.29881 12.3077 9.68258 11.6885 10.6855 10.6855C11.6885 9.68258 12.3077 8.29881 12.3077 6.76923C12.3077 3.71042 9.82804 1.23077 6.76923 1.23077ZM0 6.76923C0 3.03069 3.03069 0 6.76923 0C10.5078 0 13.5385 3.03069 13.5385 6.76923C13.5385 8.41668 12.9493 9.92743 11.9712 11.1009L15.8198 14.9495C16.0601 15.1898 16.0601 15.5794 15.8198 15.8198C15.5794 16.0601 15.1898 16.0601 14.9495 15.8198L11.1009 11.9712C9.92743 12.9493 8.41668 13.5385 6.76923 13.5385C3.03069 13.5385 0 10.5078 0 6.76923Z" fill="currentColor"/></svg>
                 </button>
                 
-                <NuxtLink to="/ubicaciones" class="d-none d-sm-inline-block tp-btn-md tp-bg-theme-1 tp-left-right p-relative hover-text-white text-uppercase tp-text-grey-5 lh-1 fs-15 fw-800 tp-ff-dm" style="padding: 14px 25px;">
+                <NuxtLink to="/ubicaciones" class="d-none d-sm-inline-flex align-items-center tp-btn-md tp-bg-theme-1 tp-left-right p-relative hover-text-white text-uppercase tp-text-grey-5 lh-1 fs-14 fw-800 tp-ff-dm" style="padding: 12px 24px; border-radius: 30px;">
                   <span class="td-text d-inline-block mr-5">Solicitar + info</span>
                   <span class="tp-arrow-angle">
                     <svg width="13" height="12" viewBox="0 0 13 12" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M1 11L12 1M12 1H3.44444M12 1V8.77778" stroke="#F3F1F2" stroke-width="1.5" stroke-linecap="round"/><path d="M1 11L12 1M12 1H3.44444M12 1V8.77778" stroke="#F3F1F2" stroke-width="1.5" stroke-linecap="round"/></svg>
                   </span>
                 </NuxtLink>
                 
-                <a href="https://admin.casitaiedis.edu.mx/login.php" class="d-none d-lg-inline-flex" target="_blank" rel="noopener noreferrer">
+                <a href="https://admin.casitaiedis.edu.mx/login.php" class="d-none d-lg-inline-flex align-items-center" target="_blank" rel="noopener noreferrer">
                   <img src="/assets/img/IECS-IEDIS IMAGES/ID-HUSKY-PASS-HORIZONTAL.webp" alt="Husky Pass" style="width: 120px; height: 35px; object-fit: contain;">
                 </a>
                 
@@ -133,10 +133,14 @@ const isSearchOpen = useState('isSearchOpen', () => false)
   =============================================================
 */
 
+#header-sticky {
+  z-index: 999 !important;
+}
+
 .iecs-header-wrapper {
   width: 100%;
   position: relative;
-  z-index: 100;
+  z-index: 999;
 }
 
 .iecs-container {
@@ -342,23 +346,25 @@ const isSearchOpen = useState('isSearchOpen', () => false)
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  gap: clamp(10px, 1.5vw, 20px);
+  gap: clamp(12px, 1.5vw, 24px); /* Perfected flow gap */
 }
 
 .iecs-icon-btn {
   background: none;
   border: none;
-  padding: 5px;
+  padding: 8px; /* Increased click target */
   cursor: pointer;
   color: var(--tp-common-black-5, #141414);
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: opacity 0.2s;
+  transition: color 0.2s, transform 0.2s;
+  border-radius: 50%;
 }
 
 .iecs-icon-btn:hover {
-  opacity: 0.6;
+  color: var(--tp-theme-1, #618B2F);
+  transform: scale(1.05);
 }
 
 /* 

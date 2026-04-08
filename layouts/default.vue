@@ -146,7 +146,13 @@ html, body {
 
 @media (max-width: 1199px) {
   .inner-page-offset {
-    padding-top: 80px;
+    padding-top: 110px;
+  }
+}
+
+@media (max-width: 991px) {
+  .inner-page-offset {
+    padding-top: 90px;
   }
 }
 
