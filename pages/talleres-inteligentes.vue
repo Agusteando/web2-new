@@ -1,7 +1,7 @@
 <template>
   <main>
     <!-- HERO SECTION (Alineación perfecta al ras del header: margen negativo para absorber subpíxeles blancos) -->
-    <div class="tp-faq-hero-area pre-header tp-faq-hero-spacing bg-position p-relative" style="margin-top: -10px;">
+    <div class="tp-faq-hero-area pre-header  bg-position p-relative" style="margin-top: -10px;">
        <div class="bg-position" style="background-image: url('/assets/img/IECS-IEDIS IMAGES/HERO-TALLERES.jpg'); background-size: cover; background-position: center; padding-top: 10px;">
           <!-- Overlay para asegurar legibilidad del texto blanco sobre la imagen -->
           <div style="position: absolute; inset: 0; background: rgba(0,0,0,0.35); z-index: 0;"></div>
