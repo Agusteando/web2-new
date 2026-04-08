@@ -36,7 +36,7 @@
                    </svg>
                 </NuxtLink>
                 
-                <a href="https://youtu.be/cwX1iPY2kJE" target="_blank" class="iecs-hero-btn-video popup-video">
+                <a href="https://www.youtube.com/watch?v=cwX1iPY2kJE" class="iecs-hero-btn-video popup-video">
                    <span class="iecs-hero-play-icon">
                       <svg width="14" height="16" viewBox="0 0 15 18" fill="none" xmlns="http://www.w3.org/2000/svg">
                          <path d="M15 9L0 17.6603L0 0.339745L15 9Z" fill="currentColor" />
@@ -454,7 +454,7 @@
        <div class="swiper-container tp-text-md-slider-active">
           <div class="swiper-wrapper slide-transtion">
              <div class="swiper-slide">
-                <div class="tp-text-md-top-text">
+               <div class="tp-text-md-top-text">
                    <h2 class="tp-text-md-title tp-ff-familjen ls-m-3 tp-text-common-black-5 mb-0"> Compartiendo contigo la formación integral de tus hijos. </h2>
                 </div>
              </div>

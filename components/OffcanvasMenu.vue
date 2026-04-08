@@ -96,18 +96,16 @@
             <div class="iecs-offcanvas-contact mb-40">
               <h3 class="iecs-offcanvas-contact-title">CAMPUS TOLUCA / OCOYOACAC / CALIMAYA</h3>
               <ul>
-                <li><a href="tel:7225725729">722 572 5729</a></li>
-                <li><a href="https://wa.me/message/PI6TZB36CIWYD1" target="_blank" rel="noopener noreferrer"><i class="fa-brands fa-whatsapp"></i> Chat Whatsapp</a></li>
-                <li><a href="mailto:mercadotecnia@casitaiedis.edu.mx">mercadotecnia@casitaiedis.edu.mx</a></li>
+                <li><a href="https://wa.me/message/PI6TZB36CIWYD1" target="_blank" rel="noopener noreferrer"><i class="fa-brands fa-whatsapp"></i> 722 572 5729 (WhatsApp)</a></li>
+                <li><a href="mailto:mercadotecnia@casitaiedis.edu.mx"><i class="fa-light fa-paper-plane"></i> mercadotecnia@casitaiedis.edu.mx</a></li>
               </ul>
             </div>
 
             <div class="iecs-offcanvas-contact mb-50">
               <h3 class="iecs-offcanvas-contact-title">CAMPUS METEPEC</h3>
               <ul>
-                <li><a href="tel:7221095789">722 109 5789</a></li>
-                <li><a href="https://wa.me/message/KBRAQHE4ITIRD1" target="_blank" rel="noopener noreferrer"><i class="fa-brands fa-whatsapp"></i> Chat Whatsapp</a></li>
-                <li><a href="mailto:coord.mkt.met@casitaiedis.edu.mx">coord.mkt.met@casitaiedis.edu.mx</a></li>
+                <li><a href="https://wa.me/message/KBRAQHE4ITIRD1" target="_blank" rel="noopener noreferrer"><i class="fa-brands fa-whatsapp"></i> 722 109 5789 (WhatsApp)</a></li>
+                <li><a href="mailto:coord.mkt.met@casitaiedis.edu.mx"><i class="fa-light fa-paper-plane"></i> coord.mkt.met@casitaiedis.edu.mx</a></li>
               </ul>
             </div>
 

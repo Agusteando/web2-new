@@ -21,12 +21,12 @@
               <div class="iecs-topbar-contacts">
                 <ul>
                   <li>
-                    <i class="fa-light fa-phone"></i>
-                    <span>Metepec: <a href="tel:7221095789">722 109 5789</a></span>
+                    <i class="fa-brands fa-whatsapp"></i>
+                    <span>Metepec: <a href="https://wa.me/message/KBRAQHE4ITIRD1" target="_blank" rel="noopener">722 109 5789</a></span>
                   </li>
                   <li>
-                    <i class="fa-light fa-phone"></i>
-                    <span>Toluca / Calimaya / Ocoyoacac: <a href="tel:7225725729">722 572 5729</a></span>
+                    <i class="fa-brands fa-whatsapp"></i>
+                    <span>Toluca / Calimaya / Ocoyoacac: <a href="https://wa.me/message/PI6TZB36CIWYD1" target="_blank" rel="noopener">722 572 5729</a></span>
                   </li>
                   <li>
                     <i class="fa-light fa-paper-plane"></i>
@@ -255,6 +255,8 @@ const isSearchOpen = useState('isSearchOpen', () => false)
   display: flex;
   justify-content: center;
   min-width: 0; /* Prevents flex flex-basis blowout */
+  position: relative;
+  z-index: 50; /* Safely elevates navigation items strictly above utility components */
 }
 
 .iecs-nav-list {
@@ -347,6 +349,8 @@ const isSearchOpen = useState('isSearchOpen', () => false)
   align-items: center;
   justify-content: flex-end;
   gap: clamp(12px, 1.5vw, 24px); /* Perfected flow gap */
+  position: relative;
+  z-index: 10;
 }
 
 .iecs-icon-btn {
