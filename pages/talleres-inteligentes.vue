@@ -1,20 +1,24 @@
 <template>
   <main>
-    <!-- HERO SECTION (Clean native flow: perfectly flush with the header offset, no negative margins, no legacy spacing classes) -->
-    <div class="p-relative z-index-1" style="background-image: url('/assets/img/IECS-IEDIS IMAGES/HERO-TALLERES.jpg'); background-size: cover; background-position: center;">
-       <!-- Overlay para garantizar contraste del texto -->
-       <div style="position: absolute; inset: 0; background: rgba(0,0,0,0.35); z-index: 0;"></div>
-       
-       <div class="container-fluid container-1524 containers position-relative z-index-1 pt-120 pb-100">
-          <div class="row">
-             <div class="col-xl-12 col-lg-12 col-md-9 text-center text-md-start">
-                <h2 class="tp-section-ai-title mb-20 fs-70 fs-xl-65 fs-lg-55 fs-sm-45 fs-xs-40 fw-600 ls-m-4 tp-ff-familjen tp-text-common-white tp_fade_anim" data-delay=".2">Talleres<br> Inteligentes</h2>
-                <div class="tp-breadcrumb-list tp-breadcrumb-2-list tp-breadcrumb-3-white tp_fade_anim" data-delay=".4">
-                   <ul>
-                      <li><NuxtLink to="/">Home</NuxtLink></li>
-                      <li><span></span></li>
-                      <li>Talleres Inteligentes</li>
-                   </ul>
+    <!-- HERO SECTION (Alineación perfecta al ras del header: margen negativo para absorber subpíxeles blancos) -->
+    <div class="tp-faq-hero-area pre-header tp-faq-hero-spacing bg-position p-relative" style="margin-top: -10px;">
+       <div class="bg-position" style="background-image: url('/assets/img/IECS-IEDIS IMAGES/HERO-TALLERES.jpg'); background-size: cover; background-position: center; padding-top: 10px;">
+          <!-- Overlay para asegurar legibilidad del texto blanco sobre la imagen -->
+          <div style="position: absolute; inset: 0; background: rgba(0,0,0,0.35); z-index: 0;"></div>
+          
+          <div class="container-fluid container-1524 containers position-relative z-index-1">
+             <div class="row">
+                <div class="col-xl-12 col-lg-12 col-md-9">
+                   <div class="tp-faq-hero-title-wrap">
+                      <h2 class="tp-section-ai-title mb-45 fs-70 fs-xl-65 fs-lg-55 fs-sm-45 fs-xs-40 fw-600 ls-m-4 tp-ff-familjen mb-15 tp-text-common-white tp_fade_anim" data-delay=".2">Talleres<br> Inteligentes</h2>
+                      <div class="tp-breadcrumb-list tp-breadcrumb-2-list tp-breadcrumb-3-white pt-35 tp_fade_anim" data-delay=".4">
+                         <ul>
+                            <li><NuxtLink to="/">Home</NuxtLink></li>
+                            <li><span></span></li>
+                            <li>Talleres Inteligentes</li>
+                         </ul>
+                      </div>
+                   </div>
                 </div>
              </div>
           </div>
@@ -22,7 +26,7 @@
     </div>
     
     <!-- ABOUT TALLERES SECTION -->
-    <div class="tp-about-area p-relative z-index-1 pt-100 pb-70">
+    <div class="tp-about-area p-relative z-index-1 pt-130 pb-70">
        <div class="container">
           <div class="row">
              <div class="col-lg-12">
