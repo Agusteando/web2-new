@@ -1,6 +1,19 @@
 {
   "redirects": [
-    { "source": "/virtual/:path*", "destination": "https://admin.casitaiedis.edu.mx/virtual/:path*", "permanent": false },
-    { "source": "/signatures/:path*", "destination": "https://admin.casitaiedis.edu.mx/signatures/:path*", "permanent": false }
+    {
+      "source": "/virtual/:path*",
+      "destination": "https://admin.casitaiedis.edu.mx/virtual/:path*",
+      "permanent": false
+    },
+    {
+      "source": "/signatures",
+      "destination": "https://admin.casitaiedis.edu.mx/signatures",
+      "permanent": false
+    },
+    {
+      "source": "/signatures/:path*",
+      "destination": "https://admin.casitaiedis.edu.mx/signatures/:path*",
+      "permanent": false
+    }
   ]
 }
