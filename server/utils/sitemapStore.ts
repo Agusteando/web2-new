@@ -9,7 +9,7 @@ export interface RouteOverride {
 
 export type SitemapOverrides = Record<string, RouteOverride>;
 
-export async function getSitemapOverrides(): Promise<SitemapOverrides> {
+export const getSitemapOverrides = defineCachedFunction(async (): Promise<SitemapOverrides> => {
   const pool = getDbPool();
   const [rows] = await pool.query<RowDataPacket[]>('SELECT path, type, target, status_code FROM route_overrides');
   
@@ -22,7 +22,11 @@ export async function getSitemapOverrides(): Promise<SitemapOverrides> {
     };
   }
   return result;
-}
+}, {
+  maxAge: 60,
+  name: 'sitemap-overrides-cache',
+  getKey: () => 'all'
+});
 
 export async function saveSitemapOverride(path: string, override: RouteOverride): Promise<void> {
   const pool = getDbPool();
