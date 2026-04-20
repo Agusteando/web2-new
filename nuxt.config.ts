@@ -11,11 +11,15 @@ export default defineNuxtConfig({
   // Native proxy mapping ensures cross-environment compatibility (Vercel, PM2, Local)
   // Preserves original external behavior natively without brittle hacks.
   routeRules: {
-    // Configuración de ISR para optimizar el rendimiento en Vercel y reducir el uso de CPU
-    '/**': { isr: 3600 },
-    '/api/**': { isr: false },
-    '/ads-dashboard': { isr: false },
-    '/sitemap': { isr: false },
+    // Conversión a Static Site Generation (SSG) para optimizar el rendimiento en Vercel 
+    // y reducir el consumo de Serverless Functions a cero en el tráfico público
+    '/**': { prerender: true },
+    
+    // Excluir rutas de APIs y Dashboard del prerender para mantener su comportamiento dinámico
+    '/api/**': { cors: true, prerender: false },
+    '/ads-dashboard': { ssr: false, prerender: false },
+    '/sitemap': { ssr: false, prerender: false },
+    
     // Proxies nativos heredados
     '/virtual/**': { proxy: 'https://admin.casitaiedis.edu.mx/virtual/**' },
     '/signatures/**': { proxy: 'https://admin.casitaiedis.edu.mx/signatures/**' }

@@ -1,4 +1,6 @@
 {
+  "cleanUrls": true,
+  "trailingSlash": false,
   "redirects": [
     {
       "source": "/virtual/:path*",
@@ -14,6 +16,16 @@
       "source": "/signatures/:path*",
       "destination": "https://admin.casitaiedis.edu.mx/signatures/:path*",
       "permanent": false
+    },
+    {
+      "source": "/index.html",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/(.*)\\.html",
+      "destination": "/$1",
+      "permanent": true
     }
   ]
 }

@@ -4,7 +4,8 @@ import { getSitemapOverrides } from '~/server/utils/sitemapStore';
 export default defineEventHandler(async (event) => {
   const url = getRequestURL(event);
   
-  // Ignoramos activos estáticos y llamadas API temprano para proteger el rendimiento de Vercel
+  // Bypass temprano para estáticos, API y rutas ya prerenderizadas.
+  // Esto garantiza que Vercel Free Tier no facture Serverless Functions por tráfico del lado público.
   if (
     url.pathname.startsWith('/api/') || 
     url.pathname.startsWith('/_nuxt/') || 
@@ -22,7 +23,6 @@ export default defineEventHandler(async (event) => {
       if (over.type === 'redirect') {
         return sendRedirect(event, over.target, over.statusCode || 302);
       } else if (over.type === 'proxy') {
-        // Si el target es relativo, lo convertimos en absoluto resolviendo contra el propio host
         let target = over.target;
         if (target.startsWith('/')) {
           target = `${url.protocol}//${url.host}${target}`;
@@ -31,8 +31,6 @@ export default defineEventHandler(async (event) => {
       }
     }
   } catch (e) {
-    // Si la DB falla temporalmente (max connections, timeout), fallamos limpiamente 
-    // y dejamos que la petición continúe hacia Nuxt para evitar tirar la página con Error 500
     console.error('[Sitemap Interceptor] Error apply overrides:', e);
   }
 });

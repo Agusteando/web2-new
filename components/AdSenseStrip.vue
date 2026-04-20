@@ -1,5 +1,5 @@
 <template>
-  <section v-if="decision?.adsRendered" class="tp-ad-strip-area pt-60 pb-60">
+  <section v-if="decision.adsRendered" class="tp-ad-strip-area pt-60 pb-60">
     <div class="container">
       <div class="row justify-content-center">
         <div class="col-xl-10 col-lg-11 col-md-12">
@@ -35,18 +35,33 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 
-const { data: decision } = await useFetch('/api/ads/decision')
+// Obtenemos la configuración global estática en build-time.
+// Esto permite que el componente inyecte la variable pre-generada y no realice ninguna llamada de red (0 invocaciones edge).
+const { data: config } = await useAsyncData('ad-config', () => $fetch('/api/ads/config'))
+
+const decision = ref({ adsRendered: false })
 const isDevPreview = ref(false)
 
 onMounted(() => {
   // Verifiable placement test: Force preview on localhost/127.0.0.1
   isDevPreview.value = import.meta.dev || ['localhost', '127.0.0.1'].includes(window.location.hostname)
 
-  if (decision.value?.adsRendered && !isDevPreview.value) {
-    try {
-      ;(window.adsbygoogle = window.adsbygoogle || []).push({})
-    } catch (e) {
-      console.error('[AdSense] Initialization failed:', e)
+  // La evaluación de las cookies se realiza estrictamente en el cliente
+  const cookies = document.cookie || ''
+  const isSuppressed = cookies.includes('ads_suppressed=true')
+  const globalEnabled = config.value?.global_ads_enabled ?? true
+
+  if (globalEnabled && !isSuppressed) {
+    decision.value.adsRendered = true
+    
+    if (!isDevPreview.value) {
+      setTimeout(() => {
+        try {
+          ;(window.adsbygoogle = window.adsbygoogle || []).push({})
+        } catch (e) {
+          console.error('[AdSense] Initialization failed:', e)
+        }
+      }, 100)
     }
   }
 })
