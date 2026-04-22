@@ -102,6 +102,11 @@ export default defineNuxtConfig({
     ],
     // Fuerza 'vercel-static' en Vercel para impedir explícitamente la construcción e instanciación de Serverless Functions
     preset: isVercel ? 'vercel-static' : (isProd ? 'node-server' : undefined),
+    prerender: {
+      // Evita que el build se bloquee si el crawler choca con rutas privadas (403/404)
+      failOnError: false,
+      ignore: ['/ads-dashboard', '/sitemap', '/api/ads/dashboard', '/api/sitemap/overrides']
+    },
     ...(isProd && !isVercel
       ? {
           server: {
