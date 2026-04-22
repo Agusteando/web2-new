@@ -1,5 +1,5 @@
 const isProd = process.env.NODE_ENV === 'production'
-// Automatically detect Vercel environment to prevent forcing 'node-server'
+// Detección automática del entorno Vercel para forzar SSG puro
 const isVercel = !!process.env.VERCEL || process.env.VERCEL_ENV !== undefined
 
 export default defineNuxtConfig({
@@ -8,19 +8,17 @@ export default defineNuxtConfig({
 
   compatibilityDate: '2025-12-13',
 
-  // Native proxy mapping ensures cross-environment compatibility (Vercel, PM2, Local)
-  // Preserves original external behavior natively without brittle hacks.
-  routeRules: {
-    // Conversión a Static Site Generation (SSG) para optimizar el rendimiento en Vercel 
-    // y reducir el consumo de Serverless Functions a cero en el tráfico público
+  // Configuración condicional para garantizar 0 Edge Requests en Vercel,
+  // preservando el comportamiento dinámico y las capacidades de escritura en despliegues maestro con PM2.
+  routeRules: isVercel ? {
+    // En Vercel: Conversión estricta a Static Site Generation (SSG)
+    '/**': { prerender: true }
+  } : {
+    // En PM2/IIS: Mantiene el servidor Node nativo, las APIs dinámicas y los proxies transparentes
     '/**': { prerender: true },
-    
-    // Excluir rutas de APIs y Dashboard del prerender para mantener su comportamiento dinámico
     '/api/**': { cors: true, prerender: false },
     '/ads-dashboard': { ssr: false, prerender: false },
     '/sitemap': { ssr: false, prerender: false },
-    
-    // Proxies nativos heredados
     '/virtual/**': { proxy: 'https://admin.casitaiedis.edu.mx/virtual/**' },
     '/signatures/**': { proxy: 'https://admin.casitaiedis.edu.mx/signatures/**' }
   },
@@ -102,11 +100,10 @@ export default defineNuxtConfig({
       '**/server/middleware/legacy-html.ts',
       '**/server/routes/virtual/\\[blob\\].get.ts'
     ],
-    // Only force 'node-server' if we are building for production AND we are NOT on Vercel.
-    // This allows local PM2/IIS deployments to work natively while Vercel builds effortlessly.
+    // Fuerza 'vercel-static' en Vercel para impedir explícitamente la construcción e instanciación de Serverless Functions
+    preset: isVercel ? 'vercel-static' : (isProd ? 'node-server' : undefined),
     ...(isProd && !isVercel
       ? {
-          preset: 'node-server',
           server: {
             host: process.env.NITRO_HOST || process.env.HOST || '127.0.0.1',
             port: Number(process.env.NITRO_PORT || process.env.PORT || 16767),

@@ -1,39 +1,10 @@
 {
   "cleanUrls": true,
   "trailingSlash": false,
-  "headers": [
-    {
-      "source": "/virtual/:path*",
-      "headers": [
-        {
-          "key": "Access-Control-Allow-Origin",
-          "value": "https://admin.casitaiedis.edu.mx"
-        },
-        {
-          "key": "Access-Control-Allow-Methods",
-          "value": "GET, HEAD, OPTIONS"
-        },
-        {
-          "key": "Access-Control-Allow-Headers",
-          "value": "*"
-        },
-        {
-          "key": "Vary",
-          "value": "Origin"
-        }
-      ]
-    }
-  ],
-  "rewrites": [
-    {
-      "source": "/virtual/:path*",
-      "destination": "https://admin.casitaiedis.edu.mx/virtual/:path*"
-    }
-  ],
   "redirects": [
     {
-      "source": "/signatures",
-      "destination": "https://admin.casitaiedis.edu.mx/signatures",
+      "source": "/virtual/:path*",
+      "destination": "https://admin.casitaiedis.edu.mx/virtual/:path*",
       "permanent": false
     },
     {

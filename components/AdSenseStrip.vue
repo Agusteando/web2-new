@@ -9,7 +9,7 @@
             
             <!-- Local Debug / Preview Mode -->
             <div v-if="isDevPreview" class="ad-preview-box">
-              <span class="ad-preview-badge">Debug Mode</span>
+              <span class="ad-preview-badge">Modo de Prueba</span>
               <div class="ad-preview-info">
                 <strong>Espacio Publicitario Reservado</strong>
                 <span>AdSense Slot: <code>ca-pub-1644096973273978</code></span>
