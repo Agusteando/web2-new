@@ -23,7 +23,7 @@
                             <p class="tp-ff-dm fw-500 fs-18 ls-m-2 tp-text-common-black-5">Guardería / Daycare (IMSS)</p>
                          </div>
                          <div class="tp-contact-us-thumb d-flex justify-content-center">
-                            <img decoding="async" loading="lazy" src="/assets/img/IECS-IEDIS IMAGES/FACHADA-IECS-OCO-320x242.webp" alt="">
+                            <img src="/assets/img/IECS-IEDIS IMAGES/FACHADA-IECS-OCO-320x242.webp" alt="">
                          </div>
                       </div>
                       <div class="col-lg-6 col-md-6">
@@ -55,7 +55,7 @@
                             <p class="tp-ff-dm fw-500 fs-18 ls-m-2 tp-text-common-black-5">Preescolar</p>
                          </div>
                          <div class="tp-contact-us-thumb d-flex justify-content-center">
-                            <img decoding="async" loading="lazy" src="/assets/img/IECS-IEDIS IMAGES/FACHADA-IECS-MET-320x242.webp" alt="">
+                            <img src="/assets/img/IECS-IEDIS IMAGES/FACHADA-IECS-MET-320x242.webp" alt="">
                          </div>
                       </div>
                       <div class="col-lg-6 col-md-6">
@@ -87,7 +87,7 @@
                             <p class="tp-ff-dm fw-500 fs-18 ls-m-2 tp-text-common-black-5">Preescolar</p>
                          </div>
                          <div class="tp-contact-us-thumb d-flex justify-content-center">
-                            <img decoding="async" loading="lazy" src="/assets/img/IECS-IEDIS IMAGES/FACHADA-IECS-TOL-320x242.webp" alt="">
+                            <img src="/assets/img/IECS-IEDIS IMAGES/FACHADA-IECS-TOL-320x242.webp" alt="">
                          </div>
                       </div>
                       <div class="col-lg-6 col-md-6">
@@ -118,7 +118,7 @@
                             <p class="tp-ff-dm fw-500 fs-18 ls-m-2 tp-text-common-black-5">Guardería (IMSS)</p>
                          </div>
                          <div class="tp-contact-us-thumb d-flex justify-content-center">
-                            <img decoding="async" loading="lazy" src="/assets/img/IECS-IEDIS IMAGES/FACHADA-DESARROLLO-MET-320x242.webp" alt="">
+                            <img src="/assets/img/IECS-IEDIS IMAGES/FACHADA-DESARROLLO-MET-320x242.webp" alt="">
                          </div>
                       </div>
                       <div class="col-lg-6 col-md-6">
@@ -149,7 +149,7 @@
                             <p class="tp-ff-dm fw-500 fs-18 ls-m-2 tp-text-common-black-5">Guardería (IMSS)</p>
                          </div>
                          <div class="tp-contact-us-thumb d-flex justify-content-center">
-                            <img decoding="async" loading="lazy" src="/assets/img/IECS-IEDIS IMAGES/FACHADA-IEDIS-CALI-320x242.webp" alt="">
+                            <img src="/assets/img/IECS-IEDIS IMAGES/FACHADA-IEDIS-CALI-320x242.webp" alt="">
                          </div>
                       </div>
                       <div class="col-lg-6 col-md-6">
@@ -181,7 +181,7 @@
                             <p class="tp-ff-dm fw-500 fs-18 ls-m-2 tp-text-common-black-5">Secundaria</p>
                          </div>
                          <div class="tp-contact-us-thumb d-flex justify-content-center">
-                            <img decoding="async" loading="lazy" src="/assets/img/IECS-IEDIS IMAGES/FACHADA-IEDIS-MET-320x242.webp" alt="">
+                            <img src="/assets/img/IECS-IEDIS IMAGES/FACHADA-IEDIS-MET-320x242.webp" alt="">
                          </div>
                       </div>
                       <div class="col-lg-6 col-md-6">
@@ -213,7 +213,7 @@
                             <p class="tp-ff-dm fw-500 fs-18 ls-m-2 tp-text-common-black-5">Secundaria</p>
                          </div>
                          <div class="tp-contact-us-thumb d-flex justify-content-center">
-                            <img decoding="async" loading="lazy" src="/assets/img/IECS-IEDIS IMAGES/FACHADA-IEDIS-TOL-320x242.webp" alt="">
+                            <img src="/assets/img/IECS-IEDIS IMAGES/FACHADA-IEDIS-TOL-320x242.webp" alt="">
                          </div>
                       </div>
                       <div class="col-lg-6 col-md-6">

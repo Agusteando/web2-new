@@ -42,7 +42,7 @@
     </div>
     
     <div class="tp-about-me-banner scale-up-img">
-       <img decoding="async" loading="lazy" class="img-cover scale-up" src="/assets/img/IECS-IEDIS IMAGES/thumb-elementary.webp" alt="About Thumbnail">
+       <img class="img-cover scale-up" src="/assets/img/IECS-IEDIS IMAGES/thumb-elementary.webp" alt="About Thumbnail">
     </div>
     
     <div class="tp-service-details-area pt-60">
@@ -61,7 +61,7 @@
              <div class="col-lg-6">
                 <div class="tp-service-details-content mr-105 mb-40">
                    <p class="fs-18 lh-140-per mb-20">La primaria es una etapa clave para que tu hijo consolide habilidades, descubra nuevos intereses y desarrolle la confianza para enfrentar retos cada vez más complejos. Por eso, ofrecemos una formación integral que fortalece su pensamiento crítico, su creatividad y su capacidad para trabajar en equipo.</p>
-                   <img decoding="async" loading="lazy" class="tp-round-20 mt-20" src="/assets/img/IECS-IEDIS IMAGES/HUSKY-ELEMENTARY.webp" alt="">
+                   <img class="tp-round-20 mt-20" src="/assets/img/IECS-IEDIS IMAGES/HUSKY-ELEMENTARY.webp" alt="">
                 </div>
              </div>
              <div class="col-lg-6">
@@ -91,24 +91,24 @@
                    </div>
                    <div class="col-lg-6 col-md-6 mb-10">
                       <div class="tp-gallery-it-thumb fix scale-up-img h-100">
-                         <img decoding="async" loading="lazy" class="w-100 scale-up h-100" src="/assets/img/IECS-IEDIS IMAGES/ELEMENTARY-SPACE1-475X475.webp" alt="">
+                         <img class="w-100 scale-up h-100" src="/assets/img/IECS-IEDIS IMAGES/ELEMENTARY-SPACE1-475X475.webp" alt="">
                       </div>
                    </div>
                    <div class="col-lg-6 col-md-6 mb-10">
                       <div class="tp-gallery-it-thumb fix scale-up-img h-100">
-                         <img decoding="async" loading="lazy" class="w-100 scale-up h-100" src="/assets/img/IECS-IEDIS IMAGES/ELEMENTARY-SPACE2-475X475.webp" alt="">
+                         <img class="w-100 scale-up h-100" src="/assets/img/IECS-IEDIS IMAGES/ELEMENTARY-SPACE2-475X475.webp" alt="">
                       </div>
                    </div>
                    <div class="col-lg-6 col-md-6 mb-10">
                       <div class="tp-gallery-it-thumb fix scale-up-img h-100">
-                         <img decoding="async" loading="lazy" class="w-100 scale-up h-100" src="/assets/img/IECS-IEDIS IMAGES/ELEMENTARY-SPACE3-475X475.webp" alt="">
+                         <img class="w-100 scale-up h-100" src="/assets/img/IECS-IEDIS IMAGES/ELEMENTARY-SPACE3-475X475.webp" alt="">
                       </div>
                    </div>
                 </div>
              </div>
              <div class="col-lg-6 mb-10">
                 <div class="tp-gallery-it-thumb fix scale-up-img h-100">
-                   <img decoding="async" loading="lazy" class="w-100 scale-up h-100" src="/assets/img/IECS-IEDIS IMAGES/ELEMENTARY-SPACE4-950X949.webp" alt="">
+                   <img class="w-100 scale-up h-100" src="/assets/img/IECS-IEDIS IMAGES/ELEMENTARY-SPACE4-950X949.webp" alt="">
                 </div>
              </div>
           </div>

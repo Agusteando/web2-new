@@ -88,7 +88,7 @@
                 <div class="col-lg-5 col-md-6">
                    <div class="tp-footer-widget mb-45">
                       <div class="tp-footer-logo mb-25">
-                         <img decoding="async" loading="lazy" data-width="140" src="/assets/img/IECS-IEDIS IMAGES/IMAGOTIPO-IECS-IEDIS-23-24.webp" alt="" style="width: 140px;">
+                         <img data-width="140" src="/assets/img/IECS-IEDIS IMAGES/IMAGOTIPO-IECS-IEDIS-23-24.webp" alt="" style="width: 140px;">
                       </div>
                       <div class="al-footer-seo-widget-paragraph mb-35">
                          <p>Instituto Educativo <br> La Casita del Saber S.C.</p>

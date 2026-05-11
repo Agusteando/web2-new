@@ -33,7 +33,10 @@ export default defineNuxtPlugin((nuxtApp) => {
     // This perfectly restores broken homepage effects (Swiper, HoverEffects, GSAP timelines) 
     // by making the external scripts bind to the freshly mounted Vue DOM components.
     const scriptsToReload = [
-      '/assets/js/legacy-reinit.bundle.js'
+      '/assets/js/hover-effect.umd.js',
+      '/assets/js/slider-init.js',
+      '/assets/js/main.js',
+      '/assets/js/tp-cursor.js'
     ];
 
     scriptsToReload.forEach(src => {

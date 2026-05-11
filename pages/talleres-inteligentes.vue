@@ -106,12 +106,12 @@
              <!-- Taller Card Dynamic Rendering -->
              <div v-for="(taller, index) in talleres" :key="index" class="col-lg-3 col-md-6 tp_fade_anim" :data-delay="0.1 * (index % 4)">
                 <div class="tp-team-it-item mb-90" data-speed=".9" data-lag="0">
-                   <img decoding="async" loading="lazy" :src="taller.image" :alt="taller.name">
+                   <img :src="taller.image" :alt="taller.name">
                    <div class="tp-team-it-content p-relative">
                       <div class="tp-team-it-socials">
                          <div class="tp-team-it-socials-trigger">
                             <span class="tp-team-it-socials-share">
-                               <img decoding="async" loading="lazy" :src="taller.icon" alt="">
+                               <img :src="taller.icon" alt="">
                             </span>
                          </div>
                       </div>

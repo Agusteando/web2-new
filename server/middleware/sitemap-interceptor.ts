@@ -2,12 +2,6 @@ import { defineEventHandler, getRequestURL, sendRedirect, proxyRequest } from 'h
 import { getSitemapOverrides } from '~/server/utils/sitemapStore';
 
 export default defineEventHandler(async (event) => {
-  const runtimeConfig = useRuntimeConfig(event);
-
-  if (!runtimeConfig.public.enableRouteOverrides) {
-    return;
-  }
-
   const url = getRequestURL(event);
   
   // Bypass temprano para estáticos, API y rutas ya prerenderizadas.

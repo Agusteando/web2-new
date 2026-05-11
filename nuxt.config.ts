@@ -8,33 +8,19 @@ export default defineNuxtConfig({
 
   compatibilityDate: '2025-12-13',
 
+  // Configuración condicional para garantizar 0 Edge Requests en Vercel,
+  // preservando el comportamiento dinámico y las capacidades de escritura en despliegues maestro con PM2.
   routeRules: isVercel ? {
-    // Static prerender on Vercel. Static files still count as Edge Requests,
-    // so we also reduce the number of browser requests and make cache behavior explicit.
-    '/**': { prerender: true },
-    '/_nuxt/**': { headers: { 'cache-control': 'public, max-age=31536000, immutable' } },
-    '/assets/**': { headers: { 'cache-control': 'public, max-age=604800, stale-while-revalidate=2592000' } },
-    '/img/**': { headers: { 'cache-control': 'public, max-age=604800, stale-while-revalidate=2592000' } }
+    // En Vercel: Conversión estricta a Static Site Generation (SSG)
+    '/**': { prerender: true }
   } : {
     // En PM2/IIS: Mantiene el servidor Node nativo, las APIs dinámicas y los proxies transparentes
     '/**': { prerender: true },
-    '/_nuxt/**': { headers: { 'cache-control': 'public, max-age=31536000, immutable' } },
-    '/assets/**': { headers: { 'cache-control': 'public, max-age=604800, stale-while-revalidate=2592000' } },
-    '/img/**': { headers: { 'cache-control': 'public, max-age=604800, stale-while-revalidate=2592000' } },
     '/api/**': { cors: true, prerender: false },
     '/ads-dashboard': { ssr: false, prerender: false },
     '/sitemap': { ssr: false, prerender: false },
     '/virtual/**': { proxy: 'https://admin.casitaiedis.edu.mx/virtual/**' },
     '/signatures/**': { proxy: 'https://admin.casitaiedis.edu.mx/signatures/**' }
-  },
-
-  experimental: {
-    defaults: {
-      nuxtLink: {
-        prefetch: false,
-        prefetchOn: { visibility: false, interaction: false }
-      }
-    }
   },
 
   vue: {
@@ -64,16 +50,41 @@ export default defineNuxtConfig({
         { rel: 'preconnect', href: 'https://fonts.gstatic.com', crossorigin: '' },
         { rel: 'stylesheet', href: 'https://fonts.googleapis.com/css2?family=Fredoka:wght@700&display=swap' },
         { rel: 'stylesheet', href: 'https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap' },
-        { rel: 'stylesheet', href: '/assets/css/legacy-styles.bundle.css' }
+        { rel: 'stylesheet', href: '/assets/css/bootstrap.css' },
+        { rel: 'stylesheet', href: '/assets/css/swiper-bundle.css' },
+        { rel: 'stylesheet', href: '/assets/css/magnific-popup.css' },
+        { rel: 'stylesheet', href: '/assets/css/font-awesome-pro.css' },
+        { rel: 'stylesheet', href: '/assets/css/spacing.css' },
+        { rel: 'stylesheet', href: '/assets/css/atropos.min.css' },
+        { rel: 'stylesheet', href: '/assets/css/main.css' }
       ],
       script: [
         { type: 'module', src: 'https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js' },
         { nomodule: true, src: 'https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js' },
         { src: 'https://www.clarity.ms/tag/jutz06e6ij', async: true },
         { src: 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1644096973273978', async: true, crossorigin: 'anonymous' },
-
-        // Ordered bundle of the same legacy theme scripts, built by scripts/build-legacy-assets.mjs.
-        { src: '/assets/js/legacy-vendor.bundle.js', tagPosition: 'bodyClose', defer: true }
+        
+        // Restauración completa de los scripts visuales del diseñador al final del body
+        { src: '/assets/js/vendor/jquery.js', tagPosition: 'bodyClose', defer: true },
+        { src: '/assets/js/bootstrap-bundle.js', tagPosition: 'bodyClose', defer: true },
+        { src: '/assets/js/plugin.js', tagPosition: 'bodyClose', defer: true },
+        { src: '/assets/js/three.js', tagPosition: 'bodyClose', defer: true },
+        { src: '/assets/js/hover-effect.umd.js', tagPosition: 'bodyClose', defer: true },
+        { src: '/assets/js/split-type.js', tagPosition: 'bodyClose', defer: true },
+        { src: '/assets/js/swiper-bundle.js', tagPosition: 'bodyClose', defer: true },
+        { src: '/assets/js/swiper-gl.js', tagPosition: 'bodyClose', defer: true },
+        { src: '/assets/js/effect-slicer.js', tagPosition: 'bodyClose', defer: true },
+        { src: '/assets/js/magnific-popup.js', tagPosition: 'bodyClose', defer: true },
+        { src: '/assets/js/nice-select.js', tagPosition: 'bodyClose', defer: true },
+        { src: '/assets/js/purecounter.js', tagPosition: 'bodyClose', defer: true },
+        { src: '/assets/js/isotope-pkgd.js', tagPosition: 'bodyClose', defer: true },
+        { src: '/assets/js/imagesloaded-pkgd.js', tagPosition: 'bodyClose', defer: true },
+        { src: '/assets/js/atropos.js', tagPosition: 'bodyClose', defer: true },
+        { src: '/assets/js/backtop.js', tagPosition: 'bodyClose', defer: true },
+        { src: '/assets/js/ajax-form.js', tagPosition: 'bodyClose', defer: true },
+        { src: '/assets/js/slider-init.js', tagPosition: 'bodyClose', defer: true },
+        { src: '/assets/js/main.js', tagPosition: 'bodyClose', defer: true },
+        { src: '/assets/js/tp-cursor.js', tagPosition: 'bodyClose', defer: true }
       ]
     }
   },
@@ -114,9 +125,6 @@ export default defineNuxtConfig({
     dbPassword: process.env.NUXT_DB_PASSWORD || process.env.DB_PASSWORD || '',
     public: {
       siteUrl: process.env.NUXT_PUBLIC_SITE_URL || 'https://casitaiedis.edu.mx',
-      adsEnabled: process.env.NUXT_PUBLIC_ADS_ENABLED !== 'false',
-      enableDynamicAdConfig: process.env.NUXT_PUBLIC_DYNAMIC_AD_CONFIG === 'true',
-      enableRouteOverrides: process.env.NUXT_PUBLIC_ENABLE_ROUTE_OVERRIDES === 'true',
     },
   },
 })
