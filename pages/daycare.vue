@@ -42,7 +42,7 @@
     </div>
     
     <div class="tp-about-me-banner scale-up-img">
-       <img class="img-cover scale-up" src="/assets/img/IECS-IEDIS IMAGES/thumb-daycare.webp" alt="About Thumbnail">
+       <img decoding="async" loading="lazy" class="img-cover scale-up" src="/assets/img/IECS-IEDIS IMAGES/thumb-daycare.webp" alt="About Thumbnail">
     </div>
     
     <div class="tp-service-details-area pt-60">
@@ -61,7 +61,7 @@
              <div class="col-lg-6">
                 <div class="tp-service-details-content mr-105 mb-40">
                    <p class="fs-18 lh-140-per mb-20">Sabemos que los primeros años de vida son clave para el desarrollo de tu hijo. Por eso, ofrecemos una experiencia educativa integral que promueve el desarrollo físico, cognitivo, emocional y social, en un ambiente lleno de contención y respeto.</p>
-                   <img class="tp-round-20 mt-20" src="/assets/img/IECS-IEDIS IMAGES/HUSKY-DAYCARE.webp" alt="">
+                   <img decoding="async" loading="lazy" class="tp-round-20 mt-20" src="/assets/img/IECS-IEDIS IMAGES/HUSKY-DAYCARE.webp" alt="">
                 </div>
              </div>
              <div class="col-lg-6">
@@ -87,7 +87,7 @@
              </div>
              <div class="col-lg-4 col-md-6">
                 <div class="tp-about-process-item tp-about-process-2-item tp-bg-common-white-2 mb-40">
-                   <img class="mr-30 mb-10" src="/assets/img/IECS-IEDIS IMAGES/IMSS-DAYCARE-600x505.webp" alt="">
+                   <img decoding="async" loading="lazy" class="mr-30 mb-10" src="/assets/img/IECS-IEDIS IMAGES/IMSS-DAYCARE-600x505.webp" alt="">
                    <h4 class="fs-35 fw-500 fs-lg-30 tp-text-common-black lh-130-per mb-10">Modalidad IMSS</h4>
                    <span class="tp-about-process-2-border d-block mb-20">
                       <svg viewBox="0 0 354 6" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5 2.5L0 0.113249V5.88675L5 3.5V2.5ZM349 3.5L354 5.88675V0.113249L349 2.5V3.5ZM4.5 3.5H349.5V2.5H4.5V3.5Z" fill="#030303" fill-opacity="0.1" /></svg>
@@ -97,7 +97,7 @@
              </div>
              <div class="col-lg-4 col-md-6">
                 <div class="tp-about-process-item tp-about-process-2-item tp-bg-common-white-2 mb-40">
-                   <img class="mr-30 mb-10" src="/assets/img/IECS-IEDIS IMAGES/ISSSTE-DAYCARE-600x505.webp" alt="">
+                   <img decoding="async" loading="lazy" class="mr-30 mb-10" src="/assets/img/IECS-IEDIS IMAGES/ISSSTE-DAYCARE-600x505.webp" alt="">
                    <h4 class="fs-35 fw-500 fs-lg-30 tp-text-common-black lh-130-per mb-10">Modalidad ISSSTE</h4>
                    <span class="tp-about-process-2-border d-block mb-20">
                       <svg viewBox="0 0 354 6" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5 2.5L0 0.113249V5.88675L5 3.5V2.5ZM349 3.5L354 5.88675V0.113249L349 2.5V3.5ZM4.5 3.5H349.5V2.5H4.5V3.5Z" fill="#030303" fill-opacity="0.1" /></svg>
@@ -107,7 +107,7 @@
              </div>
              <div class="col-lg-4 col-md-6">
                 <div class="tp-about-process-item tp-about-process-2-item tp-bg-common-white-2 mb-40">
-                   <img class="mr-30 mb-10" src="/assets/img/IECS-IEDIS IMAGES/PARTICULAR-DAYCARE-600x505.webp" alt="">
+                   <img decoding="async" loading="lazy" class="mr-30 mb-10" src="/assets/img/IECS-IEDIS IMAGES/PARTICULAR-DAYCARE-600x505.webp" alt="">
                    <h4 class="fs-35 fw-500 fs-lg-30 tp-text-common-black lh-130-per mb-10">Modalidad Particular</h4>
                    <span class="tp-about-process-2-border d-block mb-20">
                       <svg viewBox="0 0 354 6" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5 2.5L0 0.113249V5.88675L5 3.5V2.5ZM349 3.5L354 5.88675V0.113249L349 2.5V3.5ZM4.5 3.5H349.5V2.5H4.5V3.5Z" fill="#030303" fill-opacity="0.1" /></svg>
@@ -133,24 +133,24 @@
                    </div>
                    <div class="col-lg-6 col-md-6 mb-10">
                       <div class="tp-gallery-it-thumb fix scale-up-img h-100">
-                         <img class="w-100 scale-up h-100" src="/assets/img/IECS-IEDIS IMAGES/DAYCARE-SPACE1-475X475.webp" alt="">
+                         <img decoding="async" loading="lazy" class="w-100 scale-up h-100" src="/assets/img/IECS-IEDIS IMAGES/DAYCARE-SPACE1-475X475.webp" alt="">
                       </div>
                    </div>
                    <div class="col-lg-6 col-md-6 mb-10">
                       <div class="tp-gallery-it-thumb fix scale-up-img h-100">
-                         <img class="w-100 scale-up h-100" src="/assets/img/IECS-IEDIS IMAGES/DAYCARE-SPACE2-475X475.webp" alt="">
+                         <img decoding="async" loading="lazy" class="w-100 scale-up h-100" src="/assets/img/IECS-IEDIS IMAGES/DAYCARE-SPACE2-475X475.webp" alt="">
                       </div>
                    </div>
                    <div class="col-lg-6 col-md-6 mb-10">
                       <div class="tp-gallery-it-thumb fix scale-up-img h-100">
-                         <img class="w-100 scale-up h-100" src="/assets/img/IECS-IEDIS IMAGES/DAYCARE-SPACE4-475X475.webp" alt="">
+                         <img decoding="async" loading="lazy" class="w-100 scale-up h-100" src="/assets/img/IECS-IEDIS IMAGES/DAYCARE-SPACE4-475X475.webp" alt="">
                       </div>
                    </div>
                 </div>
              </div>
              <div class="col-lg-6 mb-10">
                 <div class="tp-gallery-it-thumb fix scale-up-img h-100">
-                   <img class="w-100 scale-up h-100" src="/assets/img/IECS-IEDIS IMAGES/DAYCARE-SPACE3-950X949.webp" alt="">
+                   <img decoding="async" loading="lazy" class="w-100 scale-up h-100" src="/assets/img/IECS-IEDIS IMAGES/DAYCARE-SPACE3-950X949.webp" alt="">
                 </div>
              </div>
           </div>

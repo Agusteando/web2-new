@@ -1,6 +1,12 @@
-import { defineNuxtPlugin, useAsyncData, addRouteMiddleware, navigateTo } from '#app';
+import { defineNuxtPlugin, useAsyncData, addRouteMiddleware, navigateTo, useRuntimeConfig } from '#app';
 
 export default defineNuxtPlugin(async () => {
+  const runtimeConfig = useRuntimeConfig();
+
+  if (!runtimeConfig.public.enableRouteOverrides) {
+    return;
+  }
+
   // Descarga segura del mapa de rutas durante SSR y lo hidrata al cliente (SPA).
   // Usamos una ruta pública de solo lectura para no chocar con el Ads-Auth.
   const { data: overrides } = await useAsyncData('sitemapOverrides', () =>

@@ -20,3 +20,12 @@ export function getDbPool() {
 
   return pool
 }
+
+
+export async function closeDbPool() {
+  if (!pool) return
+
+  const currentPool = pool
+  pool = null
+  await currentPool.end().catch(() => undefined)
+}

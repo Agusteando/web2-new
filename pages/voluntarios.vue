@@ -72,12 +72,12 @@
              </div>
              <div class="col-lg-4 col-md-6 mb-30 tp_fade_anim" data-delay="1.1">
                 <div class="tp-round-24 fix h-100 shadow-sm" style="background-color: #f3f4f6; aspect-ratio: 1/1;">
-                   <img class="w-100 h-100 zoom-on-hover" src="/assets/img/IECS-IEDIS IMAGES/funfact-g.webp" alt="Colecta de juguetes" style="object-fit: cover;">
+                   <img decoding="async" loading="lazy" class="w-100 h-100 zoom-on-hover" src="/assets/img/IECS-IEDIS IMAGES/funfact-g.webp" alt="Colecta de juguetes" style="object-fit: cover;">
                 </div>
              </div>
              <div class="col-lg-4 col-md-6 mb-30 tp_fade_anim" data-delay="1.2">
                 <div class="tp-round-24 fix h-100 shadow-sm" style="background-color: #f3f4f6; aspect-ratio: 1/1;">
-                   <img class="w-100 h-100 zoom-on-hover" src="/assets/img/IECS-IEDIS IMAGES/funfact-f.webp" alt="Alumnos participando" style="object-fit: cover;">
+                   <img decoding="async" loading="lazy" class="w-100 h-100 zoom-on-hover" src="/assets/img/IECS-IEDIS IMAGES/funfact-f.webp" alt="Alumnos participando" style="object-fit: cover;">
                 </div>
              </div>
           </div>

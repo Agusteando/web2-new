@@ -5,7 +5,9 @@
   "scripts": {
     "dev": "nuxt dev",
     "build": "nuxt build",
-    "start": "nuxt start"
+    "start": "nuxt start",
+    "build:legacy-assets": "node scripts/build-legacy-assets.mjs",
+    "prebuild": "npm run build:legacy-assets"
   },
   "dependencies": {
     "dotenv": "^17.2.3",

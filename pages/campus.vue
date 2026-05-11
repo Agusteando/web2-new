@@ -34,7 +34,7 @@
              <div v-for="(campus, index) in campuses" :key="index" class="col-lg-6 mb-40 tp_fade_anim" :data-delay="0.1 * (index % 2)">
                 <div class="tp-blog-ai-item tp-blog-md-item tp-bg-common-white tp-round-24 h-100" style="box-shadow: 0 10px 30px rgba(0,0,0,0.04); transition: transform 0.3s ease;">
                    <NuxtLink to="/ubicaciones" class="tp-round-top-24 w-100 fix p-relative d-block overflow-hidden" style="border-radius: 24px 24px 0 0;">
-                      <img class="w-100 tp-zoom-img" :src="campus.img" :alt="campus.title" style="aspect-ratio: 16/10; object-fit: cover; transition: transform 0.5s ease;">
+                      <img decoding="async" loading="lazy" class="w-100 tp-zoom-img" :src="campus.img" :alt="campus.title" style="aspect-ratio: 16/10; object-fit: cover; transition: transform 0.5s ease;">
                       <div class="position-absolute top-0 end-0 m-3 d-flex flex-column align-items-end gap-2">
                          <span v-for="(tag, i) in campus.tags" :key="i" class="badge rounded-pill shadow-sm" :style="{ backgroundColor: campus.color, color: '#fff', fontFamily: 'Montserrat, sans-serif', fontSize: '12px', fontWeight: '600', padding: '6px 12px' }">
                             {{ tag }}

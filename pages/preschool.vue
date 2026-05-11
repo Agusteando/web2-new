@@ -42,7 +42,7 @@
     </div>
     
     <div class="tp-about-me-banner scale-up-img">
-       <img class="img-cover scale-up" src="/assets/img/IECS-IEDIS IMAGES/thumb-preschool.jpg" alt="About Thumbnail">
+       <img decoding="async" loading="lazy" class="img-cover scale-up" src="/assets/img/IECS-IEDIS IMAGES/thumb-preschool.jpg" alt="About Thumbnail">
     </div>
     
     <div class="tp-service-details-area pt-60">
@@ -61,7 +61,7 @@
              <div class="col-lg-6">
                 <div class="tp-service-details-content mr-105 mb-40">
                    <p class="fs-18 lh-140-per mb-20">Sabemos que el preescolar es una de las etapas más importantes en la vida de tu hijo. Aquí, los niños aprenden jugando, explorando y compartiendo, mientras construyen los cimientos que los acompañarán durante toda su vida escolar.</p>
-                   <img class="tp-round-20 mt-20" src="/assets/img/IECS-IEDIS IMAGES/HUSKY-PRESCHOOL.webp" alt="">
+                   <img decoding="async" loading="lazy" class="tp-round-20 mt-20" src="/assets/img/IECS-IEDIS IMAGES/HUSKY-PRESCHOOL.webp" alt="">
                 </div>
              </div>
              <div class="col-lg-6">
@@ -91,24 +91,24 @@
                    </div>
                    <div class="col-lg-6 col-md-6 mb-10">
                       <div class="tp-gallery-it-thumb fix scale-up-img h-100">
-                         <img class="w-100 scale-up h-100" src="/assets/img/IECS-IEDIS IMAGES/PRESCHOOL-SPACE1-475X475.webp" alt="">
+                         <img decoding="async" loading="lazy" class="w-100 scale-up h-100" src="/assets/img/IECS-IEDIS IMAGES/PRESCHOOL-SPACE1-475X475.webp" alt="">
                       </div>
                    </div>
                    <div class="col-lg-6 col-md-6 mb-10">
                       <div class="tp-gallery-it-thumb fix scale-up-img h-100">
-                         <img class="w-100 scale-up h-100" src="/assets/img/IECS-IEDIS IMAGES/PRESCHOOL-SPACE2-475X475.webp" alt="">
+                         <img decoding="async" loading="lazy" class="w-100 scale-up h-100" src="/assets/img/IECS-IEDIS IMAGES/PRESCHOOL-SPACE2-475X475.webp" alt="">
                       </div>
                    </div>
                    <div class="col-lg-6 col-md-6 mb-10">
                       <div class="tp-gallery-it-thumb fix scale-up-img h-100">
-                         <img class="w-100 scale-up h-100" src="/assets/img/IECS-IEDIS IMAGES/PRESCHOOL-SPACE3-950X949.webp" alt="">
+                         <img decoding="async" loading="lazy" class="w-100 scale-up h-100" src="/assets/img/IECS-IEDIS IMAGES/PRESCHOOL-SPACE3-950X949.webp" alt="">
                       </div>
                    </div>
                 </div>
              </div>
              <div class="col-lg-6 mb-10">
                 <div class="tp-gallery-it-thumb fix scale-up-img h-100">
-                   <img class="w-100 scale-up h-100" src="/assets/img/IECS-IEDIS IMAGES/PRESCHOOL-SPACE4-950X949.webp" alt="">
+                   <img decoding="async" loading="lazy" class="w-100 scale-up h-100" src="/assets/img/IECS-IEDIS IMAGES/PRESCHOOL-SPACE4-950X949.webp" alt="">
                 </div>
              </div>
           </div>

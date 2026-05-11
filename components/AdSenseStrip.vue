@@ -35,21 +35,27 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 
-// Obtenemos la configuración global estática en build-time.
-// Esto permite que el componente inyecte la variable pre-generada y no realice ninguna llamada de red (0 invocaciones edge).
-const { data: config } = await useAsyncData('ad-config', () => $fetch('/api/ads/config'))
-
+const runtimeConfig = useRuntimeConfig()
 const decision = ref({ adsRendered: false })
 const isDevPreview = ref(false)
 
-onMounted(() => {
+onMounted(async () => {
   // Verifiable placement test: Force preview on localhost/127.0.0.1
   isDevPreview.value = import.meta.dev || ['localhost', '127.0.0.1'].includes(window.location.hostname)
 
   // La evaluación de las cookies se realiza estrictamente en el cliente
   const cookies = document.cookie || ''
   const isSuppressed = cookies.includes('ads_suppressed=true')
-  const globalEnabled = config.value?.global_ads_enabled ?? true
+  let globalEnabled = runtimeConfig.public.adsEnabled !== false
+
+  if (runtimeConfig.public.enableDynamicAdConfig) {
+    try {
+      const config = await $fetch('/api/ads/config')
+      globalEnabled = config?.global_ads_enabled ?? globalEnabled
+    } catch {
+      globalEnabled = runtimeConfig.public.adsEnabled !== false
+    }
+  }
 
   if (globalEnabled && !isSuppressed) {
     decision.value.adsRendered = true

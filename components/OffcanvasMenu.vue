@@ -13,7 +13,7 @@
             <div class="iecs-offcanvas-header mb-40">
               <div class="iecs-offcanvas-logo">
                 <NuxtLink to="/" @click="closeMenu">
-                  <img src="/assets/img/IECS-IEDIS IMAGES/IMAGOTIPOS-HORIZONTAL-IECS-IEDIS-GRADIENT.webp" alt="IECS-IEDIS Logo">
+                  <img decoding="async" loading="lazy" src="/assets/img/IECS-IEDIS IMAGES/IMAGOTIPOS-HORIZONTAL-IECS-IEDIS-GRADIENT.webp" alt="IECS-IEDIS Logo">
                 </NuxtLink>
               </div>
               <button class="iecs-offcanvas-close" @click="closeMenu" aria-label="Cerrar menú">
@@ -34,7 +34,7 @@
               <ul>
                 <div class="iecs-mobile-husky-pass text-left mb-30">
                   <a href="https://admin.casitaiedis.edu.mx/login.php" target="_blank" rel="noopener noreferrer" class="d-inline-block">
-                    <img src="/assets/img/IECS-IEDIS IMAGES/ID-HUSKY-PASS-HORIZONTAL.webp" alt="Husky Pass" style="width: 140px; height: auto; object-fit: contain;">
+                    <img decoding="async" loading="lazy" src="/assets/img/IECS-IEDIS IMAGES/ID-HUSKY-PASS-HORIZONTAL.webp" alt="Husky Pass" style="width: 140px; height: auto; object-fit: contain;">
                   </a>
                 </div>
                 
@@ -78,16 +78,16 @@
             <div class="iecs-offcanvas-gallery d-none d-xl-block mb-50">
               <div class="gallery-grid">
                 <NuxtLink to="/daycare" @click="closeMenu" class="gallery-item">
-                  <img src="/assets/img/IECS-IEDIS IMAGES/THUMB-DAYCARE-HAMBUERGER.webp" alt="Daycare / Guardería / Desarrollo Infantil">
+                  <img decoding="async" loading="lazy" src="/assets/img/IECS-IEDIS IMAGES/THUMB-DAYCARE-HAMBUERGER.webp" alt="Daycare / Guardería / Desarrollo Infantil">
                 </NuxtLink>
                 <NuxtLink to="/preschool" @click="closeMenu" class="gallery-item">
-                  <img src="/assets/img/IECS-IEDIS IMAGES/THUMB-PREESCOLAR-HAMBUERGER.webp" alt="Preescolar / Preschool">
+                  <img decoding="async" loading="lazy" src="/assets/img/IECS-IEDIS IMAGES/THUMB-PREESCOLAR-HAMBUERGER.webp" alt="Preescolar / Preschool">
                 </NuxtLink>
                 <NuxtLink to="/elementary-school" @click="closeMenu" class="gallery-item">
-                  <img src="/assets/img/IECS-IEDIS IMAGES/THUMB-PRIMARIA-HAMBUERGER.webp" alt="Primaria / Elementary School">
+                  <img decoding="async" loading="lazy" src="/assets/img/IECS-IEDIS IMAGES/THUMB-PRIMARIA-HAMBUERGER.webp" alt="Primaria / Elementary School">
                 </NuxtLink>
                 <NuxtLink to="/middle-school" @click="closeMenu" class="gallery-item">
-                  <img src="/assets/img/IECS-IEDIS IMAGES/THUMB-SECUNDARIA-HAMBUERGER.webp" alt="Secundaria / Middle School">
+                  <img decoding="async" loading="lazy" src="/assets/img/IECS-IEDIS IMAGES/THUMB-SECUNDARIA-HAMBUERGER.webp" alt="Secundaria / Middle School">
                 </NuxtLink>
               </div>
             </div>
