@@ -82,28 +82,28 @@
           <div class="row">
              <div class="col-lg-4 col-md-6 mb-30 tp_fade_anim" data-delay=".7">
                 <div class="tp-round-24 overflow-hidden position-relative group h-100 shadow-sm">
-                   <img class="w-100 h-100 zoom-on-hover husky-gallery-portrait" src="/assets/img/IECS-IEDIS IMAGES/504x644-sunny.webp" alt="Vida Husky Daycare">
+                   <img decoding="async" loading="lazy" class="w-100 h-100 zoom-on-hover husky-gallery-portrait" src="/assets/img/IECS-IEDIS IMAGES/504x644-sunny.webp" alt="Vida Husky Daycare">
                 </div>
              </div>
              <div class="col-lg-4 col-md-6 mb-30 tp_fade_anim" data-delay=".8">
                 <div class="tp-round-24 overflow-hidden position-relative group h-100 shadow-sm">
-                   <img class="w-100 h-100 zoom-on-hover husky-gallery-portrait" src="/assets/img/IECS-IEDIS IMAGES/504x644-joy.webp" alt="Vida Husky Preschool">
+                   <img decoding="async" loading="lazy" class="w-100 h-100 zoom-on-hover husky-gallery-portrait" src="/assets/img/IECS-IEDIS IMAGES/504x644-joy.webp" alt="Vida Husky Preschool">
                 </div>
              </div>
              <div class="col-lg-4 col-md-6 mb-30 tp_fade_anim" data-delay=".9">
                 <div class="tp-round-24 overflow-hidden position-relative group h-100 shadow-sm">
-                   <img class="w-100 h-100 zoom-on-hover husky-gallery-portrait" src="/assets/img/IECS-IEDIS IMAGES/504x644-brave.webp" alt="Vida Husky Elementary">
+                   <img decoding="async" loading="lazy" class="w-100 h-100 zoom-on-hover husky-gallery-portrait" src="/assets/img/IECS-IEDIS IMAGES/504x644-brave.webp" alt="Vida Husky Elementary">
                 </div>
              </div>
              <!-- Second row -->
              <div class="col-lg-6 col-md-6 mb-30 tp_fade_anim" data-delay="1.0">
                 <div class="tp-round-24 overflow-hidden position-relative group h-100 shadow-sm">
-                   <img class="w-100 h-100 zoom-on-hover husky-gallery-landscape" src="/assets/img/IECS-IEDIS IMAGES/DAYCARE-SPACE3-950X949.webp" alt="Instalaciones">
+                   <img decoding="async" loading="lazy" class="w-100 h-100 zoom-on-hover husky-gallery-landscape" src="/assets/img/IECS-IEDIS IMAGES/DAYCARE-SPACE3-950X949.webp" alt="Instalaciones">
                 </div>
              </div>
              <div class="col-lg-6 col-md-12 mb-30 tp_fade_anim" data-delay="1.1">
                 <div class="tp-round-24 overflow-hidden position-relative group h-100 shadow-sm">
-                   <img class="w-100 h-100 zoom-on-hover husky-gallery-landscape" src="/assets/img/IECS-IEDIS IMAGES/PRESCHOOL-SPACE4-950X949.webp" alt="Instalaciones">
+                   <img decoding="async" loading="lazy" class="w-100 h-100 zoom-on-hover husky-gallery-landscape" src="/assets/img/IECS-IEDIS IMAGES/PRESCHOOL-SPACE4-950X949.webp" alt="Instalaciones">
                 </div>
              </div>
           </div>

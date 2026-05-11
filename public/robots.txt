@@ -1,0 +1,10 @@
+User-agent: *
+Disallow: /api/
+Disallow: /ads-dashboard
+Disallow: /sitemap
+Disallow: /search/
+
+User-agent: AdsBot-Google
+Allow: /
+
+Host: https://casitaiedis.edu.mx

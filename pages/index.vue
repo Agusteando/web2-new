@@ -130,11 +130,11 @@
              <div class="col-xxl-3 col-xl-6 col-lg-6 col-md-6">
                 <div class="tp-feature-md-item tpshake-wrap d-flex mb-30 tp_fade_anim" data-delay=".3" data-duration="1" data-fade-from="bottom" data-ease="bounce" data-bg-color="#E8F4D9">
                    <div class="tp-feature-md-icon mr-30">
-                      <img class="tpshake" src="/assets/img/IECS-IEDIS IMAGES/40x42-icon-sunny.webp" alt="">
+                      <img decoding="async" loading="lazy" class="tpshake" src="/assets/img/IECS-IEDIS IMAGES/40x42-icon-sunny.webp" alt="">
                       <ion-icon name="paper-plane-outline"></ion-icon>
                    </div>
                    <div class="tp-feature-md-content">
-                      <img data-width="350" class="tpshake mb-20" src="/assets/img/IECS-IEDIS IMAGES/ID-HORIZONTAL-GUARDERIA.webp" alt="">
+                      <img decoding="async" loading="lazy" data-width="350" class="tpshake mb-20" src="/assets/img/IECS-IEDIS IMAGES/ID-HORIZONTAL-GUARDERIA.webp" alt="">
                       <h4 class="tp-ff-familjen fw-600 fs-24 lh-140-per ls-m-4 tp-text-common-black-5">¡ Creciendo con amor desde el primer día !</h4>
                       <p class="tp-ff-dm fs-18 lh-160-per ls-m-3 tp-text-common-black-6 opacity-8 mb-20">Sunny nos recuerda que cada pequeño gesto importa. En nuestra guardería, cuidamos, guiamos y despertamos la curiosidad desde los 43 días de nacidos.</p>
                       <NuxtLink to="/daycare" class="tp-feature-md-btn tp-btn-md hover-text-white d-inline-block tp-text-common-black-5 lh-1 fs-16 fw-700 tp-ff-dm">
@@ -149,11 +149,11 @@
              <div class="col-xxl-3 col-xl-6 col-lg-6 col-md-6">
                 <div class="tp-feature-md-item tpshake-wrap d-flex mb-30 tp_fade_anim" data-delay=".5" data-duration="1" data-fade-from="bottom" data-ease="bounce" data-bg-color="#F4D9D9">
                    <div class="tp-feature-md-icon mr-30">
-                      <img class="tpshake" src="/assets/img/IECS-IEDIS IMAGES/40x42-icon-joy.webp" alt="">
+                      <img decoding="async" loading="lazy" class="tpshake" src="/assets/img/IECS-IEDIS IMAGES/40x42-icon-joy.webp" alt="">
                       <ion-icon name="color-palette-outline"></ion-icon>
                    </div>
                    <div class="tp-feature-md-content">
-                      <img data-width="250" class="tpshake mb-20" src="/assets/img/IECS-IEDIS IMAGES/ID-HORIZONTAL-PREESCOLAR.webp" alt="">
+                      <img decoding="async" loading="lazy" data-width="250" class="tpshake mb-20" src="/assets/img/IECS-IEDIS IMAGES/ID-HORIZONTAL-PREESCOLAR.webp" alt="">
                       <h4 class="tp-ff-familjen fw-600 fs-24 lh-140-per ls-m-4 tp-text-common-black-5">¡ Aprender es un juego !</h4>
                       <p class="tp-ff-dm fs-18 lh-160-per ls-m-3 tp-text-common-black-6 opacity-8 mb-20">Joy juega, ríe y aprende rodeada de historias, colores y valores. En Preescolar sembramos la base de un aprendizaje feliz y significativo.</p>
                       <NuxtLink to="/preschool" class="tp-feature-md-btn tp-btn-md hover-text-white d-inline-block tp-text-common-black-5 lh-1 fs-16 fw-700 tp-ff-dm">
@@ -168,11 +168,11 @@
              <div class="col-xxl-3 col-xl-6 col-lg-6 col-md-6">
                 <div class="tp-feature-md-item tpshake-wrap d-flex mb-30 tp_fade_anim" data-delay=".7" data-duration="1" data-fade-from="bottom" data-ease="bounce" data-bg-color="#F4EFD9">
                    <div class="tp-feature-md-icon mr-30">
-                      <img class="tpshake" src="/assets/img/IECS-IEDIS IMAGES/40x42-icon-brave.webp" alt="">
+                      <img decoding="async" loading="lazy" class="tpshake" src="/assets/img/IECS-IEDIS IMAGES/40x42-icon-brave.webp" alt="">
                       <ion-icon name="telescope-outline"></ion-icon>
                    </div>
                    <div class="tp-feature-md-content">
-                      <img data-width="300" class="tpshake mb-20" src="/assets/img/IECS-IEDIS IMAGES/ID-HORIZONTAL-PRIMARIA.webp" alt="">
+                      <img decoding="async" loading="lazy" data-width="300" class="tpshake mb-20" src="/assets/img/IECS-IEDIS IMAGES/ID-HORIZONTAL-PRIMARIA.webp" alt="">
                       <h4 class="tp-ff-familjen fw-600 fs-24 lh-140-per ls-m-4 tp-text-common-black-5">¡ Desafios, una oportunidad para crear !</h4>
                       <p class="tp-ff-dm fs-18 lh-160-per ls-m-3 tp-text-common-black-6 opacity-8 mb-20">Brave enfrenta desafíos con empatía y decisión. En Primaria formamos pensadores, makers y niños conscientes de su entorno.</p>
                       <NuxtLink to="/elementary-school" class="tp-feature-md-btn tp-btn-md hover-text-white d-inline-block tp-text-common-black-5 lh-1 fs-16 fw-700 tp-ff-dm">
@@ -187,11 +187,11 @@
              <div class="col-xxl-3 col-xl-6 col-lg-6 col-md-6">
                 <div class="tp-feature-md-item tpshake-wrap d-flex mb-30 tp_fade_anim" data-delay=".9" data-duration="1" data-fade-from="bottom" data-ease="bounce" data-bg-color="#D9E9F4">
                    <div class="tp-feature-md-icon mr-30">
-                      <img class="tpshake" src="/assets/img/IECS-IEDIS IMAGES/40x42-icon-hope.webp" alt="">
+                      <img decoding="async" loading="lazy" class="tpshake" src="/assets/img/IECS-IEDIS IMAGES/40x42-icon-hope.webp" alt="">
                       <ion-icon name="finger-print-outline"></ion-icon>
                    </div>
                    <div class="tp-feature-md-content">
-                      <img data-width="250" class="tpshake mb-20" src="/assets/img/IECS-IEDIS IMAGES/ID-HORIZONTAL-SECUNDARIA.webp" alt="">
+                      <img decoding="async" loading="lazy" data-width="250" class="tpshake mb-20" src="/assets/img/IECS-IEDIS IMAGES/ID-HORIZONTAL-SECUNDARIA.webp" alt="">
                       <h4 class="tp-ff-familjen fw-600 fs-24 lh-140-per ls-m-4 tp-text-common-black-5">¡ Valores,que dejan huella !</h4>
                       <p class="tp-ff-dm fs-18 lh-160-per ls-m-3 tp-text-common-black-6 opacity-8 mb-20">Hope camina con respeto y propósito. En Secundaria cultivamos pensamiento crítico, liderazgo y un proyecto de vida sólido.</p>
                       <NuxtLink to="/middle-school" class="tp-feature-md-btn tp-btn-md hover-text-white d-inline-block tp-text-common-black-5 lh-1 fs-16 fw-700 tp-ff-dm">
@@ -210,10 +210,10 @@
     <!-- tp-about-area-start -->
     <div class="tp-about-area p-relative z-index-1 pb-160 tp-item-anime-area-md">
        <div class="tp-about-md-shape d-none d-lg-block">
-          <img class="has_fade_anim" data-fade-from="left" data-duration="2" data-delay="0.3" data-fade-offset="80" data-ease="bounce" src="/assets/img/IECS-IEDIS IMAGES/530x671-hands.webp" alt="">
+          <img decoding="async" loading="lazy" class="has_fade_anim" data-fade-from="left" data-duration="2" data-delay="0.3" data-fade-offset="80" data-ease="bounce" src="/assets/img/IECS-IEDIS IMAGES/530x671-hands.webp" alt="">
        </div>
        <div class="tp-about-md-shape-2">
-          <img class="has_fade_anim" data-fade-from="right" data-duration="2" data-delay="0.3" data-fade-offset="80" data-ease="bounce" src="/assets/img/IECS-IEDIS IMAGES/137x246-highlight.webp" alt="">
+          <img decoding="async" loading="lazy" class="has_fade_anim" data-fade-from="right" data-duration="2" data-delay="0.3" data-fade-offset="80" data-ease="bounce" src="/assets/img/IECS-IEDIS IMAGES/137x246-highlight.webp" alt="">
        </div>
        <h2 class="tp-about-md-bigtext fw-600 tp-ff-familjen ls-m-4 tp-item-anime-md marque d-none d-lg-block">Calidez</h2>
        <div class="container">
@@ -262,15 +262,15 @@
             <div class="tp-brand-wrap tp-hero-ai-brand pt-125">
                <div class="swiper tp-brand-slide-active">
                   <div class="swiper-wrapper slide-transtion">
-                     <div class="swiper-slide"><div class="tp-brand-item"><a href="#"><img src="/assets/img/IECS-IEDIS IMAGES/CAMBRIDGE-SPONSOR-450X446.webp" alt=""></a></div></div>
-                     <div class="swiper-slide"><div class="tp-brand-item"><a href="#"><img src="/assets/img/IECS-IEDIS IMAGES/APPLE-SPONSOR-450X446.webp" alt=""></a></div></div>
-                     <div class="swiper-slide"><div class="tp-brand-item"><a href="#"><img src="/assets/img/IECS-IEDIS IMAGES/UNOI-SPONSOR-450X446.webp" alt=""></a></div></div>
-                     <div class="swiper-slide"><div class="tp-brand-item"><a href="#"><img src="/assets/img/IECS-IEDIS IMAGES/TALLERES-SPONSOR-450X446.webp" alt=""></a></div></div>
-                     <div class="swiper-slide"><div class="tp-brand-item"><a href="#"><img src="/assets/img/IECS-IEDIS IMAGES/HUSKIES-SPONSOR-450X446.webp" alt=""></a></div></div>
-                     <div class="swiper-slide"><div class="tp-brand-item"><a href="#"><img src="/assets/img/IECS-IEDIS IMAGES/INOVATIQ-SPONSOR-450X446.webp" alt=""></a></div></div>
-                     <div class="swiper-slide"><div class="tp-brand-item"><a href="#"><img src="/assets/img/IECS-IEDIS IMAGES/ORDEREAT-SPONSOR-450X446.webp" alt=""></a></div></div>
-                     <div class="swiper-slide"><div class="tp-brand-item"><a href="#"><img src="/assets/img/IECS-IEDIS IMAGES/HABILMIND-SPONSOR-450X446.webp" alt=""></a></div></div>
-                     <div class="swiper-slide"><div class="tp-brand-item"><a href="#"><img src="/assets/img/IECS-IEDIS IMAGES/DISCOVERY-SPONSOR-450X446.webp" alt=""></a></div></div>
+                     <div class="swiper-slide"><div class="tp-brand-item"><a href="#"><img decoding="async" loading="lazy" src="/assets/img/IECS-IEDIS IMAGES/CAMBRIDGE-SPONSOR-450X446.webp" alt=""></a></div></div>
+                     <div class="swiper-slide"><div class="tp-brand-item"><a href="#"><img decoding="async" loading="lazy" src="/assets/img/IECS-IEDIS IMAGES/APPLE-SPONSOR-450X446.webp" alt=""></a></div></div>
+                     <div class="swiper-slide"><div class="tp-brand-item"><a href="#"><img decoding="async" loading="lazy" src="/assets/img/IECS-IEDIS IMAGES/UNOI-SPONSOR-450X446.webp" alt=""></a></div></div>
+                     <div class="swiper-slide"><div class="tp-brand-item"><a href="#"><img decoding="async" loading="lazy" src="/assets/img/IECS-IEDIS IMAGES/TALLERES-SPONSOR-450X446.webp" alt=""></a></div></div>
+                     <div class="swiper-slide"><div class="tp-brand-item"><a href="#"><img decoding="async" loading="lazy" src="/assets/img/IECS-IEDIS IMAGES/HUSKIES-SPONSOR-450X446.webp" alt=""></a></div></div>
+                     <div class="swiper-slide"><div class="tp-brand-item"><a href="#"><img decoding="async" loading="lazy" src="/assets/img/IECS-IEDIS IMAGES/INOVATIQ-SPONSOR-450X446.webp" alt=""></a></div></div>
+                     <div class="swiper-slide"><div class="tp-brand-item"><a href="#"><img decoding="async" loading="lazy" src="/assets/img/IECS-IEDIS IMAGES/ORDEREAT-SPONSOR-450X446.webp" alt=""></a></div></div>
+                     <div class="swiper-slide"><div class="tp-brand-item"><a href="#"><img decoding="async" loading="lazy" src="/assets/img/IECS-IEDIS IMAGES/HABILMIND-SPONSOR-450X446.webp" alt=""></a></div></div>
+                     <div class="swiper-slide"><div class="tp-brand-item"><a href="#"><img decoding="async" loading="lazy" src="/assets/img/IECS-IEDIS IMAGES/DISCOVERY-SPONSOR-450X446.webp" alt=""></a></div></div>
                   </div>
                </div>
             </div>
@@ -342,7 +342,7 @@
              <div class="tp-portfolio-md-inner-wrap">
                 <div class="tp-portfolio-md-item">
                    <div class="tp-portfolio-md-thumb not-hide-cursor mb-40" data-cursor="View<br>Demo">
-                      <NuxtLink class="cursor-hide" to="/escuela-padres"><img src="/assets/img/IECS-IEDIS IMAGES/836x720-escuela-padres.webp" alt=""></NuxtLink>
+                      <NuxtLink class="cursor-hide" to="/escuela-padres"><img decoding="async" loading="lazy" src="/assets/img/IECS-IEDIS IMAGES/836x720-escuela-padres.webp" alt=""></NuxtLink>
                    </div>
                    <div class="tp-portfolio-md-content">
                       <span class="tp-portfolio-md-tag tp-round-36 tp-ff-dm fw-600 ls-m-2 tp-text-common-black-5 mb-10 d-inline-block">-</span>
@@ -351,7 +351,7 @@
                 </div>
                 <div class="tp-portfolio-md-item">
                    <div class="tp-portfolio-md-thumb not-hide-cursor mb-40" data-cursor="View<br>Demo">
-                      <NuxtLink class="cursor-hide" to="/talleres-inteligentes"><img src="/assets/img/IECS-IEDIS IMAGES/836x720-talleresinteligentes.webp" alt=""></NuxtLink>
+                      <NuxtLink class="cursor-hide" to="/talleres-inteligentes"><img decoding="async" loading="lazy" src="/assets/img/IECS-IEDIS IMAGES/836x720-talleresinteligentes.webp" alt=""></NuxtLink>
                    </div>
                    <div class="tp-portfolio-md-content">
                       <span class="tp-portfolio-md-tag tp-round-36 tp-ff-dm fw-600 ls-m-2 tp-text-common-black-5 mb-10 d-inline-block">-</span>
@@ -360,7 +360,7 @@
                 </div>
                 <div class="tp-portfolio-md-item">
                    <div class="tp-portfolio-md-thumb not-hide-cursor mb-40" data-cursor="View<br>Demo">
-                      <a class="cursor-hide" href="#"><img src="/assets/img/IECS-IEDIS IMAGES/836x720-eventos.webp" alt=""></a>
+                      <a class="cursor-hide" href="#"><img decoding="async" loading="lazy" src="/assets/img/IECS-IEDIS IMAGES/836x720-eventos.webp" alt=""></a>
                    </div>
                    <div class="tp-portfolio-md-content">
                       <span class="tp-portfolio-md-tag tp-round-36 tp-ff-dm fw-600 ls-m-2 tp-text-common-black-5 mb-10 d-inline-block">-</span>
@@ -434,7 +434,7 @@
                                <div class="atropos-scale">
                                   <div class="atropos-rotate">
                                      <div class="atropos-inner">
-                                        <img data-atropos-offset="-4.5" src="/assets/img/IECS-IEDIS IMAGES/581x680-husky-callcenter.webp" alt="">
+                                        <img decoding="async" loading="lazy" data-atropos-offset="-4.5" src="/assets/img/IECS-IEDIS IMAGES/581x680-husky-callcenter.webp" alt="">
                                      </div>
                                   </div>
                                </div>
@@ -442,7 +442,7 @@
                          </div>
                       </div>
                    </atropos-component>
-                   <img class="tp-faq-md-shape upslide" src="/assets/img/faq/md/shape.png" alt="">
+                   <img decoding="async" loading="lazy" class="tp-faq-md-shape upslide" src="/assets/img/faq/md/shape.png" alt="">
                 </div>
              </div>
           </div>
@@ -474,7 +474,7 @@
     
     <!-- tp-video-area-start -->
     <div class="tp-video-area tp-video-md-spacing scale-up-img p-relative">
-       <img class="tp-video-md-bg img-cover scale-up" data-speed=".8" src="/assets/img/IECS-IEDIS IMAGES/1920x860-video-cover.webp" alt="">
+       <img decoding="async" loading="lazy" class="tp-video-md-bg img-cover scale-up" data-speed=".8" src="/assets/img/IECS-IEDIS IMAGES/1920x860-video-cover.webp" alt="">
        <div class="tp-video-main tp-video-md-wrap">
           <a class="tp-video-md-btn popup-video video-animetion" href="https://www.youtube.com/watch?v=cwX1iPY2kJE">
              <span>
@@ -498,42 +498,42 @@
                             <div class="row gx-20">
                                <div class="col-lg-3 col-sm-4 col-6">
                                   <div class="tp-funfact-img mb-20 tp_fade_anim" data-delay=".3">
-                                     <img src="/assets/img/IECS-IEDIS IMAGES/funfact-1.webp" alt="">
+                                     <img decoding="async" loading="lazy" src="/assets/img/IECS-IEDIS IMAGES/funfact-1.webp" alt="">
                                   </div>
                                </div>
                                <div class="col-lg-3 col-sm-4 col-6">
                                   <div class="tp-funfact-img mb-20 tp_fade_anim" data-delay=".5">
-                                     <img src="/assets/img/IECS-IEDIS IMAGES/funfact-2.webp" alt="">
+                                     <img decoding="async" loading="lazy" src="/assets/img/IECS-IEDIS IMAGES/funfact-2.webp" alt="">
                                   </div>
                                </div>
                                <div class="col-lg-3 col-sm-4 col-6">
                                   <div class="tp-funfact-img mb-20 tp_fade_anim" data-delay=".7">
-                                     <img src="/assets/img/IECS-IEDIS IMAGES/funfact-3.webp" alt="">
+                                     <img decoding="async" loading="lazy" src="/assets/img/IECS-IEDIS IMAGES/funfact-3.webp" alt="">
                                   </div>
                                </div>
                                <div class="col-lg-3 col-sm-4 col-6">
                                   <div class="tp-funfact-img mb-20 tp_fade_anim" data-delay=".9">
-                                     <img src="/assets/img/funfact/funfact-placeholder-2.png" alt="">
+                                     <img decoding="async" loading="lazy" src="/assets/img/funfact/funfact-placeholder-2.png" alt="">
                                   </div>
                                </div>
                                <div class="col-lg-3 col-sm-4 col-6">
                                   <div class="tp-funfact-img mb-20 tp_fade_anim" data-delay="1">
-                                     <img src="/assets/img/IECS-IEDIS IMAGES/funfact-5.webp" alt="">
+                                     <img decoding="async" loading="lazy" src="/assets/img/IECS-IEDIS IMAGES/funfact-5.webp" alt="">
                                   </div>
                                </div>
                                <div class="col-lg-3 col-sm-4 col-6">
                                   <div class="tp-funfact-img mb-20 tp_fade_anim" data-delay="1.1">
-                                     <img src="/assets/img/funfact/funfact-placeholder-2.png" alt="">
+                                     <img decoding="async" loading="lazy" src="/assets/img/funfact/funfact-placeholder-2.png" alt="">
                                   </div>
                                </div>
                                <div class="col-lg-3 col-sm-4 col-6">
                                   <div class="tp-funfact-img mb-20 tp_fade_anim" data-delay="1.2">
-                                     <img src="/assets/img/IECS-IEDIS IMAGES/funfact-8.webp" alt="">
+                                     <img decoding="async" loading="lazy" src="/assets/img/IECS-IEDIS IMAGES/funfact-8.webp" alt="">
                                   </div>
                                </div>
                                <div class="col-lg-3 col-sm-4 col-6">
                                   <div class="tp-funfact-img mb-20 tp_fade_anim" data-delay="1.3">
-                                     <img src="/assets/img/IECS-IEDIS IMAGES/funfact-4.webp " alt="">
+                                     <img decoding="async" loading="lazy" src="/assets/img/IECS-IEDIS IMAGES/funfact-4.webp" alt="">
                                   </div>
                                </div>
                             </div>
@@ -556,29 +556,29 @@
                                   <div class="row gx-20">
                                      <div class="col-lg-6 col-sm-4 col-6">
                                         <div class="tp-funfact-img mb-20 tp_fade_anim" data-delay="1.4">
-                                           <img src="/assets/img/funfact/funfact-placeholder.png" alt="">
+                                           <img decoding="async" loading="lazy" src="/assets/img/funfact/funfact-placeholder.png" alt="">
                                         </div>
                                      </div>
                                      <div class="col-lg-6 col-sm-4 col-6">
                                         <div class="tp-funfact-img mb-20 tp_fade_anim" data-delay="1.5">
-                                           <img src="/assets/img/IECS-IEDIS IMAGES/funfact-4.webp" alt="">
+                                           <img decoding="async" loading="lazy" src="/assets/img/IECS-IEDIS IMAGES/funfact-4.webp" alt="">
                                         </div>
                                      </div>
                                      <div class="col-lg-6 col-sm-4 col-6">
                                         <div class="tp-funfact-img mb-20 tp_fade_anim" data-delay="1.6">
-                                           <img src="/assets/img/IECS-IEDIS IMAGES/funfact-6.webp" alt="">
+                                           <img decoding="async" loading="lazy" src="/assets/img/IECS-IEDIS IMAGES/funfact-6.webp" alt="">
                                         </div>
                                      </div>
                                      <div class="col-lg-6 col-sm-4 col-6">
                                         <div class="tp-funfact-img mb-20 tp_fade_anim" data-delay="1.7">
-                                           <img src="/assets/img/funfact/funfact-placeholder-2.png" alt="">
+                                           <img decoding="async" loading="lazy" src="/assets/img/funfact/funfact-placeholder-2.png" alt="">
                                         </div>
                                      </div>
                                   </div>
                                </div>
                                <div class="col-lg-6">
                                   <div class="tp-funfact-big-img mb-20 tp-text-bounce" data-delay=".7">
-                                     <img src="/assets/img/IECS-IEDIS IMAGES/funfact-6.png" alt="">
+                                     <img decoding="async" loading="lazy" src="/assets/img/IECS-IEDIS IMAGES/funfact-6.png" alt="">
                                   </div>
                                </div>
                             </div>
@@ -597,42 +597,42 @@
                             <div class="row gx-20">
                                <div class="col-lg-3 col-sm-4 col-6">
                                   <div class="tp-funfact-img mb-20 tp_fade_anim" data-delay=".3">
-                                     <img src="/assets/img/IECS-IEDIS IMAGES/funfact-a.webp" alt="">
+                                     <img decoding="async" loading="lazy" src="/assets/img/IECS-IEDIS IMAGES/funfact-a.webp" alt="">
                                   </div>
                                </div>
                                <div class="col-lg-3 col-sm-4 col-6">
                                   <div class="tp-funfact-img mb-20 tp_fade_anim" data-delay=".5">
-                                    <img src="/assets/img/IECS-IEDIS IMAGES/funfact-b.webp" alt="">
+                                    <img decoding="async" loading="lazy" src="/assets/img/IECS-IEDIS IMAGES/funfact-b.webp" alt="">
                                   </div>
                                </div>
                                <div class="col-lg-3 col-sm-4 col-6">
                                   <div class="tp-funfact-img mb-20 tp_fade_anim" data-delay=".7">
-                                     <img src="/assets/img/IECS-IEDIS IMAGES/funfact-c.webp" alt="">
+                                     <img decoding="async" loading="lazy" src="/assets/img/IECS-IEDIS IMAGES/funfact-c.webp" alt="">
                                   </div>
                                </div>
                                <div class="col-lg-3 col-sm-4 col-6">
                                   <div class="tp-funfact-img mb-20 tp_fade_anim" data-delay=".9">
-                                     <img src="/assets/img/funfact/funfact-placeholder-3.png" alt="">
+                                     <img decoding="async" loading="lazy" src="/assets/img/funfact/funfact-placeholder-3.png" alt="">
                                   </div>
                                </div>
                                <div class="col-lg-3 col-sm-4 col-6">
                                   <div class="tp-funfact-img mb-20 tp_fade_anim" data-delay="1">
-                                     <img src="/assets/img/funfact/funfact-placeholder-3.png" alt="">
+                                     <img decoding="async" loading="lazy" src="/assets/img/funfact/funfact-placeholder-3.png" alt="">
                                   </div>
                                </div>
                                <div class="col-lg-3 col-sm-4 col-6">
                                   <div class="tp-funfact-img mb-20 tp_fade_anim" data-delay="1.1">
-                                     <img src="/assets/img/IECS-IEDIS IMAGES/funfact-d.webp" alt="">
+                                     <img decoding="async" loading="lazy" src="/assets/img/IECS-IEDIS IMAGES/funfact-d.webp" alt="">
                                   </div>
                                </div>
                                <div class="col-lg-3 col-sm-4 col-6">
                                   <div class="tp-funfact-img mb-20 tp_fade_anim" data-delay="1.2">
-                                     <img src="/assets/img/funfact/funfact-placeholder-3.png" alt="">
+                                     <img decoding="async" loading="lazy" src="/assets/img/funfact/funfact-placeholder-3.png" alt="">
                                   </div>
                                </div>
                                <div class="col-lg-3 col-sm-4 col-6">
                                   <div class="tp-funfact-img mb-20 tp_fade_anim" data-delay="1.3">
-                                     <img src="/assets/img/funfact/funfact-placeholder-2.png" alt="">
+                                     <img decoding="async" loading="lazy" src="/assets/img/funfact/funfact-placeholder-2.png" alt="">
                                   </div>
                                </div>
                             </div>
@@ -655,29 +655,29 @@
                                   <div class="row gx-20">
                                      <div class="col-lg-6 col-sm-4 col-6">
                                         <div class="tp-funfact-img mb-20 tp_fade_anim" data-delay="1.4">
-                                           <img src="/assets/img/funfact/funfact-placeholder.png" alt="">
+                                           <img decoding="async" loading="lazy" src="/assets/img/funfact/funfact-placeholder.png" alt="">
                                         </div>
                                      </div>
                                      <div class="col-lg-6 col-sm-4 col-6">
                                         <div class="tp-funfact-img mb-20 tp_fade_anim" data-delay="1.5">
-                                           <img src="/assets/img/IECS-IEDIS IMAGES/funfact-f.webp" alt="">
+                                           <img decoding="async" loading="lazy" src="/assets/img/IECS-IEDIS IMAGES/funfact-f.webp" alt="">
                                         </div>
                                      </div>
                                      <div class="col-lg-6 col-sm-4 col-6">
                                         <div class="tp-funfact-img mb-20 tp_fade_anim" data-delay="1.6">
-                                           <img src="/assets/img/funfact/funfact-placeholder-3.png" alt="">
+                                           <img decoding="async" loading="lazy" src="/assets/img/funfact/funfact-placeholder-3.png" alt="">
                                         </div>
                                      </div>
                                      <div class="col-lg-6 col-sm-4 col-6">
                                         <div class="tp-funfact-img mb-20 tp_fade_anim" data-delay="1.7">
-                                           <img src="/assets/img/IECS-IEDIS IMAGES/funfact-g.webp" alt="">
+                                           <img decoding="async" loading="lazy" src="/assets/img/IECS-IEDIS IMAGES/funfact-g.webp" alt="">
                                         </div>
                                      </div>
                                   </div>
                                </div>
                                <div class="col-lg-6">
                                   <div class="tp-funfact-big-img mb-20 tp-text-bounce" data-delay=".7">
-                                     <img src="/assets/img/IECS-IEDIS IMAGES/funfact-7.webp" alt="">
+                                     <img decoding="async" loading="lazy" src="/assets/img/IECS-IEDIS IMAGES/funfact-7.webp" alt="">
                                   </div>
                                </div>
                             </div>
@@ -693,10 +693,10 @@
                    <div class="row">
                       <div class="col-12">
                          <div class="tp-funfact-content-wrap p-relative z-index-1">
-                            <img class="tp-funfact-yellow-shape tp_fade_anim d-none d-md-block" data-delay="1.6" src="/assets/img/IECS-IEDIS IMAGES/funfact-A1.webp" alt="">
-                            <img class="tp-funfact-yellow-shape-2 tp_fade_anim d-none d-md-block" data-delay="1.7" src="/assets/img/IECS-IEDIS IMAGES/funfact-A2.webp" alt="">
-                            <img class="tp-funfact-yellow-shape-3 tp_fade_anim d-none d-md-block" data-delay="1.8" src="/assets/img/IECS-IEDIS IMAGES/funfact-A3.webp" alt="">
-                            <img class="tp-funfact-yellow-shape-4 tp_fade_anim d-none d-md-block" data-delay="1.9" src="/assets/img/IECS-IEDIS IMAGES/funfact-A4.webp" alt="">
+                            <img decoding="async" loading="lazy" class="tp-funfact-yellow-shape tp_fade_anim d-none d-md-block" data-delay="1.6" src="/assets/img/IECS-IEDIS IMAGES/funfact-A1.webp" alt="">
+                            <img decoding="async" loading="lazy" class="tp-funfact-yellow-shape-2 tp_fade_anim d-none d-md-block" data-delay="1.7" src="/assets/img/IECS-IEDIS IMAGES/funfact-A2.webp" alt="">
+                            <img decoding="async" loading="lazy" class="tp-funfact-yellow-shape-3 tp_fade_anim d-none d-md-block" data-delay="1.8" src="/assets/img/IECS-IEDIS IMAGES/funfact-A3.webp" alt="">
+                            <img decoding="async" loading="lazy" class="tp-funfact-yellow-shape-4 tp_fade_anim d-none d-md-block" data-delay="1.9" src="/assets/img/IECS-IEDIS IMAGES/funfact-A4.webp" alt="">
                             <div class="tp-funfact-number text-center">
                                <h3 class="tp-ff-familjen fs-60 fs-xl-50 lh-1 ls-m-4 tp-text-common-black-5 mb-0 tp_fade_anim" data-delay=".3">Una comunidad que <br> crece contigo.</h3>
                                <span class="tp_fade_anim fs-20" data-delay=".5"><em>#</em>IECS-IEDIS</span>
@@ -739,7 +739,7 @@
                 <div class="tp-blog-ai-item tp-blog-md-item tp--hover-item tp-round-24 mb-30">
                    <NuxtLink :to="`/noticias/${n.id}`" class="tp-round-24 w-100 fix p-relative d-inline-block">
                       <div class="tp-blog-ai-thumb w-100 tp--hover-img tp-round-24" data-displacement="assets/img/imghover/stripe-mul.png" data-intensity="0.2" data-speedin="1" data-speedout="1">
-                         <img class="tp-round-24 w-100" :src="resolveImage(n.imagen, i)" alt="">
+                         <img decoding="async" loading="lazy" class="tp-round-24 w-100" :src="resolveImage(n.imagen, i)" alt="">
                       </div>
                    </NuxtLink>
                    <div class="tp-blog-ai-content tp-blog-md-content text-center">

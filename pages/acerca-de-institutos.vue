@@ -83,7 +83,7 @@
              </div>
              <div class="col-lg-6 mb-40 tp_fade_anim" data-delay=".6">
                 <div class="tp-round-24 overflow-hidden" style="box-shadow: 0 20px 40px rgba(0,0,0,0.08);">
-                   <img src="/assets/img/IECS-IEDIS IMAGES/MIDDLE-SPACE4-950X949.webp" alt="Crecimiento IEDIS" class="w-100" style="aspect-ratio: 4/3; object-fit: cover;">
+                   <img decoding="async" loading="lazy" src="/assets/img/IECS-IEDIS IMAGES/MIDDLE-SPACE4-950X949.webp" alt="Crecimiento IEDIS" class="w-100" style="aspect-ratio: 4/3; object-fit: cover;">
                 </div>
              </div>
           </div>
