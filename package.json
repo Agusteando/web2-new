@@ -7,7 +7,8 @@
     "build": "nuxt build",
     "start": "nuxt start",
     "build:legacy-assets": "node scripts/build-legacy-assets.mjs",
-    "prebuild": "npm run build:legacy-assets"
+    "prebuild": "npm run build:legacy-assets",
+    "verify:font-assets": "node scripts/verify-font-assets.mjs"
   },
   "dependencies": {
     "dotenv": "^17.2.3",
