@@ -33,7 +33,7 @@
             <nav class="iecs-offcanvas-mobile-nav d-xl-none mb-40">
               <ul>
                 <div class="iecs-mobile-husky-pass text-left mb-30">
-                  <a href="https://admin.casitaiedis.edu.mx/login.php" target="_blank" rel="noopener noreferrer" class="d-inline-block">
+                  <a href="https://admin.casitaiedis.edu.mx" target="_blank" rel="noopener noreferrer" class="d-inline-block">
                     <img decoding="async" loading="lazy" src="/assets/img/IECS-IEDIS IMAGES/ID-HUSKY-PASS-HORIZONTAL.webp" alt="Husky Pass" style="width: 140px; height: auto; object-fit: contain;">
                   </a>
                 </div>
