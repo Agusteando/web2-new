@@ -1,1 +1,1 @@
-Corrige la composición visual de noticias en la página de inicio
+Configura renderizado híbrido para contenido dinámico y páginas estáticas

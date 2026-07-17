@@ -1,6 +1,26 @@
 const isProd = process.env.NODE_ENV === 'production'
-// Detección automática del entorno Vercel para habilitar una salida híbrida.
-const isVercel = !!process.env.VERCEL || process.env.VERCEL_ENV !== undefined
+const isVercel = Boolean(process.env.VERCEL || process.env.VERCEL_ENV !== undefined)
+
+const dynamicContentTtl = 300
+
+const staticPublicRoutes = [
+  '/acerca-de-institutos',
+  '/aviso-legal',
+  '/campus',
+  '/convenios',
+  '/daycare',
+  '/elementary-school',
+  '/escuela-padres',
+  '/middle-school',
+  '/politica-privacidad',
+  '/preguntas-frecuentes',
+  '/preschool',
+  '/talleres-inteligentes',
+  '/terminos-condiciones',
+  '/ubicaciones',
+  '/vida-husky',
+  '/voluntarios',
+]
 
 export default defineNuxtConfig({
   ssr: true,
@@ -8,27 +28,61 @@ export default defineNuxtConfig({
 
   compatibilityDate: '2025-12-13',
 
-  routeRules: isVercel ? {
-    // Las páginas públicas continúan prerenderizadas; noticias usa API en tiempo de ejecución.
+  routeRules: {
+    // Public informational pages are emitted as static HTML at build time.
     '/**': { prerender: true },
+
+    // The homepage and news remain server-rendered so new MySQL content is
+    // present in the initial HTML without requiring a new deployment.
+    '/': { prerender: false, swr: dynamicContentTtl },
+    '/noticias': { prerender: false, swr: dynamicContentTtl },
+    '/noticias/**': { prerender: false, swr: dynamicContentTtl },
+
+    // APIs always execute at runtime. Preserve the current CORS behavior;
+    // future write endpoints can add stricter authentication and origin rules.
     '/api/**': { cors: true, prerender: false },
-    '/noticias/**': { ssr: false, prerender: false },
-    '/ads-dashboard': { ssr: false, prerender: false },
-    '/sitemap': { ssr: false, prerender: false },
-    '/_nuxt/**': { headers: { 'cache-control': 'public, max-age=31536000, immutable' } },
-    '/assets/**': { headers: { 'cache-control': 'public, max-age=604800, stale-while-revalidate=2592000' } },
-    '/img/**': { headers: { 'cache-control': 'public, max-age=604800, stale-while-revalidate=2592000' } }
-  } : {
-    // En PM2/IIS: Mantiene el servidor Node nativo, las APIs dinámicas y los proxies transparentes
-    '/**': { prerender: true },
-    '/_nuxt/**': { headers: { 'cache-control': 'public, max-age=31536000, immutable' } },
-    '/assets/**': { headers: { 'cache-control': 'public, max-age=604800, stale-while-revalidate=2592000' } },
-    '/img/**': { headers: { 'cache-control': 'public, max-age=604800, stale-while-revalidate=2592000' } },
-    '/api/**': { cors: true, prerender: false },
-    '/ads-dashboard': { ssr: false, prerender: false },
-    '/sitemap': { ssr: false, prerender: false },
+    '/api/noticias': { prerender: false, swr: dynamicContentTtl },
+    '/api/noticias/**': { prerender: false, swr: dynamicContentTtl },
+
+    // Private tools remain client-only and must never be cached or prerendered.
+    '/ads-dashboard': {
+      ssr: false,
+      prerender: false,
+      headers: { 'cache-control': 'private, no-store' },
+    },
+    '/ads-dashboard/**': {
+      ssr: false,
+      prerender: false,
+      headers: { 'cache-control': 'private, no-store' },
+    },
+    '/sitemap': {
+      ssr: false,
+      prerender: false,
+      headers: { 'cache-control': 'private, no-store' },
+    },
+
+    // The XML sitemap is generated from the current database state at runtime.
+    '/sitemap.xml': { prerender: false, swr: dynamicContentTtl },
+
+    '/_nuxt/**': {
+      headers: {
+        'cache-control': 'public, max-age=31536000, immutable',
+      },
+    },
+    '/assets/**': {
+      headers: {
+        'cache-control': 'public, max-age=604800, stale-while-revalidate=2592000',
+      },
+    },
+    '/img/**': {
+      headers: {
+        'cache-control': 'public, max-age=604800, stale-while-revalidate=2592000',
+      },
+    },
+
+    // Preserve the existing admin-site proxy behavior outside IIS.
     '/virtual/**': { proxy: 'https://admin.casitaiedis.edu.mx/virtual/**' },
-    '/signatures/**': { proxy: 'https://admin.casitaiedis.edu.mx/signatures/**' }
+    '/signatures/**': { proxy: 'https://admin.casitaiedis.edu.mx/signatures/**' },
   },
 
   experimental: {
@@ -73,7 +127,6 @@ export default defineNuxtConfig({
         { type: 'module', src: 'https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js' },
         { nomodule: true, src: 'https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js' },
         { src: 'https://www.clarity.ms/tag/jutz06e6ij', async: true },
-        { src: 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1644096973273978', async: true, crossorigin: 'anonymous' },
 
         // Ordered bundle of the same legacy theme scripts, built by scripts/build-legacy-assets.mjs.
         { src: '/assets/js/legacy-vendor.bundle.js', tagPosition: 'bodyClose', defer: true }
@@ -92,20 +145,19 @@ export default defineNuxtConfig({
       '**/server/middleware/legacy-html.ts',
       '**/server/routes/virtual/\\[blob\\].get.ts'
     ],
-    // Vercel conserva páginas estáticas y despliega las APIs de noticias como funciones Node.
+    // Keep runtime rendering and APIs available on both deployment targets.
     preset: isVercel ? 'vercel' : (isProd ? 'node-server' : undefined),
     prerender: {
-      // Evita que el crawler intente generar rutas privadas o dependientes de datos en vivo.
-      failOnError: false,
+      // Fail the build when a public static page cannot be generated.
+      failOnError: true,
+      crawlLinks: true,
+      routes: staticPublicRoutes,
       ignore: [
-        '/ads-dashboard',
+        '/noticias',
         '/sitemap',
-        '/api/ads/dashboard',
-        '/api/sitemap/overrides',
-        '/api/noticias',
-        '/api/noticias/**',
-        '/noticias/**'
-      ]
+        '/ads-dashboard',
+        '/api/',
+      ],
     },
     ...(isProd && !isVercel
       ? {
