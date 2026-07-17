@@ -18,10 +18,14 @@ export default defineNuxtConfig({
   } : {
     // En PM2/IIS: Mantiene el servidor Node nativo, las APIs dinámicas y los proxies transparentes
     '/**': { prerender: true },
+    '/': { ssr: true, prerender: false },
     '/_nuxt/**': { headers: { 'cache-control': 'public, max-age=31536000, immutable' } },
     '/assets/**': { headers: { 'cache-control': 'public, max-age=604800, stale-while-revalidate=2592000' } },
     '/img/**': { headers: { 'cache-control': 'public, max-age=604800, stale-while-revalidate=2592000' } },
     '/api/**': { cors: true, prerender: false },
+    '/noticias': { ssr: true, prerender: false },
+    '/noticias/**': { ssr: true, prerender: false },
+    '/sitemap.xml': { ssr: true, prerender: false },
     '/ads-dashboard': { ssr: false, prerender: false },
     '/sitemap': { ssr: false, prerender: false },
     '/virtual/**': { proxy: 'https://admin.casitaiedis.edu.mx/virtual/**' },
@@ -70,7 +74,6 @@ export default defineNuxtConfig({
         { type: 'module', src: 'https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js' },
         { nomodule: true, src: 'https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js' },
         { src: 'https://www.clarity.ms/tag/jutz06e6ij', async: true },
-        { src: 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1644096973273978', async: true, crossorigin: 'anonymous' },
 
         // Ordered bundle of the same legacy theme scripts, built by scripts/build-legacy-assets.mjs.
         { src: '/assets/js/legacy-vendor.bundle.js', tagPosition: 'bodyClose', defer: true }
@@ -94,6 +97,8 @@ export default defineNuxtConfig({
     prerender: {
       // Evita que el build se bloquee si el crawler choca con rutas privadas (403/404)
       failOnError: false,
+      crawlLinks: true,
+      routes: ['/', '/noticias', '/sitemap.xml'],
       ignore: ['/ads-dashboard', '/sitemap', '/api/ads/dashboard', '/api/sitemap/overrides']
     },
     ...(isProd && !isVercel

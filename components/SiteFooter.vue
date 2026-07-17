@@ -126,10 +126,12 @@
                 <div class="col-lg-6">
                    <div class="tp-footer-menu tp-ff-inter">
                       <ul>
+                         <li><NuxtLink to="/noticias">Noticias</NuxtLink></li>
                          <li><NuxtLink to="/preguntas-frecuentes">FAQ's</NuxtLink></li>
                          <li><NuxtLink to="/terminos-condiciones">Terminos y condiciones</NuxtLink></li>
                          <li><NuxtLink to="/politica-privacidad">Política de privacidad</NuxtLink></li>
                          <li><NuxtLink to="/aviso-legal">Aviso legal</NuxtLink></li>
+                         <li><PrivacySettingsLink /></li>
                       </ul>
                    </div>
                 </div>

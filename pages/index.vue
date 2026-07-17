@@ -121,7 +121,8 @@
        </div>
     </div>
     
-    <AdSenseStrip />
+
+    <AdSenseStrip placement="home" />
 
     <!-- tp-feature-area-start -->
     <div class="tp-feature-area pt-50 pb-80">
@@ -722,7 +723,7 @@
              </div>
              <div class="col-lg-4">
                 <div class="tp-blog-md-btn mb-40 text-lg-end tp_fade_anim" data-delay=".4" data-fade-from="bottom" data-ease="bounce">
-                   <a href="#" class="tp-btn-md tp-bg-theme-1 tp-left-right p-relative hover-text-white d-inline-block tp-text-grey-5 lh-1 fs-16 fw-700 tp-ff-dm">
+                   <NuxtLink to="/noticias" class="tp-btn-md tp-bg-theme-1 tp-left-right p-relative hover-text-white d-inline-block tp-text-grey-5 lh-1 fs-16 fw-700 tp-ff-dm">
                       <span class="td-text d-inline-block mr-5">Ver todas las noticias</span>
                       <span class="tp-arrow-angle">
                          <svg width="13" height="12" viewBox="0 0 13 12" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -730,7 +731,7 @@
                             <path d="M1 11L12 1M12 1H3.44444M12 1V8.77778" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
                          </svg>
                       </span>
-                   </a>
+                   </NuxtLink>
                 </div>
              </div>
           </div>

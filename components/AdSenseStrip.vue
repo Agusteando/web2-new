@@ -1,107 +1,178 @@
 <template>
-  <section v-if="decision.adsRendered" class="tp-ad-strip-area pt-60 pb-60">
+  <section v-if="shouldRender" class="tp-ad-strip-area" :class="placementClass" aria-label="Publicidad">
     <div class="container">
       <div class="row justify-content-center">
         <div class="col-xl-10 col-lg-11 col-md-12">
-          
-          <!-- Safe boundary preventing layout shift (Zero CLS) -->
+          <p class="ad-label">Publicidad</p>
+
           <div class="tp-ad-strip-slot w-100" :class="{ 'is-dev-preview': isDevPreview }">
-            
-            <!-- Local Debug / Preview Mode -->
             <div v-if="isDevPreview" class="ad-preview-box">
-              <span class="ad-preview-badge">Modo de Prueba</span>
+              <span class="ad-preview-badge">Modo de prueba</span>
               <div class="ad-preview-info">
-                <strong>Espacio Publicitario Reservado</strong>
-                <span>AdSense Slot: <code>ca-pub-1644096973273978</code></span>
+                <strong>Espacio publicitario reservado</strong>
+                <span>AdSense Slot: <code>5188349041</code></span>
               </div>
             </div>
 
-            <!-- Production AdSense Script -->
-            <ins v-else
-                 class="adsbygoogle"
-                 style="display:block"
-                 data-ad-client="ca-pub-1644096973273978"
-                 data-ad-slot="5188349041"
-                 data-ad-format="horizontal"
-                 data-full-width-responsive="true"></ins>
+            <ins
+              v-else
+              ref="adElement"
+              class="adsbygoogle"
+              style="display:block"
+              data-ad-client="ca-pub-1644096973273978"
+              data-ad-slot="5188349041"
+              data-ad-format="horizontal"
+              data-full-width-responsive="true"
+              data-tag-for-age-treatment="0"
+            ></ins>
           </div>
-
         </div>
       </div>
     </div>
   </section>
 </template>
 
-<script setup>
-import { ref, onMounted } from 'vue'
+<script setup lang="ts">
+import { computed, nextTick, onMounted, ref } from 'vue'
 
+const props = withDefaults(defineProps<{
+  placement?: 'home' | 'news-index' | 'article-footer'
+}>(), {
+  placement: 'article-footer',
+})
+
+const ADSENSE_SCRIPT_ID = 'iecs-adsense-script'
+const ADSENSE_CLIENT = 'ca-pub-1644096973273978'
+
+const route = useRoute()
 const runtimeConfig = useRuntimeConfig()
-const decision = ref({ adsRendered: false })
+const shouldRender = ref(false)
 const isDevPreview = ref(false)
+const adElement = ref<HTMLElement | null>(null)
+
+const placementClass = computed(() => `ad-placement-${props.placement}`)
+const isAllowedRoute = computed(() => route.path === '/' || route.path === '/noticias' || route.path.startsWith('/noticias/'))
+
+const initializePrivacyApi = () => {
+  const win = window as any
+  win.googlefc = win.googlefc || {}
+  win.googlefc.callbackQueue = win.googlefc.callbackQueue || []
+
+  win.googlefc.callbackQueue.push({
+    CONSENT_API_READY: () => {
+      if (sessionStorage.getItem('iecs-open-google-privacy') === 'true') {
+        sessionStorage.removeItem('iecs-open-google-privacy')
+        win.googlefc.showRevocationMessage?.()
+      }
+    },
+  })
+}
+
+const loadAdsenseScript = () => new Promise<void>((resolve, reject) => {
+  const existing = document.getElementById(ADSENSE_SCRIPT_ID) as HTMLScriptElement | null
+  if (existing) {
+    if (existing.dataset.loaded === 'true') resolve()
+    else {
+      existing.addEventListener('load', () => resolve(), { once: true })
+      existing.addEventListener('error', () => reject(new Error('AdSense script failed to load')), { once: true })
+    }
+    return
+  }
+
+  const script = document.createElement('script')
+  script.id = ADSENSE_SCRIPT_ID
+  script.async = true
+  script.crossOrigin = 'anonymous'
+  script.src = `https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${ADSENSE_CLIENT}`
+  script.addEventListener('load', () => {
+    script.dataset.loaded = 'true'
+    resolve()
+  }, { once: true })
+  script.addEventListener('error', () => reject(new Error('AdSense script failed to load')), { once: true })
+  document.head.appendChild(script)
+})
 
 onMounted(async () => {
-  // Verifiable placement test: Force preview on localhost/127.0.0.1
   isDevPreview.value = import.meta.dev || ['localhost', '127.0.0.1'].includes(window.location.hostname)
 
-  // La evaluación de las cookies se realiza estrictamente en el cliente
-  const cookies = document.cookie || ''
-  const isSuppressed = cookies.includes('ads_suppressed=true')
+  const isSuppressed = document.cookie.includes('ads_suppressed=true')
   let globalEnabled = runtimeConfig.public.adsEnabled !== false
 
   if (runtimeConfig.public.enableDynamicAdConfig) {
     try {
-      const config = await $fetch('/api/ads/config')
+      const config = await $fetch<{ global_ads_enabled?: boolean }>('/api/ads/config')
       globalEnabled = config?.global_ads_enabled ?? globalEnabled
     } catch {
       globalEnabled = runtimeConfig.public.adsEnabled !== false
     }
   }
 
-  if (globalEnabled && !isSuppressed) {
-    decision.value.adsRendered = true
-    
-    if (!isDevPreview.value) {
-      setTimeout(() => {
-        try {
-          ;(window.adsbygoogle = window.adsbygoogle || []).push({})
-        } catch (e) {
-          console.error('[AdSense] Initialization failed:', e)
-        }
-      }, 100)
+  if (!globalEnabled || isSuppressed || !isAllowedRoute.value) return
+
+  shouldRender.value = true
+  await nextTick()
+
+  if (isDevPreview.value) return
+
+  initializePrivacyApi()
+
+  try {
+    await loadAdsenseScript()
+    if (!adElement.value?.dataset.adsbygoogleStatus) {
+      const win = window as any
+      ;(win.adsbygoogle = win.adsbygoogle || []).push({})
     }
+  } catch (error) {
+    console.error('[AdSense] Initialization failed:', error)
   }
 })
 </script>
 
 <style scoped>
-/* 
-  =============================================================
-  UX/SEO OPTIMIZATION: Zero Cumulative Layout Shift (CLS)
-  Reserves exact physical space before Google's script injects 
-  the ad iframe. 'contain: layout' prevents sibling reflows.
-  =============================================================
-*/
+.tp-ad-strip-area {
+  padding: 64px 0;
+}
+
+.ad-placement-home {
+  padding-top: 48px;
+  padding-bottom: 48px;
+}
+
+.ad-placement-article-footer {
+  max-width: 940px;
+  margin: 24px auto 0;
+}
+
+.ad-label {
+  margin: 0 0 10px;
+  color: #64748b;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-align: center;
+  text-transform: uppercase;
+}
+
 .tp-ad-strip-slot {
   min-height: 120px;
   display: flex;
   justify-content: center;
   align-items: center;
   background-color: #f8fafc;
-  border: 1px dashed #cbd5e1;
+  border: 1px solid #d8e0e5;
   border-radius: 12px;
   position: relative;
   overflow: hidden;
-  contain: layout; /* Isolates the ad rendering layout */
-  transition: all 0.3s ease;
+  contain: layout;
 }
 
 @media (min-width: 768px) {
   .tp-ad-strip-slot {
-    min-height: 140px; /* Safe average height for desktop horizontal strips */
+    min-height: 140px;
   }
 }
 
-/* Elevate the injected ad above the background */
 .adsbygoogle {
   z-index: 1;
   width: 100%;
@@ -109,17 +180,11 @@ onMounted(async () => {
   display: block;
 }
 
-/* 
-  =============================================================
-  LOCAL PREVIEW MODE (Dev only)
-  Visible placeholder showing exactly where the ad goes
-  =============================================================
-*/
 .is-dev-preview {
   background-color: #f1f5f9;
   background-image: repeating-linear-gradient(
     45deg,
-    #e2e8f0 0px,
+    #e2e8f0 0,
     #e2e8f0 2px,
     transparent 2px,
     transparent 12px
@@ -128,10 +193,10 @@ onMounted(async () => {
 }
 
 .ad-preview-box {
-  background: #ffffff;
+  background: #fff;
   padding: 15px 30px;
   border-radius: 8px;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -141,8 +206,8 @@ onMounted(async () => {
 }
 
 .ad-preview-badge {
-  background: #3b82f6;
-  color: #ffffff;
+  background: #334155;
+  color: #fff;
   font-family: 'Montserrat', sans-serif;
   font-size: 0.7rem;
   font-weight: 700;
@@ -168,5 +233,11 @@ onMounted(async () => {
   font-family: monospace;
   font-size: 0.85rem;
   color: #64748b;
+}
+
+@media (max-width: 767px) {
+  .tp-ad-strip-area {
+    padding: 48px 0;
+  }
 }
 </style>

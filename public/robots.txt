@@ -7,4 +7,5 @@ Disallow: /search/
 User-agent: AdsBot-Google
 Allow: /
 
+Sitemap: https://casitaiedis.edu.mx/sitemap.xml
 Host: https://casitaiedis.edu.mx

@@ -1,0 +1,1 @@
+Mejora la indexación de noticias y el cumplimiento publicitario
