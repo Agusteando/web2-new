@@ -1,5 +1,5 @@
 const isProd = process.env.NODE_ENV === 'production'
-// Detección automática del entorno Vercel para forzar SSG puro
+// Detección automática del entorno Vercel para habilitar una salida híbrida.
 const isVercel = !!process.env.VERCEL || process.env.VERCEL_ENV !== undefined
 
 export default defineNuxtConfig({
@@ -9,23 +9,22 @@ export default defineNuxtConfig({
   compatibilityDate: '2025-12-13',
 
   routeRules: isVercel ? {
-    // Static prerender on Vercel. Static files still count as Edge Requests,
-    // so we also reduce the number of browser requests and make cache behavior explicit.
+    // Las páginas públicas continúan prerenderizadas; noticias usa API en tiempo de ejecución.
     '/**': { prerender: true },
+    '/api/**': { cors: true, prerender: false },
+    '/noticias/**': { ssr: false, prerender: false },
+    '/ads-dashboard': { ssr: false, prerender: false },
+    '/sitemap': { ssr: false, prerender: false },
     '/_nuxt/**': { headers: { 'cache-control': 'public, max-age=31536000, immutable' } },
     '/assets/**': { headers: { 'cache-control': 'public, max-age=604800, stale-while-revalidate=2592000' } },
     '/img/**': { headers: { 'cache-control': 'public, max-age=604800, stale-while-revalidate=2592000' } }
   } : {
     // En PM2/IIS: Mantiene el servidor Node nativo, las APIs dinámicas y los proxies transparentes
     '/**': { prerender: true },
-    '/': { ssr: true, prerender: false },
     '/_nuxt/**': { headers: { 'cache-control': 'public, max-age=31536000, immutable' } },
     '/assets/**': { headers: { 'cache-control': 'public, max-age=604800, stale-while-revalidate=2592000' } },
     '/img/**': { headers: { 'cache-control': 'public, max-age=604800, stale-while-revalidate=2592000' } },
     '/api/**': { cors: true, prerender: false },
-    '/noticias': { ssr: true, prerender: false },
-    '/noticias/**': { ssr: true, prerender: false },
-    '/sitemap.xml': { ssr: true, prerender: false },
     '/ads-dashboard': { ssr: false, prerender: false },
     '/sitemap': { ssr: false, prerender: false },
     '/virtual/**': { proxy: 'https://admin.casitaiedis.edu.mx/virtual/**' },
@@ -74,6 +73,7 @@ export default defineNuxtConfig({
         { type: 'module', src: 'https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js' },
         { nomodule: true, src: 'https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js' },
         { src: 'https://www.clarity.ms/tag/jutz06e6ij', async: true },
+        { src: 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1644096973273978', async: true, crossorigin: 'anonymous' },
 
         // Ordered bundle of the same legacy theme scripts, built by scripts/build-legacy-assets.mjs.
         { src: '/assets/js/legacy-vendor.bundle.js', tagPosition: 'bodyClose', defer: true }
@@ -92,14 +92,20 @@ export default defineNuxtConfig({
       '**/server/middleware/legacy-html.ts',
       '**/server/routes/virtual/\\[blob\\].get.ts'
     ],
-    // Fuerza 'vercel-static' en Vercel para impedir explícitamente la construcción e instanciación de Serverless Functions
-    preset: isVercel ? 'vercel-static' : (isProd ? 'node-server' : undefined),
+    // Vercel conserva páginas estáticas y despliega las APIs de noticias como funciones Node.
+    preset: isVercel ? 'vercel' : (isProd ? 'node-server' : undefined),
     prerender: {
-      // Evita que el build se bloquee si el crawler choca con rutas privadas (403/404)
+      // Evita que el crawler intente generar rutas privadas o dependientes de datos en vivo.
       failOnError: false,
-      crawlLinks: true,
-      routes: ['/', '/noticias', '/sitemap.xml'],
-      ignore: ['/ads-dashboard', '/sitemap', '/api/ads/dashboard', '/api/sitemap/overrides']
+      ignore: [
+        '/ads-dashboard',
+        '/sitemap',
+        '/api/ads/dashboard',
+        '/api/sitemap/overrides',
+        '/api/noticias',
+        '/api/noticias/**',
+        '/noticias/**'
+      ]
     },
     ...(isProd && !isVercel
       ? {

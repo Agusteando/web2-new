@@ -1,5 +1,10 @@
 <template>
   <header>
+    <!-- Required by the legacy cursor bundle; keeping it in the rendered DOM prevents an invalid GSAP ticker target. -->
+    <div id="magic-cursor" aria-hidden="true">
+      <div id="ball"></div>
+    </div>
+
     <!-- Original theme IDs/classes kept only on the absolute outer wrapper for native sticky JS compatibility -->
     <div id="header-sticky" class="tp-header-area pre-header tp-header-blur header-transparent sticky-white-bg">
       
@@ -98,7 +103,7 @@
                   </span>
                 </NuxtLink>
                 
-                <a href="https://admin.casitaiedis.edu.mx/login.php" class="d-none d-lg-inline-flex align-items-center" target="_blank" rel="noopener noreferrer">
+                <a href="https://admin.casitaiedis.edu.mx" class="d-none d-lg-inline-flex align-items-center" target="_blank" rel="noopener noreferrer">
                   <img src="/assets/img/IECS-IEDIS IMAGES/ID-HUSKY-PASS-HORIZONTAL.webp" alt="Husky Pass" style="width: 120px; height: 35px; object-fit: contain;">
                 </a>
                 
