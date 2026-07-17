@@ -712,17 +712,17 @@
     </div>
     
     <!-- tp-blog-area-start -->
-    <div class="tp-blog-area pt-155 section-m-spacing pb-130">
+    <div class="tp-blog-area home-news-section pt-155 section-m-spacing pb-130">
        <div class="container-fluid container-1824">
-          <div class="row align-items-end mb-20">
+          <div class="row align-items-end home-news-heading-row">
              <div class="col-lg-8">
-               <div class="tp-testimonial-ai-title-wrap mb-30">
+               <div class="tp-testimonial-ai-title-wrap home-news-heading">
                    <span class="tp-text-revel-anim fix tp-section-md-subtitle tp-ff-dm fw-600 fs-16 ls-m-3 tp-text-common-black d-inline-block mb-10">Acompáñanos a revivir los momentos que hacen especial cada jornada en IECS–IEDIS.</span>
-                   <h2 class="tp-text-revel-anim fix tp-section-md-title tp-ff-familjen fs-62 lh-1 ls-m-3 tp-text-common-black-5 mb-20">Nuestro día a día <br> en acción.</h2>
+                   <h2 class="tp-text-revel-anim tp-section-md-title home-news-title tp-ff-familjen fs-62 lh-1 ls-m-3 tp-text-common-black-5">Nuestro día a día <br> en acción.</h2>
                 </div>
              </div>
              <div class="col-lg-4">
-                <div class="tp-blog-md-btn mb-40 text-lg-end tp_fade_anim" data-delay=".4" data-fade-from="bottom" data-ease="bounce">
+                <div class="tp-blog-md-btn home-news-all-link text-lg-end tp_fade_anim" data-delay=".4" data-fade-from="bottom" data-ease="bounce">
                    <NuxtLink to="/noticias" class="tp-btn-md tp-bg-theme-1 tp-left-right p-relative hover-text-white d-inline-block tp-text-grey-5 lh-1 fs-16 fw-700 tp-ff-dm">
                       <span class="td-text d-inline-block mr-5">Ver todas las noticias</span>
                       <span class="tp-arrow-angle">
@@ -735,15 +735,15 @@
                 </div>
              </div>
           </div>
-          <div class="row">
-             <div v-for="(n, i) in (noticias || [])" :key="n.id" class="col-xl-4 col-lg-6 col-md-6 tp_fade_anim" data-delay=".4" :data-fade-from="['left', 'bottom', 'right'][i] || 'bottom'" data-ease="bounce">
-                <div class="tp-blog-ai-item tp-blog-md-item tp--hover-item tp-round-24 mb-30">
-                   <NuxtLink :to="`/noticias/${n.id}`" class="tp-round-24 w-100 fix p-relative d-inline-block">
-                      <div class="tp-blog-ai-thumb w-100 tp--hover-img tp-round-24" data-displacement="assets/img/imghover/stripe-mul.png" data-intensity="0.2" data-speedin="1" data-speedout="1">
-                         <img decoding="async" loading="lazy" class="tp-round-24 w-100" :src="resolveImage(n.imagen, i)" alt="">
+          <div class="row home-news-grid">
+             <div v-for="(n, i) in (noticias || [])" :key="n.id" class="col-xl-4 col-lg-6 col-md-6 home-news-column tp_fade_anim" data-delay=".4" :data-fade-from="['left', 'bottom', 'right'][i] || 'bottom'" data-ease="bounce">
+                <div class="tp-blog-ai-item tp-blog-md-item tp--hover-item tp-round-24 home-news-card">
+                   <NuxtLink :to="`/noticias/${n.id}`" class="tp-round-24 w-100 fix p-relative d-inline-block home-news-media-link">
+                      <div class="tp-blog-ai-thumb w-100 tp--hover-img tp-round-24 home-news-media" data-displacement="assets/img/imghover/stripe-mul.png" data-intensity="0.2" data-speedin="1" data-speedout="1">
+                         <img decoding="async" loading="lazy" class="tp-round-24 w-100 home-news-image" :src="resolveImage(n.imagen, i)" :alt="n.titulo" @error="handleNewsImageError($event, i)">
                       </div>
                    </NuxtLink>
-                   <div class="tp-blog-ai-content tp-blog-md-content text-center">
+                   <div class="tp-blog-ai-content tp-blog-md-content text-center home-news-card-content">
                       <div class="tp-blog-md-dates">
                          <span class="tp-ff-dm mb-5 fw-500 fs-16 tp-text-common-black-5 d-inline-block">
                             <svg class="mr-5" width="14" height="15" viewBox="0 0 14 15" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -753,7 +753,7 @@
                             {{ formatDate(n.fecha) }}
                          </span>
                       </div>
-                      <h4 class="tp-blog-md-title tp-ff-familjen fs-42 lh-1 ls-m-4 tp-text-common-black-5 mb-25"><NuxtLink :to="`/noticias/${n.id}`" class="underline-white">{{ n.titulo }}</NuxtLink></h4>
+                      <h4 class="tp-blog-md-title home-news-card-title tp-ff-familjen fs-42 lh-1 ls-m-4 tp-text-common-black-5 mb-25"><NuxtLink :to="`/noticias/${n.id}`" class="underline-white">{{ n.titulo }}</NuxtLink></h4>
                       <NuxtLink :to="`/noticias/${n.id}`" class="tp-left-right p-relative hover-text-black d-inline-block text-uppercase tp-text-common-black-5 lh-1 fs-16 fw-700 tp-ff-dm">
                          <span class="td-text d-inline-block mr-5">Descubre más</span>
                          <span class="tp-arrow-angle">
@@ -791,9 +791,22 @@ const formatDate = (d) => {
   catch { return d }
 }
 
+const getFallbackImage = (index) => fallbacks[index] || fallbacks[0]
+
 const resolveImage = (img, index) => {
-  if (!img) return fallbacks[index] || fallbacks[0]
-  return /^https?:\/\//i.test(img) ? img : (img.startsWith('/') ? img : `/${img}`)
+  const value = typeof img === 'string' ? img.trim().replace(/\\/g, '/') : ''
+  if (!value) return getFallbackImage(index)
+  if (/^https?:\/\//i.test(value)) return value
+  if (value.startsWith('//')) return `https:${value}`
+  return value.startsWith('/') ? value : `/${value}`
+}
+
+const handleNewsImageError = (event, index) => {
+  const image = event.currentTarget
+  if (!(image instanceof HTMLImageElement) || image.dataset.fallbackApplied === 'true') return
+
+  image.dataset.fallbackApplied = 'true'
+  image.src = getFallbackImage(index)
 }
 </script>
 
@@ -1117,4 +1130,135 @@ const resolveImage = (img, index) => {
     align-items: flex-start;
   }
 }
+
+/* --- Home news section --------------------------------------------------- */
+.home-news-section {
+  position: relative;
+}
+
+.home-news-heading-row {
+  position: relative;
+  z-index: 2;
+  row-gap: 24px;
+  margin-bottom: clamp(44px, 4vw, 72px);
+}
+
+.home-news-heading {
+  margin-bottom: 0;
+}
+
+.home-news-title {
+  display: block;
+  max-width: 820px;
+  margin: 0;
+  overflow: visible;
+}
+
+.home-news-all-link {
+  margin-bottom: 0;
+}
+
+.home-news-grid {
+  position: relative;
+  z-index: 1;
+  row-gap: 30px;
+}
+
+.home-news-column {
+  display: flex;
+}
+
+.home-news-card {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  margin-bottom: 0;
+}
+
+.home-news-media-link {
+  display: block;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  background: #edf3f4;
+}
+
+.home-news-media {
+  width: 100%;
+  height: 100%;
+}
+
+.home-news-image {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+
+.home-news-card-content {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: center;
+  width: calc(100% - 36px);
+  min-height: 330px;
+  margin: -72px auto 0;
+  border-radius: 24px;
+}
+
+.home-news-card-title {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 3em;
+  width: 100%;
+  overflow-wrap: anywhere;
+}
+
+.home-news-card-content > .tp-left-right {
+  margin-top: auto;
+}
+
+@media (max-width: 1399px) {
+  .home-news-card-content {
+    margin-top: -54px;
+  }
+}
+
+@media (max-width: 991px) {
+  .home-news-heading-row {
+    margin-bottom: 40px;
+  }
+
+  .home-news-all-link {
+    text-align: left !important;
+  }
+
+  .home-news-card-content {
+    min-height: 300px;
+  }
+}
+
+@media (max-width: 574.98px) {
+  .home-news-title br {
+    display: none;
+  }
+
+  .home-news-heading-row {
+    margin-bottom: 32px;
+  }
+
+  .home-news-card-content {
+    width: calc(100% - 24px);
+    min-height: 0;
+    margin-top: -36px;
+  }
+
+  .home-news-card-title {
+    min-height: 0;
+  }
+}
+
 </style>
