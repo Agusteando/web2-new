@@ -2,6 +2,7 @@ const isProd = process.env.NODE_ENV === 'production'
 const isVercel = Boolean(process.env.VERCEL || process.env.VERCEL_ENV !== undefined)
 
 const dynamicContentTtl = 300
+const blogContentTtl = 60 * 60 * 24
 
 const staticPublicRoutes = [
   '/acerca-de-institutos',
@@ -37,12 +38,16 @@ export default defineNuxtConfig({
     '/': { prerender: false, swr: dynamicContentTtl },
     '/noticias': { prerender: false, swr: dynamicContentTtl },
     '/noticias/**': { prerender: false, swr: dynamicContentTtl },
+    '/blog-iecs-iedis': { prerender: false, swr: blogContentTtl },
+    '/blog-iecs-iedis/**': { prerender: false, swr: blogContentTtl },
 
     // APIs always execute at runtime. Preserve the current CORS behavior;
     // future write endpoints can add stricter authentication and origin rules.
     '/api/**': { cors: true, prerender: false },
     '/api/noticias': { prerender: false, swr: dynamicContentTtl },
     '/api/noticias/**': { prerender: false, swr: dynamicContentTtl },
+    '/api/blog': { prerender: false, swr: blogContentTtl },
+    '/api/blog/**': { prerender: false, swr: blogContentTtl },
 
     // Private tools remain client-only and must never be cached or prerendered.
     '/ads-dashboard': {
@@ -175,6 +180,7 @@ export default defineNuxtConfig({
     dbName: process.env.NUXT_DB_NAME || process.env.DB_NAME || '',
     dbUser: process.env.NUXT_DB_USER || process.env.DB_USER || '',
     dbPassword: process.env.NUXT_DB_PASSWORD || process.env.DB_PASSWORD || '',
+    blogGoogleExecUrl: process.env.NUXT_BLOG_GOOGLE_EXEC_URL || process.env.BLOG_GOOGLE_EXEC_URL || '',
     public: {
       siteUrl: process.env.NUXT_PUBLIC_SITE_URL || 'https://casitaiedis.edu.mx',
       adsEnabled: process.env.NUXT_PUBLIC_ADS_ENABLED !== 'false',

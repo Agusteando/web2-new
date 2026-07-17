@@ -118,6 +118,7 @@ const sitePages = [
   { title: 'Voluntarios IECS-IEDIS', url: '/voluntarios', desc: 'Programa de solidaridad y acción social para ayudar a quienes más lo necesitan.', category: 'Descubre' },
   { title: 'Talleres Inteligentes', url: '/talleres-inteligentes', desc: 'Actividades artísticas, deportivas y culturales en horario vespertino.', category: 'Descubre' },
   { title: 'Vida Husky', url: '/vida-husky', desc: 'Descubre el espíritu de nuestra manada: resiliencia, liderazgo y exploración.', category: 'Descubre' },
+  { title: 'Blog IECS-IEDIS', url: '/blog-iecs-iedis', desc: 'Publicaciones, historias y experiencias de nuestra comunidad educativa.', category: 'Comunidad' },
   { title: 'Preguntas Frecuentes', url: '/preguntas-frecuentes', desc: 'Respuestas rápidas a las dudas más comunes sobre inscripciones y metodologías.', category: 'Soporte' }
 ]
 

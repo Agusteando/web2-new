@@ -1,9 +1,11 @@
 import { setHeader } from 'h3'
+import { fetchBlogFeed } from '~/server/utils/blog'
 import { fetchNoticias } from '~/server/utils/news'
 
 const STATIC_ROUTES = [
   '/',
   '/acerca-de-institutos',
+  '/blog-iecs-iedis',
   '/campus',
   '/convenios',
   '/daycare',
@@ -39,18 +41,33 @@ export default defineEventHandler(async (event) => {
   const siteUrl = String(config.public.siteUrl || 'https://casitaiedis.edu.mx').replace(/\/+$/, '')
 
   let noticias: Awaited<ReturnType<typeof fetchNoticias>> = []
+  let blogFeed: Awaited<ReturnType<typeof fetchBlogFeed>> = {
+    configured: false,
+    generatedAt: null,
+    items: [],
+  }
+
   try {
     noticias = await fetchNoticias()
   } catch (error) {
-    console.warn('[Sitemap] News could not be loaded; serving static routes only.', error)
+    console.warn('[Sitemap] News could not be loaded; serving without news detail routes.', error)
   }
 
-  const staticEntries = STATIC_ROUTES.map((path) => `
+  try {
+    blogFeed = await fetchBlogFeed()
+  } catch (error) {
+    console.warn('[Sitemap] Blog could not be loaded; serving without blog detail routes.', error)
+  }
+
+  const staticEntries = STATIC_ROUTES.map((path) => {
+    const isDynamicIndex = path === '/' || path === '/noticias' || path === '/blog-iecs-iedis'
+    return `
   <url>
     <loc>${escapeXml(`${siteUrl}${path}`)}</loc>
-    <changefreq>${path === '/' || path === '/noticias' ? 'daily' : 'monthly'}</changefreq>
-    <priority>${path === '/' ? '1.0' : path === '/noticias' ? '0.8' : '0.6'}</priority>
-  </url>`).join('')
+    <changefreq>${isDynamicIndex ? 'daily' : 'monthly'}</changefreq>
+    <priority>${path === '/' ? '1.0' : isDynamicIndex ? '0.8' : '0.6'}</priority>
+  </url>`
+  }).join('')
 
   const newsEntries = noticias.map((noticia) => {
     const lastmod = asIsoDate(noticia.fecha)
@@ -63,10 +80,21 @@ export default defineEventHandler(async (event) => {
   </url>`
   }).join('')
 
+  const blogEntries = blogFeed.items.map((post) => {
+    const lastmod = asIsoDate(post.updatedAt || post.publishedAt)
+    return `
+  <url>
+    <loc>${escapeXml(`${siteUrl}/blog-iecs-iedis/${post.slug}`)}</loc>${lastmod ? `
+    <lastmod>${lastmod}</lastmod>` : ''}
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>`
+  }).join('')
+
   setHeader(event, 'Content-Type', 'application/xml; charset=utf-8')
   setHeader(event, 'Cache-Control', 'public, max-age=300, stale-while-revalidate=3600')
 
   return `<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${staticEntries}${newsEntries}
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${staticEntries}${newsEntries}${blogEntries}
 </urlset>`
 })

@@ -71,6 +71,7 @@
                 
                 <li><NuxtLink to="/talleres-inteligentes" @click="closeMenu">Talleres Inteligentes</NuxtLink></li>
                 <li><NuxtLink to="/vida-husky" @click="closeMenu">Vida Husky</NuxtLink></li>
+                <li><NuxtLink to="/blog-iecs-iedis" @click="closeMenu">Blog IECS-IEDIS</NuxtLink></li>
               </ul>
             </nav>
 

@@ -769,15 +769,69 @@
           </div>
        </div>
     </div>
+
+    <!-- Blog IECS-IEDIS companion section -->
+    <section class="home-blog-section">
+      <div class="container-fluid container-1824">
+        <div class="home-blog-shell">
+          <div class="home-blog-heading">
+            <div>
+              <span class="home-blog-eyebrow">Blog IECS-IEDIS</span>
+              <h2>Una mirada más profunda a nuestra comunidad.</h2>
+            </div>
+            <div class="home-blog-heading-copy">
+              <p>Publicaciones, historias y experiencias que amplían lo que vivimos cada día en los Institutos IECS-IEDIS.</p>
+              <NuxtLink to="/blog-iecs-iedis" class="home-blog-main-link">
+                Explorar el blog <span aria-hidden="true">→</span>
+              </NuxtLink>
+            </div>
+          </div>
+
+          <div v-if="blogPosts.length" class="home-blog-grid">
+            <article v-for="(post, index) in blogPosts" :key="post.id || post.slug" class="home-blog-card">
+              <NuxtLink :to="`/blog-iecs-iedis/${post.slug}`" class="home-blog-card-media">
+                <img
+                  :src="getBlogCover(post, index)"
+                  :alt="post.title"
+                  decoding="async"
+                  loading="lazy"
+                  @error="handleBlogImageError"
+                >
+              </NuxtLink>
+              <div class="home-blog-card-content">
+                <div class="home-blog-meta">
+                  <span v-if="post.category">{{ post.category }}</span>
+                  <time v-if="post.publishedAt" :datetime="post.publishedAt">{{ formatBlogDate(post.publishedAt) }}</time>
+                </div>
+                <h3><NuxtLink :to="`/blog-iecs-iedis/${post.slug}`">{{ post.title }}</NuxtLink></h3>
+                <p>{{ post.description }}</p>
+                <NuxtLink :to="`/blog-iecs-iedis/${post.slug}`" class="home-blog-card-link">Leer publicación</NuxtLink>
+              </div>
+            </article>
+          </div>
+
+          <div v-else class="home-blog-empty">
+            <div>
+              <strong>Próximamente en el Blog IECS-IEDIS</strong>
+              <p>Este espacio ya está preparado para recibir las primeras publicaciones.</p>
+            </div>
+            <NuxtLink to="/blog-iecs-iedis">Conocer el nuevo espacio</NuxtLink>
+          </div>
+        </div>
+      </div>
+    </section>
   </main>
 </template>
 
 <script setup>
 import { ref } from 'vue'
+import { BLOG_FALLBACK_IMAGES, formatBlogDate, getBlogCover } from '~/utils/blog'
 
 const activeCard = ref(4)
 
 const { data: noticias } = await useFetch('/api/noticias', { query: { limit: 3 } })
+const { data: blogFeed } = await useFetch('/api/blog', { key: 'home-blog-preview', query: { limit: 2 } })
+const blogPosts = computed(() => blogFeed.value?.items || [])
 
 const fallbacks = [
   "/assets/img/IECS-IEDIS IMAGES/ex-news-578x433.webp",
@@ -807,6 +861,14 @@ const handleNewsImageError = (event, index) => {
 
   image.dataset.fallbackApplied = 'true'
   image.src = getFallbackImage(index)
+}
+
+const handleBlogImageError = (event) => {
+  const image = event.currentTarget
+  if (!(image instanceof HTMLImageElement) || image.dataset.fallbackApplied === 'true') return
+
+  image.dataset.fallbackApplied = 'true'
+  image.src = BLOG_FALLBACK_IMAGES[0]
 }
 </script>
 
@@ -1258,6 +1320,212 @@ const handleNewsImageError = (event, index) => {
 
   .home-news-card-title {
     min-height: 0;
+  }
+}
+
+
+/* --- Home Blog IECS-IEDIS companion section ----------------------------- */
+.home-blog-section {
+  padding: 0 0 130px;
+  background: #fff;
+}
+
+.home-blog-shell {
+  padding: clamp(38px, 5vw, 72px);
+  border-radius: 32px;
+  background:
+    radial-gradient(circle at 0 0, rgba(102, 168, 216, 0.22), transparent 32%),
+    radial-gradient(circle at 100% 100%, rgba(142, 193, 82, 0.2), transparent 30%),
+    #eef7f6;
+}
+
+.home-blog-heading {
+  display: grid;
+  grid-template-columns: minmax(0, 1.25fr) minmax(280px, 0.75fr);
+  gap: 48px;
+  align-items: end;
+  margin-bottom: 38px;
+}
+
+.home-blog-eyebrow {
+  display: inline-block;
+  margin-bottom: 12px;
+  color: #007f92;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.8rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.home-blog-heading h2 {
+  max-width: 900px;
+  margin: 0;
+  color: #151b1d;
+  font-family: 'Fredoka', sans-serif;
+  font-size: clamp(2.5rem, 4vw, 4.2rem);
+  line-height: 0.98;
+  letter-spacing: -0.04em;
+}
+
+.home-blog-heading-copy p,
+.home-blog-card-content > p,
+.home-blog-empty p {
+  color: #526166;
+  font-family: 'Montserrat', sans-serif;
+  line-height: 1.7;
+}
+
+.home-blog-heading-copy p {
+  margin: 0 0 18px;
+}
+
+.home-blog-main-link,
+.home-blog-card-link,
+.home-blog-empty > a {
+  color: #007f92;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 800;
+  text-decoration: underline;
+  text-underline-offset: 5px;
+}
+
+.home-blog-main-link {
+  display: inline-flex;
+  gap: 8px;
+}
+
+.home-blog-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 24px;
+}
+
+.home-blog-card {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border: 1px solid rgba(20, 75, 78, 0.12);
+  border-radius: 24px;
+  background: #fff;
+  box-shadow: 0 16px 38px rgba(25, 67, 70, 0.07);
+}
+
+.home-blog-card-media {
+  display: block;
+  aspect-ratio: 16 / 10;
+  overflow: hidden;
+  background: #e4eeee;
+}
+
+.home-blog-card-media img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.4s ease;
+}
+
+.home-blog-card:hover .home-blog-card-media img {
+  transform: scale(1.035);
+}
+
+.home-blog-card-content {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  padding: 24px;
+}
+
+.home-blog-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 14px;
+  margin-bottom: 12px;
+  color: #66757a;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.76rem;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.home-blog-meta span {
+  color: #618b2f;
+}
+
+.home-blog-card h3 {
+  margin: 0 0 12px;
+  font-family: 'Fredoka', sans-serif;
+  font-size: 1.75rem;
+  line-height: 1.12;
+}
+
+.home-blog-card h3 a {
+  color: #172024;
+}
+
+.home-blog-card-content > p {
+  margin: 0 0 20px;
+}
+
+.home-blog-card-link {
+  margin-top: auto;
+}
+
+.home-blog-empty {
+  display: flex;
+  justify-content: space-between;
+  gap: 24px;
+  align-items: center;
+  padding: 28px 30px;
+  border: 1px solid rgba(20, 75, 78, 0.14);
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.78);
+}
+
+.home-blog-empty strong {
+  color: #172024;
+  font-family: 'Fredoka', sans-serif;
+  font-size: 1.55rem;
+}
+
+.home-blog-empty p {
+  margin: 5px 0 0;
+}
+
+@media (max-width: 991px) {
+  .home-blog-heading {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+
+  .home-blog-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 767px) {
+  .home-blog-section {
+    padding-bottom: 80px;
+  }
+
+  .home-blog-shell {
+    padding: 30px 20px;
+    border-radius: 24px;
+  }
+
+  .home-blog-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .home-blog-empty {
+    display: block;
+  }
+
+  .home-blog-empty > a {
+    display: inline-block;
+    margin-top: 16px;
   }
 }
 

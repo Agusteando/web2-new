@@ -36,7 +36,7 @@
 import { computed, nextTick, onMounted, ref } from 'vue'
 
 const props = withDefaults(defineProps<{
-  placement?: 'home' | 'news-index' | 'article-footer'
+  placement?: 'home' | 'news-index' | 'blog-index' | 'article-footer'
 }>(), {
   placement: 'article-footer',
 })
@@ -51,7 +51,7 @@ const isDevPreview = ref(false)
 const adElement = ref<HTMLElement | null>(null)
 
 const placementClass = computed(() => `ad-placement-${props.placement}`)
-const isAllowedRoute = computed(() => route.path === '/' || route.path === '/noticias' || route.path.startsWith('/noticias/'))
+const isAllowedRoute = computed(() => route.path === '/' || route.path === '/noticias' || route.path.startsWith('/noticias/') || route.path === '/blog-iecs-iedis' || route.path.startsWith('/blog-iecs-iedis/'))
 
 const initializePrivacyApi = () => {
   const win = window as any

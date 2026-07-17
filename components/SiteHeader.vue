@@ -82,6 +82,9 @@
                   <li class="iecs-nav-item">
                     <NuxtLink to="/vida-husky" class="iecs-nav-link">Vida Husky</NuxtLink>
                   </li>
+                  <li class="iecs-nav-item">
+                    <NuxtLink to="/blog-iecs-iedis" class="iecs-nav-link">Blog IECS-IEDIS</NuxtLink>
+                  </li>
                 </ul>
               </nav>
 

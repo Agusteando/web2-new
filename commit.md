@@ -1,1 +1,1 @@
-Configura renderizado híbrido para contenido dinámico y páginas estáticas
+Añade Blog IECS-IEDIS conectado a Google Sheets mediante Apps Script
