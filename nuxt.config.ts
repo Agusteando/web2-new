@@ -9,6 +9,7 @@ const staticPublicRoutes = [
   '/aviso-legal',
   '/campus',
   '/convenios',
+  '/curso-de-verano',
   '/daycare',
   '/elementary-school',
   '/escuela-padres',
@@ -181,6 +182,8 @@ export default defineNuxtConfig({
     dbUser: process.env.NUXT_DB_USER || process.env.DB_USER || '',
     dbPassword: process.env.NUXT_DB_PASSWORD || process.env.DB_PASSWORD || '',
     blogGoogleExecUrl: process.env.NUXT_BLOG_GOOGLE_EXEC_URL || process.env.BLOG_GOOGLE_EXEC_URL || '',
+    summerApiUrl: process.env.NUXT_SUMMER_API_URL || 'https://script.google.com/macros/s/AKfycbxmW417T-EAhM66QtDvdyYrgiMFeFAdU8c34YrHJhGtNu2o6VD82LoYzb6DOn98A9QSUw/exec',
+    summerApiKey: process.env.NUXT_SUMMER_API_KEY || process.env.SUMMER_API_KEY || '',
     public: {
       siteUrl: process.env.NUXT_PUBLIC_SITE_URL || 'https://casitaiedis.edu.mx',
       adsEnabled: process.env.NUXT_PUBLIC_ADS_ENABLED !== 'false',

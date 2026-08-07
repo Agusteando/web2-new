@@ -34,6 +34,7 @@ const siteNavigation: SiteNavItem[] = [
     ],
   },
   { id: 'talleres-inteligentes', label: 'Talleres Inteligentes', to: '/talleres-inteligentes' },
+  { id: 'curso-de-verano', label: 'Curso de Verano', to: '/curso-de-verano' },
   { id: 'vida-husky', label: 'Vida Husky', to: '/vida-husky' },
   { id: 'blog-iecs-iedis', label: 'Blog IECS-IEDIS', to: '/blog-iecs-iedis' },
 ]
