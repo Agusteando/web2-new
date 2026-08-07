@@ -1,1 +1,1 @@
-Agrega la sección de Curso de Verano y la generación de reconocimientos
+Corrige la navegación adaptable para evitar que desaparezca al agregar nuevas secciones

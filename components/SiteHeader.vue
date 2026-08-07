@@ -53,12 +53,12 @@
               <!-- Zone 2: Adaptive primary navigation -->
               <nav
                 class="iecs-nav-zone"
-                :class="[`is-${navDensity}`, { 'is-collapsed': navCollapsed }]"
+                :class="`is-${navDensity}`"
                 aria-label="Navegación principal"
               >
                 <ul ref="navListRef" class="iecs-nav-list">
                   <li
-                    v-for="item in navItems"
+                    v-for="item in visibleNavItems"
                     :key="item.id"
                     class="iecs-nav-item"
                     :class="{ 'has-dropdown': item.children?.length }"
@@ -114,7 +114,7 @@
 </template>
 
 <script setup>
-import { nextTick, onBeforeUnmount, onMounted, ref } from 'vue'
+import { computed, nextTick, onBeforeUnmount, onMounted, ref } from 'vue'
 
 const isOffcanvasOpen = useState('isOffcanvasOpen', () => false)
 const isSearchOpen = useState('isSearchOpen', () => false)
@@ -131,7 +131,8 @@ const densityForCount = (count) => {
   return 'comfortable'
 }
 
-const navCollapsed = ref(navItems.length >= 10)
+const visibleNavCount = ref(navItems.length)
+const visibleNavItems = computed(() => navItems.slice(0, visibleNavCount.value))
 const navDensity = ref(densityForCount(navItems.length))
 let resizeObserver = null
 let measureFrame = 0
@@ -144,27 +145,33 @@ const measureNavigation = async () => {
   const utils = utilsZoneRef.value
   const list = navListRef.value
 
-  if (!inner || !logo || !utils || !list || window.innerWidth < 1200) {
-    navCollapsed.value = true
+  if (!inner || !logo || !utils || !list) return
+
+  if (window.innerWidth < 1200) {
+    visibleNavCount.value = navItems.length
+    navDensity.value = densityForCount(navItems.length)
     return
   }
 
-  navCollapsed.value = false
   const densityOrder = ['comfortable', 'compact', 'tight']
-  const minimumDensityIndex = densityOrder.indexOf(densityForCount(navItems.length))
   const availableWidth = Math.max(0, inner.clientWidth - logo.offsetWidth - utils.offsetWidth - 40)
 
-  for (let index = minimumDensityIndex; index < densityOrder.length; index += 1) {
-    navDensity.value = densityOrder[index]
+  for (let count = navItems.length; count >= 1; count -= 1) {
+    visibleNavCount.value = count
     await nextTick()
 
-    if (list.scrollWidth <= availableWidth) {
-      navCollapsed.value = false
-      return
+    const minimumDensityIndex = densityOrder.indexOf(densityForCount(count))
+
+    for (let index = minimumDensityIndex; index < densityOrder.length; index += 1) {
+      navDensity.value = densityOrder[index]
+      await nextTick()
+
+      if (list.scrollWidth <= availableWidth) return
     }
   }
 
-  navCollapsed.value = true
+  visibleNavCount.value = 1
+  navDensity.value = 'tight'
 }
 
 const scheduleNavigationMeasure = () => {
@@ -330,7 +337,7 @@ onBeforeUnmount(() => {
 }
 
 @media (min-width: 1200px) {
-  .iecs-nav-zone:not(.is-collapsed) {
+  .iecs-nav-zone {
     display: flex;
   }
 }
