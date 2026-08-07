@@ -41,68 +41,58 @@
         <!-- Main Navigation Bar -->
         <div class="iecs-mainbar">
           <div class="iecs-container">
-            <div class="iecs-mainbar-inner">
+            <div ref="mainbarInnerRef" class="iecs-mainbar-inner">
               
               <!-- Zone 1: Strict Logo Boundary -->
-              <div class="iecs-logo-zone">
+              <div ref="logoZoneRef" class="iecs-logo-zone">
                 <NuxtLink to="/" class="iecs-logo-link">
                   <img src="/assets/img/IECS-IEDIS IMAGES/IMAGOTIPOS-HORIZONTAL-IECS-IEDIS-GRADIENT.webp" alt="Imagotipo IECS-IEDIS">
                 </NuxtLink>
               </div>
 
-              <!-- Zone 2: Strict Center Navigation Boundary (Desktop Only) -->
-              <nav class="iecs-nav-zone d-none d-xl-flex">
-                <ul class="iecs-nav-list">
-                  <li class="iecs-nav-item has-dropdown">
-                    <a href="#" class="iecs-nav-link">Descubre 
-                      <svg width="7" height="6" viewBox="0 0 7 6" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M2.7 4.93333L0.2 1.6C-0.294427 0.940764 0.175955 0 1 0H6C6.82405 0 7.29443 0.940764 6.8 1.6L4.3 4.93333C3.9 5.46667 3.1 5.46667 2.7 4.93333Z" fill="currentColor"/></svg>
-                    </a>
-                    <ul class="iecs-submenu">
-                      <li><NuxtLink to="/acerca-de-institutos">Acerca de los institutos</NuxtLink></li>
-                      <li><NuxtLink to="/campus">Nuestros campus</NuxtLink></li>
-                      <li><NuxtLink to="/escuela-padres">Escuela para padres</NuxtLink></li>
-                      <li><NuxtLink to="/convenios">Convenios IECS-IEDIS</NuxtLink></li>
-                      <li><NuxtLink to="/voluntarios">Voluntarios IECS-IEDIS</NuxtLink></li>
+              <!-- Zone 2: Adaptive primary navigation -->
+              <nav
+                class="iecs-nav-zone"
+                :class="[`is-${navDensity}`, { 'is-collapsed': navCollapsed }]"
+                aria-label="Navegación principal"
+              >
+                <ul ref="navListRef" class="iecs-nav-list">
+                  <li
+                    v-for="item in navItems"
+                    :key="item.id"
+                    class="iecs-nav-item"
+                    :class="{ 'has-dropdown': item.children?.length }"
+                  >
+                    <button v-if="item.children?.length" type="button" class="iecs-nav-link iecs-nav-trigger">
+                      <span>{{ item.label }}</span>
+                      <svg width="7" height="6" viewBox="0 0 7 6" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M2.7 4.93333L0.2 1.6C-0.294427 0.940764 0.175955 0 1 0H6C6.82405 0 7.29443 0.940764 6.8 1.6L4.3 4.93333C3.9 5.46667 3.1 5.46667 2.7 4.93333Z" fill="currentColor"/></svg>
+                    </button>
+                    <NuxtLink v-else :to="item.to" class="iecs-nav-link">{{ item.label }}</NuxtLink>
+
+                    <ul v-if="item.children?.length" class="iecs-submenu">
+                      <li v-for="child in item.children" :key="child.to">
+                        <NuxtLink :to="child.to" :style="child.color ? { color: child.color } : undefined">{{ child.label }}</NuxtLink>
+                      </li>
                     </ul>
-                  </li>
-                  <li class="iecs-nav-item has-dropdown">
-                    <a href="#" class="iecs-nav-link">Niveles 
-                      <svg width="7" height="6" viewBox="0 0 7 6" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M2.7 4.93333L0.2 1.6C-0.294427 0.940764 0.175955 0 1 0H6C6.82405 0 7.29443 0.940764 6.8 1.6L4.3 4.93333C3.9 5.46667 3.1 5.46667 2.7 4.93333Z" fill="currentColor"/></svg>
-                    </a>
-                    <ul class="iecs-submenu">
-                      <li><NuxtLink to="/daycare" style="color: #8EC152;">Desarrollo Infantil</NuxtLink></li>
-                      <li><NuxtLink to="/preschool" style="color: #E83F4B;">Preescolar</NuxtLink></li>
-                      <li><NuxtLink to="/elementary-school" style="color: #FCBF2C;">Primaria</NuxtLink></li>
-                      <li><NuxtLink to="/middle-school" style="color: #66A8D8;">Secundaria</NuxtLink></li>
-                    </ul>
-                  </li>
-                  <li class="iecs-nav-item">
-                    <NuxtLink to="/talleres-inteligentes" class="iecs-nav-link">Talleres Inteligentes</NuxtLink>
-                  </li>
-                  <li class="iecs-nav-item">
-                    <NuxtLink to="/vida-husky" class="iecs-nav-link">Vida Husky</NuxtLink>
-                  </li>
-                  <li class="iecs-nav-item">
-                    <NuxtLink to="/blog-iecs-iedis" class="iecs-nav-link">Blog IECS-IEDIS</NuxtLink>
                   </li>
                 </ul>
               </nav>
 
               <!-- Zone 3: Strict Utility Boundary -->
-              <div class="iecs-utils-zone">
+              <div ref="utilsZoneRef" class="iecs-utils-zone">
                 <button class="iecs-icon-btn search-btn" @click.prevent="isSearchOpen = true" aria-label="Buscar">
                   <svg width="22" height="22" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M6.76923 1.23077C3.71042 1.23077 1.23077 3.71042 1.23077 6.76923C1.23077 9.82804 3.71042 12.3077 6.76923 12.3077C8.29881 12.3077 9.68258 11.6885 10.6855 10.6855C11.6885 9.68258 12.3077 8.29881 12.3077 6.76923C12.3077 3.71042 9.82804 1.23077 6.76923 1.23077ZM0 6.76923C0 3.03069 3.03069 0 6.76923 0C10.5078 0 13.5385 3.03069 13.5385 6.76923C13.5385 8.41668 12.9493 9.92743 11.9712 11.1009L15.8198 14.9495C16.0601 15.1898 16.0601 15.5794 15.8198 15.8198C15.5794 16.0601 15.1898 16.0601 14.9495 15.8198L11.1009 11.9712C9.92743 12.9493 8.41668 13.5385 6.76923 13.5385C3.03069 13.5385 0 10.5078 0 6.76923Z" fill="currentColor"/></svg>
                 </button>
                 
-                <NuxtLink to="/ubicaciones" class="d-none d-sm-inline-flex align-items-center tp-btn-md tp-bg-theme-1 tp-left-right p-relative hover-text-white text-uppercase tp-text-grey-5 lh-1 fs-14 fw-800 tp-ff-dm" style="padding: 12px 24px; border-radius: 30px;">
+                <NuxtLink to="/ubicaciones" class="iecs-info-cta d-none d-sm-inline-flex align-items-center tp-btn-md tp-bg-theme-1 tp-left-right p-relative hover-text-white text-uppercase tp-text-grey-5 lh-1 fs-14 fw-800 tp-ff-dm">
                   <span class="td-text d-inline-block mr-5">Solicitar + info</span>
                   <span class="tp-arrow-angle">
                     <svg width="13" height="12" viewBox="0 0 13 12" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M1 11L12 1M12 1H3.44444M12 1V8.77778" stroke="#F3F1F2" stroke-width="1.5" stroke-linecap="round"/><path d="M1 11L12 1M12 1H3.44444M12 1V8.77778" stroke="#F3F1F2" stroke-width="1.5" stroke-linecap="round"/></svg>
                   </span>
                 </NuxtLink>
                 
-                <a href="https://admin.casitaiedis.edu.mx/login.php" class="d-none d-lg-inline-flex align-items-center" target="_blank" rel="noopener noreferrer">
-                  <img src="/assets/img/IECS-IEDIS IMAGES/ID-HUSKY-PASS-HORIZONTAL.webp" alt="Husky Pass" style="width: 120px; height: 35px; object-fit: contain;">
+                <a href="https://admin.casitaiedis.edu.mx/login.php" class="iecs-husky-pass d-none d-lg-inline-flex align-items-center" target="_blank" rel="noopener noreferrer">
+                  <img src="/assets/img/IECS-IEDIS IMAGES/ID-HUSKY-PASS-HORIZONTAL.webp" alt="Husky Pass">
                 </a>
                 
                 <!-- Universal Desktop/Mobile Hamburger Toggle -->
@@ -124,8 +114,84 @@
 </template>
 
 <script setup>
+import { nextTick, onBeforeUnmount, onMounted, ref } from 'vue'
+
 const isOffcanvasOpen = useState('isOffcanvasOpen', () => false)
 const isSearchOpen = useState('isSearchOpen', () => false)
+const navItems = useSiteNavigation()
+
+const mainbarInnerRef = ref(null)
+const logoZoneRef = ref(null)
+const utilsZoneRef = ref(null)
+const navListRef = ref(null)
+
+const densityForCount = (count) => {
+  if (count >= 8) return 'tight'
+  if (count >= 6) return 'compact'
+  return 'comfortable'
+}
+
+const navCollapsed = ref(navItems.length >= 10)
+const navDensity = ref(densityForCount(navItems.length))
+let resizeObserver = null
+let measureFrame = 0
+
+const measureNavigation = async () => {
+  if (!import.meta.client) return
+
+  const inner = mainbarInnerRef.value
+  const logo = logoZoneRef.value
+  const utils = utilsZoneRef.value
+  const list = navListRef.value
+
+  if (!inner || !logo || !utils || !list || window.innerWidth < 1200) {
+    navCollapsed.value = true
+    return
+  }
+
+  navCollapsed.value = false
+  const densityOrder = ['comfortable', 'compact', 'tight']
+  const minimumDensityIndex = densityOrder.indexOf(densityForCount(navItems.length))
+  const availableWidth = Math.max(0, inner.clientWidth - logo.offsetWidth - utils.offsetWidth - 40)
+
+  for (let index = minimumDensityIndex; index < densityOrder.length; index += 1) {
+    navDensity.value = densityOrder[index]
+    await nextTick()
+
+    if (list.scrollWidth <= availableWidth) {
+      navCollapsed.value = false
+      return
+    }
+  }
+
+  navCollapsed.value = true
+}
+
+const scheduleNavigationMeasure = () => {
+  if (!import.meta.client) return
+  window.cancelAnimationFrame(measureFrame)
+  measureFrame = window.requestAnimationFrame(() => {
+    void measureNavigation()
+  })
+}
+
+onMounted(() => {
+  if ('ResizeObserver' in window) {
+    resizeObserver = new ResizeObserver(scheduleNavigationMeasure)
+    if (mainbarInnerRef.value) resizeObserver.observe(mainbarInnerRef.value)
+    if (logoZoneRef.value) resizeObserver.observe(logoZoneRef.value)
+    if (utilsZoneRef.value) resizeObserver.observe(utilsZoneRef.value)
+  }
+
+  window.addEventListener('resize', scheduleNavigationMeasure, { passive: true })
+  scheduleNavigationMeasure()
+})
+
+onBeforeUnmount(() => {
+  resizeObserver?.disconnect()
+  window.removeEventListener('resize', scheduleNavigationMeasure)
+  window.cancelAnimationFrame(measureFrame)
+})
 </script>
 
 <style scoped>
@@ -255,22 +321,39 @@ const isSearchOpen = useState('isSearchOpen', () => false)
 /* ZONE 2: NAVIGATION (Flexible but protected center) */
 .iecs-nav-zone {
   flex: 1 1 auto;
-  display: flex;
+  display: none;
   justify-content: center;
-  min-width: 0; /* Prevents flex flex-basis blowout */
+  min-width: 0;
   position: relative;
-  z-index: 50; /* Safely elevates navigation items strictly above utility components */
+  z-index: 50;
+  overflow: visible;
+}
+
+@media (min-width: 1200px) {
+  .iecs-nav-zone:not(.is-collapsed) {
+    display: flex;
+  }
 }
 
 .iecs-nav-list {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: clamp(15px, 2vw, 40px);
   list-style: none;
   margin: 0;
   padding: 0;
-  white-space: nowrap; /* Ensures Vida Husky and others never wrap/break */
+  white-space: nowrap;
+  max-width: 100%;
+  gap: clamp(18px, 1.55vw, 30px);
+  transition: gap 0.2s ease;
+}
+
+.iecs-nav-zone.is-compact .iecs-nav-list {
+  gap: clamp(11px, 1vw, 18px);
+}
+
+.iecs-nav-zone.is-tight .iecs-nav-list {
+  gap: clamp(7px, 0.65vw, 12px);
 }
 
 .iecs-nav-item {
@@ -282,13 +365,40 @@ const isSearchOpen = useState('isSearchOpen', () => false)
   font-family: 'Montserrat', sans-serif;
   font-weight: 600;
   font-size: 15px;
+  line-height: 1.15;
+  letter-spacing: -0.01em;
   color: var(--tp-common-black-5, #141414);
   display: flex;
   align-items: center;
   gap: 6px;
   text-decoration: none;
   padding: 10px 0;
-  transition: color 0.3s ease;
+  transition: color 0.3s ease, font-size 0.2s ease, letter-spacing 0.2s ease;
+}
+
+.iecs-nav-trigger {
+  appearance: none;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  margin: 0;
+}
+
+.iecs-nav-zone.is-compact .iecs-nav-link {
+  font-size: 14px;
+  gap: 5px;
+  letter-spacing: -0.02em;
+}
+
+.iecs-nav-zone.is-tight .iecs-nav-link {
+  font-size: 12.5px;
+  gap: 4px;
+  letter-spacing: -0.035em;
+}
+
+.iecs-nav-zone.is-tight .iecs-nav-link svg {
+  width: 6px;
+  height: 5px;
 }
 
 .iecs-nav-link:hover {
@@ -315,7 +425,8 @@ const isSearchOpen = useState('isSearchOpen', () => false)
   z-index: 999;
 }
 
-.iecs-nav-item:hover .iecs-submenu {
+.iecs-nav-item:hover .iecs-submenu,
+.iecs-nav-item:focus-within .iecs-submenu {
   opacity: 1;
   visibility: visible;
   transform: translateX(-50%) translateY(0);
@@ -372,6 +483,64 @@ const isSearchOpen = useState('isSearchOpen', () => false)
 .iecs-icon-btn:hover {
   color: var(--tp-theme-1, #618B2F);
   transform: scale(1.05);
+}
+
+
+.iecs-info-cta {
+  padding: 12px 24px;
+  border-radius: 30px;
+  white-space: nowrap;
+}
+
+.iecs-husky-pass img {
+  width: 120px;
+  height: 35px;
+  object-fit: contain;
+}
+
+@media (max-width: 1499px) and (min-width: 1200px) {
+  .iecs-mainbar-inner {
+    gap: 14px;
+  }
+
+  .iecs-logo-zone {
+    width: 190px;
+  }
+
+  .iecs-utils-zone {
+    gap: 10px;
+  }
+
+  .iecs-info-cta {
+    padding-inline: 18px;
+  }
+
+  .iecs-husky-pass img {
+    width: 106px;
+  }
+}
+
+@media (max-width: 767px) {
+  .iecs-mainbar {
+    padding: 10px 0;
+  }
+
+  .iecs-mainbar-inner {
+    gap: 10px;
+  }
+
+  .iecs-logo-zone {
+    width: clamp(145px, 43vw, 190px);
+  }
+
+  .iecs-utils-zone {
+    gap: 6px;
+  }
+
+  .iecs-icon-btn {
+    padding: 6px;
+  }
+
 }
 
 /* 
@@ -432,5 +601,13 @@ const isSearchOpen = useState('isSearchOpen', () => false)
 .iecs-hamburger-box.is-active span:nth-child(3) {
   transform: translateY(-8px) rotate(45deg);
   width: 24px;
+}
+
+
+@media (max-width: 767px) {
+  .iecs-hamburger {
+    width: 44px;
+    height: 44px;
+  }
 }
 </style>

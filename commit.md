@@ -1,1 +1,1 @@
-Añade Blog IECS-IEDIS conectado a Google Sheets mediante Apps Script
+Ajusta la navegación superior para escalar de forma responsiva

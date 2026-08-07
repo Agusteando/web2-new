@@ -24,56 +24,41 @@
               </button>
             </div>
 
+            <!-- Primary navigation: shared with the header so future items stay synchronized -->
+            <nav class="iecs-offcanvas-mobile-nav mb-40" aria-label="Navegación principal del menú">
+              <div class="iecs-mobile-husky-pass text-left mb-30 d-xl-none">
+                <a href="https://admin.casitaiedis.edu.mx/login.php" target="_blank" rel="noopener noreferrer" class="d-inline-block">
+                  <img decoding="async" loading="lazy" src="/assets/img/IECS-IEDIS IMAGES/ID-HUSKY-PASS-HORIZONTAL.webp" alt="Husky Pass" style="width: 140px; height: auto; object-fit: contain;">
+                </a>
+              </div>
+
+              <ul>
+                <li
+                  v-for="item in navItems"
+                  :key="item.id"
+                  :class="{ 'has-dropdown': item.children?.length, 'active': activeNav === item.id }"
+                >
+                  <a v-if="item.children?.length" href="#" @click.prevent="toggleNav(item.id)">
+                    {{ item.label }}
+                    <span>
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                    </span>
+                  </a>
+                  <NuxtLink v-else :to="item.to" @click="closeMenu">{{ item.label }}</NuxtLink>
+
+                  <ul v-if="item.children?.length" class="iecs-submenu" :style="{ display: activeNav === item.id ? 'block' : 'none' }">
+                    <li v-for="child in item.children" :key="child.to">
+                      <NuxtLink :to="child.to" @click="closeMenu" :style="child.color ? { color: child.color } : undefined">{{ child.label }}</NuxtLink>
+                    </li>
+                  </ul>
+                </li>
+              </ul>
+            </nav>
+
             <!-- Desktop Content Header -->
             <div class="iecs-offcanvas-desktop-title d-none d-xl-block mb-30">
               <h3>Nuestros niveles<br>educativos:</h3>
             </div>
-
-            <!-- Mobile Navigation (Accordion) -->
-            <nav class="iecs-offcanvas-mobile-nav d-xl-none mb-40">
-              <ul>
-                <div class="iecs-mobile-husky-pass text-left mb-30">
-                  <a href="https://admin.casitaiedis.edu.mx/login.php" target="_blank" rel="noopener noreferrer" class="d-inline-block">
-                    <img decoding="async" loading="lazy" src="/assets/img/IECS-IEDIS IMAGES/ID-HUSKY-PASS-HORIZONTAL.webp" alt="Husky Pass" style="width: 140px; height: auto; object-fit: contain;">
-                  </a>
-                </div>
-                
-                <li class="has-dropdown" :class="{ 'active': activeNav === 'descubre' }">
-                  <a href="#" @click.prevent="toggleNav('descubre')">
-                    Descubre
-                    <span>
-                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
-                    </span>
-                  </a>
-                  <ul class="iecs-submenu" :style="{ display: activeNav === 'descubre' ? 'block' : 'none' }">
-                    <li><NuxtLink to="/acerca-de-institutos" @click="closeMenu">Acerca de los institutos</NuxtLink></li>
-                    <li><NuxtLink to="/campus" @click="closeMenu">Nuestros campus</NuxtLink></li>
-                    <li><NuxtLink to="/escuela-padres" @click="closeMenu">Escuela para padres</NuxtLink></li>
-                    <li><NuxtLink to="/convenios" @click="closeMenu">Convenios IECS-IEDIS</NuxtLink></li>
-                    <li><NuxtLink to="/voluntarios" @click="closeMenu">Voluntarios IECS-IEDIS</NuxtLink></li>
-                  </ul>
-                </li>
-                
-                <li class="has-dropdown" :class="{ 'active': activeNav === 'niveles' }">
-                  <a href="#" @click.prevent="toggleNav('niveles')">
-                    Niveles
-                    <span>
-                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
-                    </span>
-                  </a>
-                  <ul class="iecs-submenu" :style="{ display: activeNav === 'niveles' ? 'block' : 'none' }">
-                    <li><NuxtLink to="/daycare" @click="closeMenu" style="color: #8EC152;">Desarrollo Infantil</NuxtLink></li>
-                    <li><NuxtLink to="/preschool" @click="closeMenu" style="color: #E83F4B;">Preescolar</NuxtLink></li>
-                    <li><NuxtLink to="/elementary-school" @click="closeMenu" style="color: #FCBF2C;">Primaria</NuxtLink></li>
-                    <li><NuxtLink to="/middle-school" @click="closeMenu" style="color: #66A8D8;">Secundaria</NuxtLink></li>
-                  </ul>
-                </li>
-                
-                <li><NuxtLink to="/talleres-inteligentes" @click="closeMenu">Talleres Inteligentes</NuxtLink></li>
-                <li><NuxtLink to="/vida-husky" @click="closeMenu">Vida Husky</NuxtLink></li>
-                <li><NuxtLink to="/blog-iecs-iedis" @click="closeMenu">Blog IECS-IEDIS</NuxtLink></li>
-              </ul>
-            </nav>
 
             <!-- Desktop Gallery Grid -->
             <div class="iecs-offcanvas-gallery d-none d-xl-block mb-50">
@@ -135,6 +120,7 @@ import { useRoute } from '#app'
 const isOpen = useState('isOffcanvasOpen', () => false)
 const route = useRoute()
 const activeNav = ref(null)
+const navItems = useSiteNavigation()
 
 const toggleNav = (menu) => {
   activeNav.value = activeNav.value === menu ? null : menu
@@ -472,4 +458,20 @@ onUnmounted(() => {
 .iecs-submenu a:hover {
   color: #618B2F;
 }
+
+@media (min-width: 1200px) {
+  .iecs-offcanvas-mobile-nav {
+    margin-bottom: 30px !important;
+  }
+
+  .iecs-offcanvas-mobile-nav > ul > li > a {
+    padding: 11px 0;
+    font-size: 16px;
+  }
+
+  .iecs-offcanvas-mobile-nav .iecs-submenu a {
+    font-size: 14px;
+  }
+}
+
 </style>
