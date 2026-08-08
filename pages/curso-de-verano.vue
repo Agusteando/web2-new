@@ -136,6 +136,71 @@
                 </div>
               </div>
             </div>
+
+            <Transition name="summer-review">
+              <div v-if="evaluationVisible" ref="evaluationRef" class="summer-evaluation" tabindex="-1">
+                <div class="summer-evaluation-heading">
+                  <span>Evaluación</span>
+                  <svg
+                    v-if="evaluationSaved"
+                    class="summer-evaluation-saved"
+                    width="18"
+                    height="18"
+                    viewBox="0 0 18 18"
+                    fill="none"
+                    aria-hidden="true"
+                  >
+                    <circle cx="9" cy="9" r="8" stroke="currentColor" stroke-width="1.5" />
+                    <path d="M5.3 9.1L7.8 11.6L12.9 6.4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" />
+                  </svg>
+                </div>
+
+                <div class="summer-stars" role="radiogroup" aria-label="Evaluación" @mouseleave="hoverRating = 0">
+                  <button
+                    v-for="star in 5"
+                    :key="star"
+                    type="button"
+                    class="summer-star"
+                    :class="{ 'is-filled': star <= displayedRating }"
+                    role="radio"
+                    :aria-checked="selectedRating === star ? 'true' : 'false'"
+                    :aria-label="String(star)"
+                    @mouseenter="hoverRating = star"
+                    @focus="hoverRating = star"
+                    @blur="hoverRating = 0"
+                    @click="selectRating(star)"
+                  >
+                    <svg viewBox="0 0 32 31" aria-hidden="true">
+                      <path d="M16 1.8L20.15 10.2L29.42 11.55L22.71 18.08L24.3 27.32L16 22.96L7.7 27.32L9.29 18.08L2.58 11.55L11.85 10.2L16 1.8Z" />
+                    </svg>
+                  </button>
+                </div>
+
+                <button
+                  v-if="selectedRating"
+                  type="button"
+                  class="summer-comment-toggle"
+                  :aria-expanded="commentOpen ? 'true' : 'false'"
+                  @click="commentOpen = !commentOpen"
+                >
+                  <span>Comentario</span>
+                  <svg width="12" height="7" viewBox="0 0 12 7" fill="none" aria-hidden="true" :class="{ 'is-open': commentOpen }">
+                    <path d="M1 1L6 6L11 1" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" />
+                  </svg>
+                </button>
+
+                <div v-if="selectedRating && commentOpen" class="summer-comment-field">
+                  <textarea
+                    v-model="evaluationComment"
+                    maxlength="2000"
+                    rows="3"
+                    aria-label="Comentario"
+                    @input="scheduleEvaluationSave"
+                    @blur="flushEvaluationSave"
+                  ></textarea>
+                </div>
+              </div>
+            </Transition>
           </div>
 
           <div class="summer-live-certificate">
@@ -166,7 +231,21 @@ const nameFieldFocused = ref(false)
 const activeSuggestionIndex = ref(-1)
 const nameInputRef = ref<HTMLInputElement | null>(null)
 const certificateSectionRef = ref<HTMLElement | null>(null)
+const evaluationRef = ref<HTMLElement | null>(null)
+const evaluationVisible = ref(false)
+const selectedRating = ref(0)
+const hoverRating = ref(0)
+const commentOpen = ref(false)
+const evaluationComment = ref('')
+const evaluationSaved = ref(false)
+const reviewSubmissionId = ref('')
+const reviewStudentName = ref('')
+const reviewProgram = ref<SummerCertificateProgram>('curso')
 
+let evaluationSaveTimer: ReturnType<typeof setTimeout> | null = null
+let evaluationSaveSequence = 0
+let evaluationSession = 0
+let evaluationSaveChain: Promise<void> = Promise.resolve()
 let searchTimer: ReturnType<typeof setTimeout> | null = null
 let searchSequence = 0
 let blurTimer: ReturnType<typeof setTimeout> | null = null
@@ -175,6 +254,7 @@ const cleanName = (value: string) => value.replace(/\s+/g, ' ').trim()
 
 const previewName = computed(() => cleanName(searchTerm.value).slice(0, 90))
 const manualCertificateReady = computed(() => previewName.value.length >= 2)
+const displayedRating = computed(() => hoverRating.value || selectedRating.value)
 const dropdownVisible = computed(() => {
   return nameFieldFocused.value && manualCertificateReady.value && (suggestions.value.length > 0 || manualCertificateReady.value)
 })
@@ -194,6 +274,109 @@ const activeSuggestionId = computed(() => {
 })
 
 const suggestionId = (index: number) => `summer-student-option-${index}`
+
+const createSubmissionId = () => {
+  if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
+    return crypto.randomUUID()
+  }
+
+  return `${Date.now().toString(36)}-${Math.random().toString(36).slice(2)}-${Math.random().toString(36).slice(2)}`
+}
+
+const clearEvaluation = () => {
+  evaluationSession += 1
+  evaluationSaveSequence += 1
+  evaluationSaveChain = Promise.resolve()
+  evaluationVisible.value = false
+  selectedRating.value = 0
+  hoverRating.value = 0
+  commentOpen.value = false
+  evaluationComment.value = ''
+  evaluationSaved.value = false
+  reviewSubmissionId.value = ''
+  reviewStudentName.value = ''
+
+  if (evaluationSaveTimer) {
+    clearTimeout(evaluationSaveTimer)
+    evaluationSaveTimer = null
+  }
+}
+
+const startEvaluation = async (studentName: string, program: SummerCertificateProgram) => {
+  clearEvaluation()
+  reviewSubmissionId.value = createSubmissionId()
+  reviewStudentName.value = studentName
+  reviewProgram.value = program
+  evaluationVisible.value = true
+
+  await nextTick()
+  window.requestAnimationFrame(() => {
+    evaluationRef.value?.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
+  })
+}
+
+const persistEvaluation = () => {
+  if (!reviewSubmissionId.value || !reviewStudentName.value || selectedRating.value < 1) {
+    return Promise.resolve()
+  }
+
+  const session = evaluationSession
+  const sequence = ++evaluationSaveSequence
+  const payload = {
+    submissionId: reviewSubmissionId.value,
+    studentName: reviewStudentName.value,
+    program: reviewProgram.value,
+    rating: selectedRating.value,
+    comment: evaluationComment.value,
+  }
+
+  evaluationSaved.value = false
+
+  const saveTask = evaluationSaveChain.then(async () => {
+    if (session !== evaluationSession) return
+
+    try {
+      await $fetch('/api/curso-verano/evaluaciones', {
+        method: 'POST',
+        body: payload,
+      })
+
+      if (session === evaluationSession && sequence === evaluationSaveSequence) {
+        evaluationSaved.value = true
+      }
+    } catch {
+      if (session === evaluationSession && sequence === evaluationSaveSequence) {
+        evaluationSaved.value = false
+      }
+    }
+  })
+
+  evaluationSaveChain = saveTask
+  return saveTask
+}
+
+const selectRating = (rating: number) => {
+  selectedRating.value = rating
+  hoverRating.value = 0
+  void persistEvaluation()
+}
+
+const scheduleEvaluationSave = () => {
+  evaluationSaveSequence += 1
+  evaluationSaved.value = false
+  if (evaluationSaveTimer) clearTimeout(evaluationSaveTimer)
+  evaluationSaveTimer = setTimeout(() => {
+    evaluationSaveTimer = null
+    void persistEvaluation()
+  }, 700)
+}
+
+const flushEvaluationSave = () => {
+  if (!evaluationSaveTimer) return
+  clearTimeout(evaluationSaveTimer)
+  evaluationSaveTimer = null
+  void persistEvaluation()
+}
 
 const closeSuggestions = () => {
   nameFieldFocused.value = false
@@ -250,6 +433,10 @@ const fetchStudentSuggestions = async () => {
 }
 
 const scheduleStudentSearch = () => {
+  if (evaluationVisible.value && cleanName(searchTerm.value) !== reviewStudentName.value) {
+    clearEvaluation()
+  }
+
   nameFieldFocused.value = true
   activeSuggestionIndex.value = -1
 
@@ -260,6 +447,7 @@ const scheduleStudentSearch = () => {
 }
 
 const handleProgramChange = () => {
+  clearEvaluation()
   resetSearchState()
   if (cleanName(searchTerm.value).length >= 2) {
     scheduleStudentSearch()
@@ -282,13 +470,15 @@ const downloadForName = async (value: string) => {
   const name = cleanName(value)
   if (name.length < 2) return
 
+  const program = selectedProgram.value
   searchTerm.value = name
   suggestions.value = []
   activeSuggestionIndex.value = -1
   nameFieldFocused.value = false
 
   try {
-    await downloadSummerCertificate(name, selectedProgram.value)
+    await downloadSummerCertificate(name, program)
+    await startEvaluation(name, program)
   } catch {
     // The interaction intentionally remains visually silent; the parent-facing UI
     // contains no infrastructure or transport status messaging.
@@ -339,6 +529,7 @@ onMounted(() => {
 onBeforeUnmount(() => {
   if (searchTimer) clearTimeout(searchTimer)
   if (blurTimer) clearTimeout(blurTimer)
+  if (evaluationSaveTimer) clearTimeout(evaluationSaveTimer)
 })
 
 useHead({
@@ -852,6 +1043,170 @@ useHead({
   background: #b75d00;
 }
 
+.summer-evaluation {
+  position: relative;
+  margin-top: 34px;
+  border: 1px solid rgba(7, 61, 125, 0.1);
+  border-radius: 20px;
+  outline: 0;
+  padding: 23px 24px 21px;
+  background: rgba(255, 255, 255, 0.82);
+  box-shadow: 0 14px 34px rgba(7, 61, 125, 0.07);
+  overflow: hidden;
+}
+
+.summer-evaluation::before {
+  content: '';
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 4px;
+  background: var(--summer-navy);
+}
+
+.is-clinica .summer-evaluation::before {
+  background: var(--summer-orange);
+}
+
+.summer-evaluation-heading {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  margin-bottom: 15px;
+  color: #27394e;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.summer-evaluation-saved {
+  color: var(--summer-green);
+}
+
+.summer-stars {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  width: 100%;
+}
+
+
+.summer-star {
+  display: grid;
+  place-items: center;
+  width: clamp(40px, 4vw, 48px);
+  height: clamp(40px, 4vw, 48px);
+  border: 0;
+  padding: 3px;
+  background: transparent;
+  color: #d4dae0;
+  cursor: pointer;
+  transition: transform 120ms ease, color 120ms ease;
+}
+
+.summer-star svg {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.summer-star path {
+  fill: currentColor;
+  stroke: currentColor;
+  stroke-width: 1.1;
+  stroke-linejoin: round;
+}
+
+.summer-star.is-filled {
+  color: #f5ad18;
+}
+
+.summer-star:hover,
+.summer-star:focus-visible {
+  transform: translateY(-2px) scale(1.07);
+  outline: 0;
+}
+
+.summer-comment-toggle {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin-top: 14px;
+  border: 0;
+  padding: 3px 0;
+  background: transparent;
+  color: rgba(39, 57, 78, 0.56);
+  font-family: 'Montserrat', sans-serif;
+  font-size: 11px;
+  font-weight: 650;
+  letter-spacing: 0.03em;
+  cursor: pointer;
+  transition: color 150ms ease;
+}
+
+.summer-comment-toggle:hover,
+.summer-comment-toggle:focus-visible {
+  color: var(--summer-navy);
+  outline: 0;
+}
+
+.is-clinica .summer-comment-toggle:hover,
+.is-clinica .summer-comment-toggle:focus-visible {
+  color: var(--summer-orange);
+}
+
+.summer-comment-toggle svg {
+  transition: transform 180ms ease;
+}
+
+.summer-comment-toggle svg.is-open {
+  transform: rotate(180deg);
+}
+
+.summer-comment-field {
+  margin-top: 10px;
+}
+
+.summer-comment-field textarea {
+  display: block;
+  width: 100%;
+  min-height: 82px;
+  resize: vertical;
+  border: 1px solid rgba(7, 61, 125, 0.12);
+  border-radius: 15px;
+  outline: 0;
+  padding: 13px 14px;
+  background: rgba(248, 251, 253, 0.8);
+  color: #1d2a3a;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 13px;
+  line-height: 1.55;
+  transition: border-color 150ms ease, background-color 150ms ease, box-shadow 150ms ease;
+}
+
+.summer-comment-field textarea:focus {
+  border-color: rgba(7, 61, 125, 0.35);
+  background: #fff;
+  box-shadow: 0 0 0 3px rgba(7, 61, 125, 0.06);
+}
+
+.is-clinica .summer-comment-field textarea:focus {
+  border-color: rgba(214, 109, 0, 0.38);
+  box-shadow: 0 0 0 3px rgba(214, 109, 0, 0.06);
+}
+
+.summer-review-enter-active,
+.summer-review-leave-active {
+  transition: opacity 220ms ease, transform 220ms ease;
+}
+
+.summer-review-enter-from,
+.summer-review-leave-to {
+  opacity: 0;
+  transform: translateY(8px);
+}
+
 .summer-live-certificate {
   position: relative;
   min-width: 0;
@@ -1053,6 +1408,16 @@ useHead({
     font-size: 14px;
   }
 
+  .summer-evaluation {
+    margin-top: 28px;
+    padding: 20px 20px 18px;
+  }
+
+  .summer-star {
+    width: 37px;
+    height: 37px;
+  }
+
   .summer-live-certificate {
     border-radius: 4px;
     box-shadow: 0 18px 46px rgba(7, 61, 125, 0.16);
@@ -1065,7 +1430,11 @@ useHead({
   .summer-primary-cta svg,
   .summer-program-card,
   .summer-program-card img,
-  .summer-suggestion {
+  .summer-suggestion,
+  .summer-star,
+  .summer-comment-toggle,
+  .summer-comment-toggle svg,
+  .summer-comment-field textarea {
     transition: none;
   }
 

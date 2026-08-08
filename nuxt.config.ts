@@ -61,6 +61,14 @@ export default defineNuxtConfig({
       prerender: false,
       headers: { 'cache-control': 'private, no-store' },
     },
+    '/evaluaciones-curso-verano-2026': {
+      ssr: false,
+      prerender: false,
+      headers: {
+        'cache-control': 'private, no-store',
+        'x-robots-tag': 'noindex, nofollow, noarchive',
+      },
+    },
     '/sitemap': {
       ssr: false,
       prerender: false,

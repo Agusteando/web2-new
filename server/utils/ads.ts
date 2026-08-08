@@ -314,9 +314,13 @@ export async function evaluateAdsForEvent(event: H3Event): Promise<{
 }
 
 /**
- * Restrict /ads dashboard access to IP + HTTP Basic Auth only.
+ * Restrict internal dashboards to the existing IP allowlist + HTTP Basic Auth.
+ * The ads dashboard keeps its legacy wrapper below so existing callers remain stable.
  */
-export function assertAdsDashboardAccess(event: H3Event): void {
+export function assertInternalDashboardAccess(
+  event: H3Event,
+  realm = "IECS-IEDIS Panel",
+): void {
   const debug =
     (process.env.DEBUG_LEGACY ?? "").toLowerCase() === "1" ||
     (process.env.DEBUG_LEGACY ?? "").toLowerCase() === "true";
@@ -328,17 +332,15 @@ export function assertAdsDashboardAccess(event: H3Event): void {
     .filter((v) => v.length > 0);
 
   const clientIp = getClientIp(event);
-
   const ipAllowed = allowList.length > 0 && clientIp && allowList.includes(clientIp);
 
   if (!ipAllowed) {
     if (debug) {
-      // eslint-disable-next-line no-console
-      console.warn("[ads] Dashboard access denied by IP gate", { clientIp, allowList });
+      console.warn("[internal] Dashboard access denied by IP gate", { clientIp, allowList });
     }
     throw createError({
       statusCode: 403,
-      statusMessage: "Forbidden: Ads dashboard is internal only",
+      statusMessage: "Forbidden: internal dashboard",
     });
   }
 
@@ -357,12 +359,11 @@ export function assertAdsDashboardAccess(event: H3Event): void {
 
   if (!basicConfigured) {
     if (debug) {
-      // eslint-disable-next-line no-console
-      console.warn("[ads] Dashboard Basic Auth not configured; denying access", { clientIp });
+      console.warn("[internal] Dashboard Basic Auth not configured; denying access", { clientIp });
     }
     throw createError({
       statusCode: 403,
-      statusMessage: "Forbidden: Ads dashboard is internal only",
+      statusMessage: "Forbidden: internal dashboard",
     });
   }
 
@@ -373,7 +374,7 @@ export function assertAdsDashboardAccess(event: H3Event): void {
     setHeader(
       event,
       "WWW-Authenticate",
-      'Basic realm="IECS-IEDIS Ads Dashboard", charset="UTF-8"'
+      `Basic realm="${realm.replace(/["\\]/g, "")}", charset="UTF-8"`,
     );
     throw createError({
       statusCode: 401,
@@ -383,8 +384,7 @@ export function assertAdsDashboardAccess(event: H3Event): void {
 
   if (!authHeader || !authHeader.toString().startsWith("Basic ")) {
     if (debug) {
-      // eslint-disable-next-line no-console
-      console.warn("[ads] Dashboard Basic Auth missing or malformed Authorization header", { clientIp });
+      console.warn("[internal] Dashboard Basic Auth missing or malformed Authorization header", { clientIp });
     }
     challenge();
   }
@@ -395,8 +395,7 @@ export function assertAdsDashboardAccess(event: H3Event): void {
     decoded = Buffer.from(base64, "base64").toString("utf8");
   } catch {
     if (debug) {
-      // eslint-disable-next-line no-console
-      console.warn("[ads] Dashboard Basic Auth header could not be base64-decoded", { clientIp });
+      console.warn("[internal] Dashboard Basic Auth header could not be base64-decoded", { clientIp });
     }
     challenge();
   }
@@ -410,16 +409,18 @@ export function assertAdsDashboardAccess(event: H3Event): void {
 
   if (!okUser || !okPass) {
     if (debug) {
-      // eslint-disable-next-line no-console
-      console.warn("[ads] Dashboard Basic Auth invalid credentials", { user, clientIp });
+      console.warn("[internal] Dashboard Basic Auth invalid credentials", { user, clientIp });
     }
     challenge();
   }
 
   if (debug) {
-    // eslint-disable-next-line no-console
-    console.log("[ads] Dashboard access granted via IP + HTTP Basic Auth", { user, clientIp });
+    console.log("[internal] Dashboard access granted via IP + HTTP Basic Auth", { user, clientIp });
   }
+}
+
+export function assertAdsDashboardAccess(event: H3Event): void {
+  assertInternalDashboardAccess(event, "IECS-IEDIS Ads Dashboard");
 }
 
 /**

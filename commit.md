@@ -1,1 +1,1 @@
-Corrige la navegación adaptable para evitar que desaparezca al agregar nuevas secciones
+Añade evaluación posterior al certificado y panel privado de resultados
