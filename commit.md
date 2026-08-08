@@ -1,1 +1,1 @@
-Aclarar la evaluación posterior al certificado con una pregunta contextual y elegante
+Hacer obligatoria la calificación antes de descargar el certificado de verano

@@ -114,7 +114,7 @@
                     class="summer-suggestion"
                     :class="{ 'is-active': activeSuggestionIndex === index }"
                     :aria-selected="activeSuggestionIndex === index ? 'true' : 'false'"
-                    @mousedown.prevent="downloadForName(student)"
+                    @mousedown.prevent="prepareCertificate(student)"
                     @mouseenter="activeSuggestionIndex = index"
                   >
                     {{ student }}
@@ -125,7 +125,7 @@
                     type="button"
                     class="summer-suggestion summer-manual-certificate"
                     :class="{ 'is-active': activeSuggestionIndex === suggestions.length }"
-                    @mousedown.prevent="downloadForName(searchTerm)"
+                    @mousedown.prevent="prepareCertificate(searchTerm)"
                     @mouseenter="activeSuggestionIndex = suggestions.length"
                   >
                     <span>Obtener certificado</span>
@@ -140,7 +140,7 @@
             <Transition name="summer-review">
               <div v-if="evaluationVisible" ref="evaluationRef" class="summer-evaluation" tabindex="-1">
                 <div class="summer-evaluation-heading">
-                  <span>{{ evaluationQuestion }}</span>
+                  <span>Califica nuestro curso de verano</span>
                   <svg
                     v-if="evaluationSaved"
                     class="summer-evaluation-saved"
@@ -155,7 +155,7 @@
                   </svg>
                 </div>
 
-                <div class="summer-stars" role="radiogroup" :aria-label="evaluationQuestion" @mouseleave="hoverRating = 0">
+                <div class="summer-stars" role="radiogroup" aria-label="Califica nuestro curso de verano" @mouseleave="hoverRating = 0">
                   <button
                     v-for="star in 5"
                     :key="star"
@@ -175,6 +175,18 @@
                     </svg>
                   </button>
                 </div>
+
+                <button
+                  type="button"
+                  class="summer-certificate-download"
+                  :disabled="!certificateDownloadReady || isDownloadingCertificate"
+                  @click="downloadPreparedCertificate"
+                >
+                  <span>Obtener certificado</span>
+                  <svg width="16" height="15" viewBox="0 0 16 15" fill="none" aria-hidden="true">
+                    <path d="M1 14L15 1M15 1H4.9M15 1V11.1" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+                  </svg>
+                </button>
 
                 <button
                   v-if="selectedRating"
@@ -241,6 +253,7 @@ const evaluationSaved = ref(false)
 const reviewSubmissionId = ref('')
 const reviewStudentName = ref('')
 const reviewProgram = ref<SummerCertificateProgram>('curso')
+const isDownloadingCertificate = ref(false)
 
 let evaluationSaveTimer: ReturnType<typeof setTimeout> | null = null
 let evaluationSaveSequence = 0
@@ -255,11 +268,11 @@ const cleanName = (value: string) => value.replace(/\s+/g, ' ').trim()
 const previewName = computed(() => cleanName(searchTerm.value).slice(0, 90))
 const manualCertificateReady = computed(() => previewName.value.length >= 2)
 const displayedRating = computed(() => hoverRating.value || selectedRating.value)
-const evaluationQuestion = computed(() =>
-  reviewProgram.value === 'clinica'
-    ? '¿Qué tan satisfecho estás con nuestra Clínica de Fútbol?'
-    : '¿Qué tan satisfecho estás con nuestro Curso de Verano?',
-)
+const certificateDownloadReady = computed(() => (
+  evaluationVisible.value
+  && selectedRating.value >= 1
+  && reviewStudentName.value.length >= 2
+))
 const dropdownVisible = computed(() => {
   return nameFieldFocused.value && manualCertificateReady.value && (suggestions.value.length > 0 || manualCertificateReady.value)
 })
@@ -300,6 +313,7 @@ const clearEvaluation = () => {
   evaluationSaved.value = false
   reviewSubmissionId.value = ''
   reviewStudentName.value = ''
+  isDownloadingCertificate.value = false
 
   if (evaluationSaveTimer) {
     clearTimeout(evaluationSaveTimer)
@@ -471,7 +485,7 @@ const focusCertificateFlow = () => {
   window.setTimeout(() => nameInputRef.value?.focus({ preventScroll: true }), 650)
 }
 
-const downloadForName = async (value: string) => {
+const prepareCertificate = async (value: string) => {
   const name = cleanName(value)
   if (name.length < 2) return
 
@@ -481,12 +495,26 @@ const downloadForName = async (value: string) => {
   activeSuggestionIndex.value = -1
   nameFieldFocused.value = false
 
+  await startEvaluation(name, program)
+}
+
+const downloadPreparedCertificate = async () => {
+  if (!certificateDownloadReady.value || isDownloadingCertificate.value) return
+
+  isDownloadingCertificate.value = true
+
+  if (evaluationSaveTimer) {
+    clearTimeout(evaluationSaveTimer)
+    evaluationSaveTimer = null
+  }
+
   try {
-    await downloadSummerCertificate(name, program)
-    await startEvaluation(name, program)
+    await persistEvaluation()
+    await downloadSummerCertificate(reviewStudentName.value, reviewProgram.value)
   } catch {
-    // The interaction intentionally remains visually silent; the parent-facing UI
-    // contains no infrastructure or transport status messaging.
+    // Parent-facing flow intentionally remains visually silent.
+  } finally {
+    isDownloadingCertificate.value = false
   }
 }
 
@@ -508,11 +536,11 @@ const activateCurrentChoice = () => {
   if (!manualCertificateReady.value) return
 
   if (activeSuggestionIndex.value >= 0 && activeSuggestionIndex.value < suggestions.value.length) {
-    void downloadForName(suggestions.value[activeSuggestionIndex.value])
+    void prepareCertificate(suggestions.value[activeSuggestionIndex.value])
     return
   }
 
-  void downloadForName(searchTerm.value)
+  void prepareCertificate(searchTerm.value)
 }
 
 const handleComboboxBlur = () => {
@@ -1138,6 +1166,63 @@ useHead({
   outline: 0;
 }
 
+.summer-certificate-download {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  width: 100%;
+  min-height: 56px;
+  margin-top: 18px;
+  border: 0;
+  border-radius: 999px;
+  padding: 0 22px 0 24px;
+  background: var(--summer-navy);
+  color: #fff;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 14px;
+  font-weight: 800;
+  line-height: 1;
+  cursor: pointer;
+  box-shadow: 0 13px 30px rgba(7, 61, 125, 0.16);
+  transition: transform 180ms ease, box-shadow 180ms ease, opacity 180ms ease, background-color 180ms ease;
+}
+
+.summer-certificate-download svg {
+  flex: 0 0 auto;
+  transition: transform 180ms ease;
+}
+
+.summer-certificate-download:not(:disabled):hover,
+.summer-certificate-download:not(:disabled):focus-visible {
+  background: var(--summer-navy-deep);
+  transform: translateY(-2px);
+  box-shadow: 0 17px 34px rgba(7, 61, 125, 0.2);
+  outline: 0;
+}
+
+.summer-certificate-download:not(:disabled):hover svg,
+.summer-certificate-download:not(:disabled):focus-visible svg {
+  transform: translate(2px, -2px);
+}
+
+.summer-certificate-download:disabled {
+  opacity: 0.28;
+  cursor: default;
+  box-shadow: none;
+}
+
+.is-clinica .summer-certificate-download {
+  background: var(--summer-orange);
+  box-shadow: 0 13px 30px rgba(214, 109, 0, 0.16);
+}
+
+.is-clinica .summer-certificate-download:not(:disabled):hover,
+.is-clinica .summer-certificate-download:not(:disabled):focus-visible {
+  background: #b75d00;
+  box-shadow: 0 17px 34px rgba(214, 109, 0, 0.21);
+}
+
 .summer-comment-toggle {
   display: flex;
   align-items: center;
@@ -1442,6 +1527,8 @@ useHead({
   .summer-program-card img,
   .summer-suggestion,
   .summer-star,
+  .summer-certificate-download,
+  .summer-certificate-download svg,
   .summer-comment-toggle,
   .summer-comment-toggle svg,
   .summer-comment-field textarea {
