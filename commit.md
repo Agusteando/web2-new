@@ -1,1 +1,1 @@
-Añade evaluación posterior al certificado y panel privado de resultados
+Aclarar la evaluación posterior al certificado con una pregunta contextual y elegante

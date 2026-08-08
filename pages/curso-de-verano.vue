@@ -140,7 +140,7 @@
             <Transition name="summer-review">
               <div v-if="evaluationVisible" ref="evaluationRef" class="summer-evaluation" tabindex="-1">
                 <div class="summer-evaluation-heading">
-                  <span>Evaluación</span>
+                  <span>{{ evaluationQuestion }}</span>
                   <svg
                     v-if="evaluationSaved"
                     class="summer-evaluation-saved"
@@ -155,7 +155,7 @@
                   </svg>
                 </div>
 
-                <div class="summer-stars" role="radiogroup" aria-label="Evaluación" @mouseleave="hoverRating = 0">
+                <div class="summer-stars" role="radiogroup" :aria-label="evaluationQuestion" @mouseleave="hoverRating = 0">
                   <button
                     v-for="star in 5"
                     :key="star"
@@ -255,6 +255,11 @@ const cleanName = (value: string) => value.replace(/\s+/g, ' ').trim()
 const previewName = computed(() => cleanName(searchTerm.value).slice(0, 90))
 const manualCertificateReady = computed(() => previewName.value.length >= 2)
 const displayedRating = computed(() => hoverRating.value || selectedRating.value)
+const evaluationQuestion = computed(() =>
+  reviewProgram.value === 'clinica'
+    ? '¿Qué tan satisfecho estás con nuestra Clínica de Fútbol?'
+    : '¿Qué tan satisfecho estás con nuestro Curso de Verano?',
+)
 const dropdownVisible = computed(() => {
   return nameFieldFocused.value && manualCertificateReady.value && (suggestions.value.length > 0 || manualCertificateReady.value)
 })
@@ -1069,15 +1074,20 @@ useHead({
 
 .summer-evaluation-heading {
   display: flex;
-  align-items: center;
-  gap: 9px;
-  margin-bottom: 15px;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 14px;
+  margin-bottom: 14px;
   color: #27394e;
   font-family: 'Montserrat', sans-serif;
-  font-size: 12px;
-  font-weight: 800;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
+  font-size: clamp(14px, 1.35vw, 16px);
+  font-weight: 700;
+  line-height: 1.45;
+  letter-spacing: -0.015em;
+}
+
+.summer-evaluation-heading span {
+  max-width: 440px;
 }
 
 .summer-evaluation-saved {
